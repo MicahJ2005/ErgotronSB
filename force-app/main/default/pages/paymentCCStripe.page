@@ -1,0 +1,227 @@
+<!--
+  @description       : Page for credit card payments using Stripe
+  @author            : gaurang.arora@rafter.one (R1)
+  @last modified on  : 25-04-2025
+  @last modified by  : Gaurang Arora
+  Modifications Log 
+  Ver   Date         Author         Modification
+
+-->
+<apex:page docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false" controller="PaymentController">
+	<style>
+        #card-element{
+            margin-left: 30%;
+            width: 40%;
+        }
+        #card-errors{
+            color:red;
+        }
+        #card-tnc{
+        	color:black;
+        	width:39%;
+        	font-family: 'proxima-nova', helvetica, arial, sans-serif !important;
+        	font-weight: 300;
+        }
+        #submitCCPayment{
+        	font-size:11px !important;
+        }
+        
+        @media only screen and (max-width: 600px) {
+          #card-element{
+            margin-left: 0;
+            width: 100%;
+        	}
+        }
+    </style>
+    <HEAD><script src="https://js.stripe.com/v3/"></script></HEAD>
+    <body>
+        <script id="StripeScript" type="text/template"> 
+            <div id="mainPaymentContainer">
+                <div id="card-element" class="formControl">
+                    <!-- A Stripe Element will be inserted here. -->
+                </div>
+                <br/>
+                    <center><div style="width:39%;" id="card-errors" role="alert" /></center>
+                <br/>
+                <div id="paymentIntentErrorMessage" style="color:red; display:none">
+                	<center>{{pageLabelMap "StripePaymentAuthorized_ErrorMessage"}}</center>
+            	</div>
+                <br/>
+                <center><div id="card-tnc">{{pageLabelMap "StripePaymentSubmit_TnC"}}</div></center>
+                <br/>
+                <center><button class="btn btn-default btn-sm btn-base btn-blue sbmt submitForm clientValidation" id="submitCCPayment" type="button" onclick="handleStripePayment();">Submit</button></center>
+            </div>
+            <div id="paymentSuccessMsg" style="color:green; display:none">
+                <center>{{pageLabelMap "StripePaymentAuthorized_SuccessMessage"}}</center>
+            </div>
+            <center>
+                <div id="paymentErrorMsg" style="color:red; display:none"></div>
+            </center>
+                
+            <p class="link_button cc_link_button coso_proceed shippingDetails cc_shipping_details hidden-print">
+               <input class="btn btn-default btn-sm btn-base btn-gray processBack cc_process_back" type="button" value="{{pageLabelMap 'Back'}}" alt="{{pageLabelMap 'Back'}}" />
+           </p>
+    	</script>
+        <script>
+            let stripe; 
+            let elements; 
+            let stripekey;
+        	jQuery(function($) {
+                var sourceId;
+                var client_secret='';
+                CCRZ.models.PaymentsCCModel = CCRZ.CloudCrazeModel.extend(); 
+                CCRZ.views.PaymentsCCView = CCRZ.CloudCrazeView.extend({ 
+                    viewName : "PaymentsCCView",
+                    managedSubView : true,
+                    templateDesktop : CCRZ.util.template("StripeScript"), 
+                    templatePhone : CCRZ.util.template("StripeScript"), 
+                    init : function(options)
+                    {
+                        this.selector = options.selector;
+                        this.render();
+                        CCRZ.pubSub.trigger('action:paymentViewInit',this);
+                    },
+                    renderDesktop : function()
+                    {
+                        let _this = this;
+                        this.setElement(this.selector);
+                        this.data={};
+                        this.$el.html(this.templateDesktop(this.data));  
+                        setTimeout(function(){
+                            _this.invokeStripeSetup();
+                        }, 1000);                               
+                    },
+                    renderPhone : function()
+                    {
+                        let _this = this;
+                        this.setElement(this.selector);
+                        this.data={};
+                        this.$el.html(this.templatePhone(this.data));
+                        setTimeout(function(){
+                            _this.invokeStripeSetup();
+                        }, 1000);
+                    },
+
+                    invokeStripeSetup: function(){
+                        $('#overlay').addClass('modal-backdrop fade in');
+                        $('#overlay').show();
+                        let _this = this;
+                        PaymentController.getPublicKey(function(response, event){
+                            if(response.success){
+                                _this.stripeElementsSetup(response.publicKey);
+                            }
+                            else{
+                            }
+                        });
+                    },
+
+                    stripeElementsSetup: function(stripePublicKey){
+
+                        var setStripe = setInterval(function(){
+                            if (typeof Stripe === "function"){
+                                clearInterval(setStripe);
+                                stripekey = stripePublicKey;
+                                stripe = Stripe(stripePublicKey);
+                                elements = stripe.elements();
+                                var style = {
+                                    base: {
+                                        color: '#32325d',
+                                        lineHeight: '18px',
+                                        fontFamily: '"proxima-nova", Helvetica, ariel',
+                                        fontSmoothing: 'antialiased',
+                                        fontSize: '16px',
+                                        '::placeholder': {
+                                            color: '#aab7c4'
+                                        }
+                                    },
+                                    invalid: {
+                                        color: '#fa755a',
+                                        iconColor: '#fa755a'
+                                    }
+                                };
+                            // Create an instance of the card Element.
+                            card = elements.create("card", { style, hidePostalCode: true });
+                            // Add an instance of the card Element into the `card-element` <div>.
+                            card.mount('#card-element');
+                            // Handle real-time validation errors from the card Element.
+                            card.addEventListener('change', function(event) {
+                                $('#paymentErrorMsg').css("display","none");
+                                var displayError = document.getElementById('card-errors');
+                                if(event.error) {
+                                    displayError.textContent = event.error.message;
+                                    $('#submitCCPayment').attr("disabled",true);
+                                    $('#overlay').hide();
+                                    return false;
+                                } else {
+                                    displayError.textContent = '';
+                                    $('#overlay').hide();
+                                    $('#submitCCPayment').attr("disabled",false);
+                                }
+                            });
+                            $('#overlay').hide();
+                                } 
+                            },500);
+                            
+                        }
+                });
+                CCRZ.pubSub.trigger('action:paymentViewReady','cc',function(options) {
+                    CCRZ.payment = CCRZ.payment||{views:{}};
+                    CCRZ.payment.views.pod = new CCRZ.views.PaymentsCCView({
+                        model : new CCRZ.models.PaymentsCCModel(),
+                        selector : options.selector
+                    });
+                });           
+
+            });
+
+            function handleStripePayment(){
+                    $('#overlay').show();
+                    $('#paymentIntentErrorMessage').css("display","none");
+                    PaymentController.setupStripeTransaction(CCRZ.cartCheckoutModel.attributes.encryptedId,function(response, event){
+                        if(response.success && response.PaymentIntent.success) {
+                            let client_secret = response.PaymentIntent.client_secret;
+                            stripe.confirmCardPayment(client_secret, {
+                                payment_method: {
+                                    card: card
+                                }
+                                ,setup_future_usage: 'off_session'
+                            }).then(function(result) {
+                                    if(result.error){
+                                        $('#submitCCPayment').attr("disabled",true);
+                                        $('#overlay').hide();
+                                        var messageContainer = document.getElementById('card-errors');
+                                        messageContainer.textContent = result.error.message;
+                                        $('#paymentErrorMsg').css("display","block");
+                                        logStripeError(result);
+                                    }
+                                    else{
+                                        CCRZ.pubSub.trigger('action:processPayment', result.transact); 
+                                        $('#mainPaymentContainer').hide();
+                                        $('#paymentSuccessMsg').css("display","block");
+                                    }
+                                });
+                        } else {
+                            $('#paymentIntentErrorMessage').css("display","block");
+                            $('#submitCCPayment').attr("disabled",true);
+                            $('#overlay').hide();
+                        }
+                    });
+                   
+                    }
+
+            function logStripeError(response){
+                let jsonResponse = JSON.stringify(response);
+                let cartId = CCRZ.cartCheckoutModel.attributes.encryptedId;
+                PaymentController.logStripePMError(cartId,jsonResponse,function(response,event){
+                    if(response.success){
+
+                    }
+                });
+            }
+    
+        </script>
+        <div id="overlay" class="">
+          
+        </div>
+    </body>
+</apex:page>

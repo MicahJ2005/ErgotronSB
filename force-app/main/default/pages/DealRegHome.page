@@ -1,0 +1,389 @@
+<apex:page id="DealRegNew" docType="html-5.0" standardStylesheets="true" showHeader="true" sidebar="true" controller="Deal_Reg_Home_Controller">
+    <style>
+        .outputText {
+            padding-left: 40px;
+            font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;
+        }
+
+        .outputTextLINoBold {
+            padding-left: 0px;
+            font:11px/16px Verdana,Arial,Helvetica,sans-serif;
+        }
+
+        .outputTextEMEAProgram1 {
+            padding-left: 0px;
+            font:11px/16px Verdana,Arial,Helvetica,sans-serif;
+            font-weight: bold;
+            color: #0066CC;
+        }
+
+        .outputTextEMEAProgram2 {
+            padding-left: 0px;
+            font:11px/16px Verdana,Arial,Helvetica,sans-serif;
+            font-weight: bold;
+            color: #006600;
+        }
+
+        .outputTextLIBold {
+            padding-left: 0px;
+            font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;
+        }
+
+        .outputTextHeading {
+            padding-left: 40px;
+            font:bold 23px/28px Verdana,Arial,Helvetica,sans-serif;
+        }
+
+        .outputTextSubHeading {
+            padding-left: 40px;
+            font:bold 15px/20px Verdana,Arial,Helvetica,sans-serif;
+        }
+
+        .link {
+            font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif; 
+        }
+
+        .form {
+            margin-top: 5px;
+            height: 100%;
+        }
+
+        .activeTab {
+            height: 24px;  
+            font-weight: bold;
+            font-size: medium;
+        }
+
+        .inactiveTab { 
+            height: 24px;  
+            font-weight: bold;
+            font-size: medium;
+        }
+
+    </style>
+    <apex:form id="formMain" styleClass="form">
+
+        <center>
+
+
+        
+        
+            <apex:outputText styleClass="outputTextHeading" value="{!$Label.Deal_Registration_Welcome}" /><br/><br/>
+        </center>
+
+        <apex:tabPanel id="tpDegReg" switchType="client" value="{!$CurrentPage.parameters.tab}" tabClass="activeTab" inactiveTabClass="inactiveTab">
+
+            <apex:tab id="dealreg" label="Deal Registration">
+
+                <!--BEGIN: Homepage for NON-EMEA Deal Registration Details-->
+                <apex:pageBlock rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA' || TEXT($User.CountryCode)='AU',true,false)}" id="blockNonEMEA">
+                    
+                    <u><apex:outputText styleClass="outputTextSubHeading" value="{!$Label.Deal_Reg_Program_Overview}" /></u><br/><br/>
+                    <u><apex:outputText styleClass="outputText" value="{!$Label.Deal_Reg_How}" /></u><br/>
+                    <ul>
+                        <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Program_Works_1}" /></li>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='AU',true,false)}">
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Program_Works_1_AU}" /></li>
+                        </apex:outputText>
+                    </ul>
+                    <ul>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Stopwatch}" /></li>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Stopwatch1}" /></li>
+                            <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Stopwatch4}" /></li>
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Stopwatch2}" /></li>
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Stopwatch3}" /></li>
+                            </apex:outputText>
+                            <apex:outputText rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA',true,false)}">
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Stopwatch3_EMEA}" /></li>
+                            </apex:outputText>
+                        </ul>
+                    </ul>
+                    <ul>
+                        <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_No_Extra_Cash}" /></li>
+                            <ul>
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Discount_Disclaimer}" /></li>
+                            </ul>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='AU',true,false)}">
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_No_Extra_Cash_AU}" /></li>
+                        </apex:outputText>
+                    </ul>
+                    <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Selfish}" /></li>
+                            <ul>
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Selfish1}" /></li>
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Selfish2}" /></li>
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Homepage_Note}" /></li>
+                            </ul>
+                        </ul>
+                    </apex:outputText>
+                    <apex:outputText rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA',true,false)}">
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Selfish1}" /></li>
+                        </ul>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Homepage_Note}" /></li>
+                        </ul>
+                    </apex:outputText>
+                    <u><apex:outputText styleClass="outputText" value="{!$Label.Deal_Reg_Two_Step}" /></u><br/>
+                    <ol>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Step1}" /></li>
+                        <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Step2}" /></li>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA',true,false)}">
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Step2_EMEA}" /></li>
+                        </apex:outputText>
+                    </ol>
+                    <u><apex:outputText styleClass="outputText" value="{!$Label.Deal_Reg_Register_Deal}" /></u><br/>
+                    <ul>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Registration_Navigation}" /></li>
+                        <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav1}" /></li>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA',true,false)}">
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav1_EMEA}" /></li>
+                        </apex:outputText>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav2}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav3}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav4}" /></li>
+                        <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+                            <ul>
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav4_1}" /></li>
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav4_2}" /></li>
+                            </ul>
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA',true,false)}">
+                            <ul>
+                                <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav4_1}" /></li>
+                            </ul>
+                        </apex:outputText>
+                    </ul>
+                    <apex:outputText styleClass="outputText" value="{!$Label.Deal_Registration_Help}" rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}"/>&nbsp;
+                    <apex:outputText styleClass="outputText" value="{!$Label.Deal_Registration_Help_EMEA}" rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA',true,false)}"/>&nbsp;
+                    <apex:outputLink styleClass="link" value="mailto:deals@ergotron.com">deals@ergotron.com</apex:outputLink><apex:outputText value="."/><br /><br />
+
+                    <apex:outputLink styleClass="link" style="font-size: medium;" value="/apex/DealRegHome?tab=learnfit">Looking for information on LearnFit</apex:outputLink><apex:outputText style="font-size: medium;" value="?"/><br/><br/>
+
+                </apex:pageBlock>
+
+                <!--BEGIN: Homepage for EMEA Deal Registration Details-->
+                <apex:pageBlock rendered="{!IF(
+                        TEXT($User.CountryCode)!='US' && 
+                        TEXT($User.CountryCode)!='CA' && 
+                        TEXT($User.CountryCode)!='AU' &&
+                        TEXT($User.CountryCode)!='BH' && 
+                        TEXT($User.CountryCode)!='CY' && 
+                        TEXT($User.CountryCode)!='EG' &&
+                        TEXT($User.CountryCode)!='IQ' && 
+                        TEXT($User.CountryCode)!='JO' &&
+                        TEXT($User.CountryCode)!='KW' && 
+                        TEXT($User.CountryCode)!='LB' &&
+                        TEXT($User.CountryCode)!='OM' && 
+                        TEXT($User.CountryCode)!='QA' &&
+                        TEXT($User.CountryCode)!='SA' &&
+                        TEXT($User.CountryCode)!='ZA' &&                   
+                        TEXT($User.CountryCode)!='SY' &&
+                        TEXT($User.CountryCode)!='TR' && 
+                        TEXT($User.CountryCode)!='AE' &&
+                        TEXT($User.CountryCode)!='YE',true,false)}" id="blockEMEA">
+
+                    <u><apex:outputText styleClass="outputTextSubHeading" value="{!$Label.Deal_Reg_Program_Overview}" /></u><br/><br/>
+                    <u><apex:outputText styleClass="outputText" value="{!$Label.Deal_Reg_How}" /></u><br/>
+                    <ul>
+                        <li>
+                            <apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_EMEA_Program_Works}" />
+                        </li>
+                    </ul>
+                    
+                    <ul style="color: #0066CC;">
+                        <li><apex:outputText styleClass="outputTextEMEAProgram1" value="{!$Label.Deal_Reg_EMEA_Program_1}" /></li>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextEMEAProgram1" value="{!$Label.Deal_Reg_EMEA_Program_1_1}" /></li>
+                            <li>
+                                <apex:outputText styleClass="outputTextEMEAProgram1" value="{!$Label.Deal_Reg_EMEA_Program_1_2}">
+                                    <apex:param value="{!sCurrency}" />
+                                </apex:outputText>
+                            </li>
+                            <li>
+                                <apex:outputText styleClass="outputTextEMEAProgram1" value="{!$Label.Deal_Reg_EMEA_Program_1_3}">
+                                    <apex:param value="{!sCurrency}" />
+                                </apex:outputText>
+                            </li>
+                            <li><apex:outputText styleClass="outputTextEMEAProgram1" value="{!$Label.Deal_Reg_EMEA_Program_1_4}" /></li>
+                            <li><apex:outputText styleClass="outputTextEMEAProgram1" value="{!$Label.Deal_Reg_EMEA_Program_1_5}" /></li>
+                            <li><apex:outputText styleClass="outputTextEMEAProgram1" value="{!$Label.Deal_Reg_EMEA_Program_1_6}" /></li>
+                            <li><apex:outputText styleClass="outputTextEMEAProgram1" value="{!$Label.Deal_Reg_EMEA_Program_1_7}" /></li>
+                        </ul>
+                    </ul>
+
+                    <ul style="color: #006600;">
+                        <li><apex:outputText styleClass="outputTextEMEAProgram2" value="{!$Label.Deal_Reg_EMEA_Program_2}" /></li>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextEMEAProgram2" value="{!$Label.Deal_Reg_EMEA_Program_2_1}" /></li>
+                            <li>
+                                <apex:outputText styleClass="outputTextEMEAProgram2" value="{!$Label.Deal_Reg_EMEA_Program_2_2}">
+                                    <apex:param value="{!sCurrency}" />
+                                </apex:outputText>
+                            </li>
+                            <li>
+                                <apex:outputText styleClass="outputTextEMEAProgram2" value="{!$Label.Deal_Reg_EMEA_Program_2_3}">
+                                    <apex:param value="{!sCurrency}" />
+                                </apex:outputText>
+                            </li>
+                            <li><apex:outputText styleClass="outputTextEMEAProgram2" value="{!$Label.Deal_Reg_EMEA_Program_2_4}" /></li>
+                            <li><apex:outputText styleClass="outputTextEMEAProgram2" value="{!$Label.Deal_Reg_EMEA_Program_1_5}" /></li>
+                            <li><apex:outputText styleClass="outputTextEMEAProgram2" value="{!$Label.Deal_Reg_EMEA_Program_2_6}" /></li>
+                            <li><apex:outputText styleClass="outputTextEMEAProgram2" value="{!$Label.Deal_Reg_EMEA_Program_2_7}" /></li>
+                        </ul>
+                    </ul>
+
+                    <ul>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_EMEA_Additional_Information}" /></li>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_EMEA_Additional_Information_1}" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Selfish1}" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_EMEA_Additional_Information_2}" /></li>
+                        </ul>
+                    </ul>
+
+                    <u><apex:outputText styleClass="outputText" value="{!$Label.Deal_Reg_Two_Step}" /></u><br/>
+                    <ol>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Step1}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Step2_EMEA}" /></li>
+                    </ol>
+                    <u><apex:outputText styleClass="outputText" value="{!$Label.Deal_Reg_Register_Deal}" /></u><br/>
+                    <ul>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Registration_Navigation}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav1_EMEA}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav2}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav3}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav4}" /></li>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav4_1}" /></li>
+                        </ul>
+                    </ul>
+                    <apex:outputText styleClass="outputText" value="{!$Label.Deal_Registration_Help_EMEA}" />&nbsp;
+                    <apex:outputLink styleClass="link" value="mailto:deals@ergotron.com">deals@ergotron.com</apex:outputLink>&nbsp;
+                    <apex:outputText style="font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;" value="{!$Label.Deal_Registration_Help_EMEA2}" /><br/><br/>
+                </apex:pageBlock>
+
+
+                <!--BEGIN: Homepage for MIDDLE EAST Deal Registration Details-->
+                <apex:pageBlock rendered="{!IF(
+                                            TEXT($User.CountryCode)='BH' || 
+                                            TEXT($User.CountryCode)='CY' || 
+                                            TEXT($User.CountryCode)='EG' || 
+                                            TEXT($User.CountryCode)='IQ' || 
+                                            TEXT($User.CountryCode)='JO' || 
+                                            TEXT($User.CountryCode)='KW' || 
+                                            TEXT($User.CountryCode)='LB' || 
+                                            TEXT($User.CountryCode)='OM' || 
+                                            TEXT($User.CountryCode)='QA' || 
+                                            TEXT($User.CountryCode)='SA' ||
+                                            TEXT($User.CountryCode)='ZA' ||
+                                            TEXT($User.CountryCode)='SY' || 
+                                            TEXT($User.CountryCode)='TR' || 
+                                            TEXT($User.CountryCode)='AE' || 
+                                            TEXT($User.CountryCode)='YE' ,true,false)}" id="blockMIDEAST">
+                   
+                    <u><apex:outputText styleClass="outputTextSubHeading" value="{!$Label.Deal_Reg_Program_Overview}" /></u><br/><br/>
+                   
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_MidEast_Program_1}" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_MidEast_Program_2}" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_MidEast_Program_3}" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_MidEast_Program_4}" /></li>
+
+
+                        </ul>
+                    <u><apex:outputText styleClass="outputText" value="{!$Label.Deal_Reg_Two_Step}" /></u><br/>
+                    <ol>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Step1}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Step2_EMEA}" /></li>
+                    </ol>
+                    <u><apex:outputText styleClass="outputText" value="{!$Label.Deal_Reg_Register_Deal}" /></u><br/>
+                    <ul>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Registration_Navigation}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav1_EMEA}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav2}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav3}" /></li>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav4}" /></li>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="{!$Label.Deal_Reg_Nav4_1}" /></li>
+                        </ul>
+                    </ul>
+                    <apex:outputText styleClass="outputText" value="{!$Label.Deal_Registration_Help_EMEA}" />&nbsp;
+                    <apex:outputLink styleClass="link" value="mailto:deals@ergotron.com">deals@ergotron.com</apex:outputLink>&nbsp;
+                    <apex:outputText style="font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;" value="{!$Label.Deal_Registration_Help_EMEA2}" /><br/><br/>
+                </apex:pageBlock>
+        
+            </apex:tab>
+       
+
+        <apex:tab id="learnfit" label="LearnFit">
+
+            <!--BEGIN: Homepage for NON-EMEA Deal Registration Details-->
+                <apex:pageBlock rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA' || TEXT($User.CountryCode)='AU',true,false)}" id="LFblockNonEMEA">
+
+                    <u><apex:outputText styleClass="outputTextSubHeading" value="LearnFit Pilot Program" /></u><br/><br/>
+
+                    <apex:outputText styleClass="outputText" value="Schools can obtain up to 30 LearnFit Adjustable Standing Desks at a special pilot project discount of 60% off of list price." />
+                    <br />
+
+                    <ul>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="How it works" /></li>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="Contact your Ergotron field representative" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="Discuss the scope of the pilot project and opportunity" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="Type LearnFit Pilot Program in the comments section when you click New Request in the sidebar" /></li>
+                        </ul>
+                    </ul>
+                    
+                    <ul>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="Program Details" /></li>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="Limited to one promotional order per school district of up to 30 LearnFit Adjustable Standing Desks, all shipped to one location and all in one shipment." /></li>
+                        </ul>
+                    </ul>
+                    
+                    <ul>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="Criteria" /></li>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="Budget for classroom furniture in next 12-18 months" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="School districts with 2,500 students or universities with 5,000+ students" /></li>
+                        </ul>
+                    </ul>
+
+                    <u><apex:outputText styleClass="outputTextSubHeading" value="Discussion Points for Project Approval" /></u><br />
+                    <apex:outputText styleClass="outputText" value="When reviewing with your Ergotron rep, please be prepared to discuss the following aspects of this request:" /><br />
+                    <ul>
+                        <li><apex:outputText styleClass="outputTextLINoBold" value="Criteria" /></li>
+                        <ul>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="Estimated project budget and rollout time period" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="Estimated number of LearnFits for final purchase" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="Number of LearnFits for pilot" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="LearnFit pilot period" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="Objectives of the pilot project" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="Impact and usability study requirements" /></li>
+                            <li><apex:outputText styleClass="outputTextLINoBold" value="What are the titles and roles of your customer contacts, and their purchase authority in this area?" /></li>
+                        </ul>
+                    </ul>
+
+                    <apex:outputText styleClass="outputText" value="{!$Label.Deal_Registration_Help}" rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}"/>&nbsp;
+                    <apex:outputLink styleClass="link" value="http://education.ergotron.com" target="_blank">education.ergotron.com</apex:outputLink><apex:outputText value="."/><br/><br/>
+
+                </apex:pageBlock>
+
+        </apex:tab>
+
+        </apex:tabPanel>
+
+    </apex:form>
+</apex:page>

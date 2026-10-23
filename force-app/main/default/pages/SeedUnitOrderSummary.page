@@ -1,0 +1,34 @@
+<apex:page standardController="Seed_Unit_Order__c" extensions="Seed_Unit_Order_Summary_Controller" docType="html-5.0">
+	<apex:form >
+		<apex:pageBlock >
+			<!-- Hidden fields used by the controller extension -->
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Opportunity__c}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Name}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Date_Time_Submitted_To_Oracle__c}" />
+			
+			<!-- Page Block Section - Displayed to user when no products have been selected on the seed unit order -->
+			<apex:pageBlockSection collapsible="false" title="{!$Label.Seed_Summary_Title}" rendered="{!Seed_Unit_Order__c.Total_Quantity__c=0}" columns="1">
+				<apex:pageMessage severity="error" strength="3" summary="{!$Label.Seed_Summary_No_Products}" />
+				<apex:outputLink value="{!sAddProductsURL}" id="addProducts">{!$Label.Seed_Summary_Click_To_Add_Products}</apex:outputLink>
+				<apex:outputLink value="{!sOrderRecordURL}" id="returnToSeedOrder">{!$Label.Seed_Summary_Return_To_Order}</apex:outputLink>
+			</apex:pageBlockSection>
+			
+			<!-- Page Block Section - Displayed to user when seed unit product eligibility approval is required -->
+			<apex:pageBlockSection collapsible="false" title="{!$Label.Seed_Summary_Title}" rendered="{!Seed_Unit_Order__c.Seed_Unit_Approval_Required__c && !Seed_Unit_Order__c.Seed_Unit_Order_Submitted__c}" columns="1">
+				<apex:pageMessage severity="info" strength="3" summary="{!$Label.Seed_Summary_Approval_Required}" />
+				<apex:outputLink value="{!sOrderRecordURL}" id="returnToSeedUnitOrder">{!$Label.Seed_Summary_Return_To_Order}</apex:outputLink>
+				<apex:outputLink value="{!sOpptyRecordURL}" id="returnToOppty">{!$Label.Seed_Summary_Return_To_Opportunity}</apex:outputLink>
+			</apex:pageBlockSection>
+
+			<!-- Page Block Section - Displayed to user when seed unit order has been submitted -->
+			<apex:pageBlockSection collapsible="false" title="{!$Label.Seed_Summary_Title}" rendered="{!Seed_Unit_Order__c.Seed_Unit_Order_Submitted__c}" columns="1">
+				<apex:outputText value="{!$Label.Seed_Summary_Submitted}">
+					<apex:param value="{!FormattedSubmissionDate}"/>
+				</apex:outputText>
+				<apex:outputLink value="{!sOrderRecordURL}" id="returnToSeedUnitOrder">{!$Label.Seed_Summary_Return_To_Order}</apex:outputLink>
+				<apex:outputLink value="{!sOpptyRecordURL}" id="returnToOppty">{!$Label.Seed_Summary_Return_To_Opportunity}</apex:outputLink>
+			</apex:pageBlockSection>
+			<apex:messages />
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

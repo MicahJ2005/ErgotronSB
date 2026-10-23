@@ -1,0 +1,73 @@
+<apex:page controller="CPR_Log_Controller" renderAs="pdf" applyBodyTag="false" applyHtmlTag="false" showHeader="false">
+    <html>
+        <head>
+            <style type="text/css">
+                    @page {  
+                        size: 11in 8.5in; 
+                    }
+                    body {
+                        font: normal 12px Verdana, Arial, sans-serif;
+                    }
+            </style>
+        </head>
+        <body>
+            <apex:form >
+                <apex:repeat value="{!lstcpr}" var="cp">
+                    <div style="page-break-after: always;">
+                        <apex:image value="{!$Resource.CPR_Logo}" width="2in">
+                        </apex:image>
+                        <h1 style="text-align: center">
+                            Number: {!cp.Name}
+                        </h1>
+                        <apex:pageBlock >
+                            <apex:pageBlockSection columns="2">
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputText value="{!cp.Image__c}" escape="false">
+                                    </apex:outputText>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                    <apex:panelGrid columns="2" bgcolor="EEEEEE" border="2" cellpadding="4">
+                                        <apex:outputText value="CPR Request Date: ">
+                                        </apex:outputText>
+                                        <apex:outputText value="{0,date,MM/dd/yy}">
+                                            <apex:param value="{!cp.Date_Requested__c}">
+                                            </apex:param>
+                                        </apex:outputText>
+                                        <apex:outputText value="Name: ">
+                                        </apex:outputText>
+                                        <apex:outputText value="{!cp.Customer__r.Name}">
+                                        </apex:outputText>
+                                        <apex:outputText value="Product Involved: ">
+                                        </apex:outputText>
+                                        <apex:outputText value="{!cp.Prototype_Product_Part_Number__r.Name}">
+                                        </apex:outputText>
+                                        <apex:outputText value="Description: ">
+                                        </apex:outputText>
+                                        <apex:outputText value="{!cp.Reason_for_special_Product__c}">
+                                        </apex:outputText>
+                                        <apex:outputText value="Sales Rep: ">
+                                        </apex:outputText>
+                                        <apex:outputText value="{!cp.TAM__c}">
+                                        </apex:outputText>
+                                        <apex:outputText value="Manufacturer: ">
+                                        </apex:outputText>
+                                        <apex:outputText value="{!cp.Manufacturer__c}">
+                                        </apex:outputText>
+                                        <apex:outputText value="Min. Order: ">
+                                        </apex:outputText>
+                                        <apex:outputText value="{!cp.Minimum_Order_Quantity__c}">
+                                        </apex:outputText>
+                                        <apex:outputText value="MSRP: ">
+                                        </apex:outputText>
+                                        <apex:outputText value="${!cp.MSRP__c}">
+                                        </apex:outputText>
+                                    </apex:panelGrid>
+                                </apex:pageBlockSectionItem>
+                            </apex:pageBlockSection>
+                        </apex:pageBlock>
+                    </div>
+                </apex:repeat>
+            </apex:form>
+        </body>
+    </html>
+</apex:page>

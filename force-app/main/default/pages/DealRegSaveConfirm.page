@@ -1,0 +1,17 @@
+<apex:page id="DealRegSaveConfirm" docType="html-5.0" standardStylesheets="true" showHeader="true" sidebar="true" standardController="Lead" >
+	<style>
+		.outputText {
+			font-size: 20px;
+		}
+
+		.form {
+			margin-top: 25px;
+			height: 600px;
+		}
+	</style>
+	<apex:form styleClass="form">
+		<apex:outputText styleClass="outputText" value="{!$Label.Deal_Registration_Save_Confirm}" /><br></br><br></br>
+		<apex:outputLink styleClass="outputText" value="/dealregistration/dealregnew">{!$Label.Register_Another_Deal}</apex:outputLink><br></br><br></br>
+		<apex:outputLink styleClass="outputText" value="/home/home.jsp">{!$Label.Return_To_Home}</apex:outputLink>
+	</apex:form>
+</apex:page>

@@ -1,0 +1,47 @@
+<apex:page standardController="Service_Contract__c" extensions="ServiceContractProductSearchController">  
+<!--	<apex:form id="frmSearch">  
+		<apex:inputText value="{!searchstring}" label="Input"/>   
+		<apex:commandButton value="Search" action="{!search}" reRender="frmSearch"/>  
+		<apex:commandButton id="cmdSave" value="Add to Contract" action="{!saveScpRecord}" rendered="{!ShowAddToContract}"/>  
+		<apex:pageBlock title="Add to Service Contract: {!Service_Contract__c.Name}">
+            
+            <br/>
+            
+            <apex:pageblockTable value="{!lstScp}" var="p" columnsWidth="180px">  
+                <apex:facet name="header">Service Contract Products</apex:facet>
+                <apex:column >  
+                    <apex:outputlink value="/{!p.id}">View Service Contract Product</apex:outputlink>  
+                </apex:column>
+                <apex:column value="{!p.Service_Contract__r.Contract_Status_Indicator__c}"/>
+                <apex:column value="{!p.Service_Contract__r.Customer_Name__c}"/>
+                <apex:column value="{!p.Service_Contract__c}"/>
+                <apex:column value="{!p.Service_Contract__r.Customer_Number__c}"/>
+                <apex:column value="{!p.Service_Contract__r.Part_Number__c}"/>
+                <apex:column value="{!p.Service_Contract__r.Sales_Order__c}"/>
+                <apex:column value="{!p.Service_Contract__r.Start_Date__c}"/>  
+                <apex:column value="{!p.Service_Contract__r.End_Date__c}"/>  
+            </apex:pageBlockTable>
+            
+            <br/>
+            <br/>
+            <br/>
+            
+            <apex:pageblockTable value="{!lstIp}" var="ip" columnsWidth="180px">  
+                <apex:facet name="header">Installed Products</apex:facet>
+                <apex:column >  
+                    <apex:outputlink value="/{!ip.id}">View Installed Product</apex:outputlink>  
+                </apex:column>
+                <apex:column value="{!ip.Oracle_Item_Status_Indicator__c}"/>
+                <apex:column value="{!ip.Customer_Name__c}"/>
+                <apex:column value="{!ip.Name}"/>
+                <apex:column value="{!ip.Product__c}"/>
+                <apex:column value="{!ip.Part_Number__c}"/> 
+                <apex:column value="{!ip.Shipped_To_Location__c}"/>
+                <apex:column value="{!ip.Oracle_Order_Number__c}"/>
+                <apex:column value="{!ip.Shipped_Date__c}"/> 
+            </apex:pageBlockTable>
+    
+       </apex:pageBlock>   
+	</apex:form>  
+    -->
+</apex:page>

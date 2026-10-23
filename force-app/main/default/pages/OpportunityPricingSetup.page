@@ -1,0 +1,153 @@
+<apex:page id="pricingSetupPage" standardController="Opportunity" extensions="Opportunity_Pricing_Setup_Controller" docType="html-5.0">
+	<apex:includeScript value="{!$Resource.jQuery211}" />
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+
+	    function disableButtons()
+	    {    
+            j$("#divLoading").show();
+            j$("input[type='button']").prop({disabled: true});
+            j$("input[type='submit']").prop({disabled: true});
+            j$("input[type='text']").prop({disabled: true});
+	    }
+
+	    function enableButtons()
+	    {
+            j$("#divLoading").hide();
+            j$("input[type='button']").prop({disabled: false});
+            j$("input[type='submit']").prop({disabled: false});
+            j$("input[type='text']").prop({disabled: false});           
+	    }
+    </script>
+
+    <style>
+    	.th {
+    		text-align: center;
+    	}
+    	.thNoWrap {
+    		text-align: center;
+    		width: 1px;
+    		white-space: nowrap;
+    	}
+    </style>
+
+	<apex:form id="mainForm">
+		<apex:pageBlock id="blockOpptyDetails">		   	
+			<apex:pageBlockSection />
+			<table width="100%">
+				<tr valign="top">
+					<td width="70%">
+						<apex:pageBlockSection columns="2" title="Opportunity Details" collapsible="false">
+							<apex:outputField value="{!Opportunity.Name}" />
+							<apex:outputField value="{!Opportunity.Account.Name}" />
+							<apex:pageBlockSectionItem helpText="Total opportunity value for all products and services.">
+								<apex:outputLabel value="Total Deal Size" for="totalDealSize"/>
+								<apex:outputText value="{!Opportunity.CurrencyIsoCode} {0, number, ###,###,##0.00}" label="Total Deal Size" id="totalDealSize">
+				       				<apex:param value="{!Opportunity.Total_Deal_Size__c}" />
+				 				</apex:outputText>
+			 				</apex:pageBlockSectionItem>
+							<apex:outputField value="{!Opportunity.CloseDate}" />
+							<apex:pageBlockSectionItem helpText="Total value for all products.">
+								<apex:outputLabel value="Total Product Sales Price" for="totalProductSales"/>
+								<apex:outputText value="{!Opportunity.CurrencyIsoCode} {0, number, ###,###,##0.00}" label="Total Product Sales" id="totalProductSales">
+				       				<apex:param value="{!Opportunity.Total_Product_Sales_Price__c}" />
+				 				</apex:outputText>
+			 				</apex:pageBlockSectionItem>
+							<apex:outputField value="{!Opportunity.Overall_Product_Margin__c}"/>
+						</apex:pageBlockSection>
+					</td>
+					<td width="30%">
+						<apex:pageBlockSection columns="1" title="Opportunity Rebate/Discount Details" collapsible="false" >
+							<apex:pageBlockSectionItem helpText="{!$ObjectType.Opportunity.fields.Gov_Ed_Checkbox__c.inlineHelpText}" rendered="{!IF(Opportunity.RecordType.DeveloperName='Ergotron_Forecast_Opportunity',true,false)}">
+								<apex:outputLabel value="{!$ObjectType.Opportunity.fields.Gov_Ed_Checkbox__c.Label}" for="opptyGovEd" style="white-space:nowrap;"/>
+								<apex:inputField value="{!Opportunity.Gov_Ed_Checkbox__c}" id="opptyGovEd"/>
+							</apex:pageBlockSectionItem>							
+							<apex:pageBlockSectionItem helpText="{!$ObjectType.Opportunity.fields.Partner_Loyalty__c.inlineHelpText}" rendered="{!IF(Opportunity.RecordType.DeveloperName='Ergotron_Forecast_Opportunity',true,false)}">
+								<apex:outputLabel value="{!$ObjectType.Opportunity.fields.Partner_Loyalty__c.Label}" for="opptyPartnerLoyalty" style="white-space:nowrap;"/>
+								<apex:inputField value="{!Opportunity.Partner_Loyalty__c}" id="opptyPartnerLoyalty"/>
+							</apex:pageBlockSectionItem>
+							<apex:pageBlockSectionItem helpText="{!$ObjectType.Opportunity.fields.Opportunity_Discount__c.inlineHelpText}">
+								<apex:outputLabel value="{!$ObjectType.Opportunity.fields.Opportunity_Discount__c.Label}" for="opptyDiscount" style="white-space:nowrap;"/>
+								<apex:inputField value="{!Opportunity.Opportunity_Discount__c}" id="opptyDiscount" style="width:70px;"/>
+							</apex:pageBlockSectionItem>
+						</apex:pageBlockSection>
+					</td>
+				</tr>
+			</table>
+		</apex:pageBlock>
+
+		<apex:pageBlock id="blockProductDetails" title="Product Details">
+			<apex:pageMessages id="pageMessages"/>
+			<apex:actionStatus id="saveStatus" onstart="disableButtons()" onstop="enableButtons()" />
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Save/Recalculate Values" action="{!saveUpdates}" status="saveStatus" reRender="mainForm"/>
+				<apex:commandButton value="Return To Opportunity" action="{!returnToOppty}" />
+			</apex:pageBlockButtons>
+		   	<div id="divLoading" align="center" style="display: none;">
+		       	<div style="color:red; font-style:italic"><img  src="{!$Resource.loadingimg}" />&nbsp;&nbsp;Recalculating pricing values...</div>
+		   	</div>
+			<apex:pageBlockTable value="{!listOpptyLines}" var="oLineItem">
+	            <apex:column headerValue="Part Name" value="{!oLineItem.Product2.Oracle_Part_Name__c}" title="Part Name"/>
+	            <apex:column headerValue="Part Number" value="{!oLineItem.Product2.Oracle_Part_Number__c}" title="Part Number"/>
+	            <apex:column headerValue="Quantity" title="Quantity">
+					<apex:outputText value="{0,number,#,###}">
+            			<apex:param value="{!oLineItem.Quantity}"/>
+                	</apex:outputText>
+                </apex:column>	
+	            <apex:column value="{!oLineItem.ListPrice}" styleClass="thNoWrap" title="MSRP"/>
+				<apex:column headerClass="thNoWrap" title="Rebate Amount">
+	            	<apex:facet name="header">Rebate<br/>Amount</apex:facet>
+	            	<apex:inputField value="{!oLineItem.Rebate_Amount__c}" style="width:40px;"/>
+	            </apex:column>
+				<apex:column headerClass="thNoWrap" title="Product Discount %">
+	            	<apex:facet name="header">Product<br/>Discount %</apex:facet>
+	            	<apex:inputField value="{!oLineItem.Product_Discount__c}" style="width:40px;"/>
+	            </apex:column>
+	            <apex:column headerClass="thNoWrap" title="Target End User Price">
+	            	<apex:facet name="header">Target End<br/>User Price</apex:facet>
+	            	<apex:inputField value="{!oLineItem.Target_End_User_Price__c}" style="width:50px;" />
+	            </apex:column>
+	            <apex:column headerClass="thNoWrap" title="Estimated Reseller Margin">
+	            	<apex:facet name="header">Estimated<br/>Reseller<br/>Margin %</apex:facet>
+	            	<apex:inputField value="{!oLineItem.Estimated_Reseller_Margin__c}" style="width:50px;" required="true"/>
+				</apex:column>
+	            <apex:column headerClass="th" title="Target Reseller Price">
+	            	<apex:facet name="header">Target<br/>Reseller<br/>Price</apex:facet>
+					<apex:outputText value="{!oLineItem.CurrencyIsoCode}" />&nbsp;
+					<apex:outputField value="{!oLineItem.Target_Reseller_Price_Number__c}" />
+	            </apex:column>
+	           	<apex:column headerClass="thNoWrap" title="Estimated Distribution Margin">
+	           		<apex:facet name="header">Estimated<br/>Distribution<br/>Margin %</apex:facet>
+	           		<apex:inputField value="{!oLineItem.Estimated_Distribution_Margin__c}" style="width:50px;" required="true"/>
+				</apex:column>
+	            <apex:column headerClass="th" rendered="{!bDistyPriceAccess}" title="Standard Distribution Price">
+					<apex:facet name="header">Standard<br/>Distribution<br/>Price</apex:facet>
+					<apex:outputText value="{!oLineItem.CurrencyIsoCode}"/>&nbsp;
+					<apex:outputField value="{!oLineItem.Distribution_List_Price_Number__c}" />
+	            </apex:column>
+	            <apex:column headerClass="th" rendered="{!bTargetDistyPriceAccess}" title="Target Distribution Price">
+					<apex:facet name="header">Target<br/>Distribution<br/>Price</apex:facet>
+					<apex:outputText value="{!oLineItem.CurrencyIsoCode}" />&nbsp;
+					<apex:outputField value="{!oLineItem.Target_Distribution_Price_Number__c}" />
+	            </apex:column>
+	            <apex:column headerClass="th" title="Target Rebate Amount">
+					<apex:facet name="header">Target<br/>Rebate<br/>Amount</apex:facet>
+					<apex:outputText value="{!oLineItem.CurrencyIsoCode}" />&nbsp;
+					<apex:outputField value="{!oLineItem.Target_Rebate_Amount__c}" />
+	            </apex:column>
+	            <apex:column headerClass="th" title="Target Rebate % (off MSRP)">
+					<apex:facet name="header">Target<br/>Rebate %<br/>(off MSRP)</apex:facet>
+					<apex:outputField value="{!oLineItem.Target_Rebate__c}" />
+	            </apex:column>
+	            <apex:column headerClass="thNoWrap" rendered="{!bItemMarginAccess}" title="Item Margin">
+					<apex:facet name="header">Item<br/>Margin %</apex:facet>
+					<apex:outputField value="{!oLineItem.Item_Margin__c}" />
+	            </apex:column>
+	        </apex:pageBlockTable>
+		</apex:pageBlock>
+	</apex:form>
+	<apex:relatedList list="ProcessSteps" ></apex:relatedList>
+	<apex:relatedList list="Opportunity_Partners__r" ></apex:relatedList>
+	<apex:relatedList list="OpportunityContactRoles" ></apex:relatedList>
+</apex:page>

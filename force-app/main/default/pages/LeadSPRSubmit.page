@@ -1,0 +1,14 @@
+<apex:page showHeader="true" sidebar="true" standardController="Lead" extensions="LeadSPRSubmitController" action="{!prepForOracle}">
+<apex:form id="frmMain">
+    <apex:sectionHeader title="SPR/Deal Registration" subtitle="Submit SPR or Deal Registration to Oracle" />
+    <apex:pageBlock title="Finalize Submission to Oracle Interface">
+        <apex:pageBlockButtons >
+            <apex:commandButton id="cmdCancel" action="{!cancel}" value="Cancel" />
+            <apex:commandButton id="cmdSubmit" action="{!prepForOracle}" value="Submit" />
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection title="Choose Type">
+            <apex:inputField value="{!soObject.DesiredRebateType__c}" required="true" />
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

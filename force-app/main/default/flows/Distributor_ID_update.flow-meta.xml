@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>updates the Distributor ID field in the lead with the Oracle Account ID value from the corresponding record in the Deal Reg Opportunity Partner custom metadata</description>
+    <interviewLabel>Distributor ID update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Distributor ID update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get the Oracle Account ID from the Deal Reg Opportunity Partner	Custom Metadata that matches the Opp Partner ID from the lead</description>
+        <name>Get_Oracle_Account_Id</name>
+        <label>Get Oracle Account Id</label>
+        <locationX>183</locationX>
+        <locationY>50</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Distributor_ID</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Account_ID__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>partnerId</elementReference>
+            </value>
+        </filters>
+        <object>Deal_Reg_Opportunity_Partner__mdt</object>
+        <outputAssignments>
+            <assignToReference>oracleAcctId</assignToReference>
+            <field>Oracle_Account_ID__c</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordUpdates>
+        <description>Updates the distributor id in the lead with the oracle account id from the Deal Reg Opportunity Partner custom metadata</description>
+        <name>Distributor_ID</name>
+        <label>Distributor ID</label>
+        <locationX>359</locationX>
+        <locationY>50</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Distributor_Id__c</field>
+            <value>
+                <elementReference>oracleAcctId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Lead</object>
+    </recordUpdates>
+    <startElementReference>Get_Oracle_Account_Id</startElementReference>
+    <status>Active</status>
+    <variables>
+        <name>oracleAcctId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>stores the Opp Partner Id from the lead</description>
+        <name>partnerId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

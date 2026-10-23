@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Whenever the first order item is shipped, mark the capture flag on order as true to proceed with capture payment process</description>
+    <environments>Default</environments>
+    <interviewLabel>Update Capture Flag on Order {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update Capture Flag on Order</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Mark Capture Initiated flag as true</description>
+        <name>Update_flag_on_order</name>
+        <label>Update flag on order</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <inputAssignments>
+            <field>Capture_Initiated__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ccrz__Order__r</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_flag_on_order</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterFormula>AND(
+ISPICKVAL({!$Record.ccrz__OrderItemStatus__c}, &apos;Shipped&apos;),
+NOT({!$Record.ccrz__Order__r.Capture_Initiated__c}),
+NOT(ISBLANK({!$Record.ccrz__Order__r.ccrz__OriginatedCart__r.Payment_Reference__c}))
+)</filterFormula>
+        <object>ccrz__E_OrderItem__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

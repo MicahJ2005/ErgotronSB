@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Update_Error</name>
+        <label>Update Error</label>
+        <locationX>578</locationX>
+        <locationY>974</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>FaultMessage</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>esau.sanchez@ergotron.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>FaultEmailSubject</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>CC_Order_Tax_Amount_Update</name>
+        <label>CC Order Tax Amount Update</label>
+        <locationX>50</locationX>
+        <locationY>674</locationY>
+        <assignmentItems>
+            <assignToReference>rvCC_Order.ccrz__TaxAmount__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Order.Tax_Amount__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>rvCC_Order.Tax_Amount_Revised__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>rvCC_Order.ccrz__OrderStatus__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>StatusMap</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>rvCC_Order.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>CC_Order.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CC_Order_Update</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Only_CC_Order_Status_Update</name>
+        <label>Only CC Order Status Update</label>
+        <locationX>314</locationX>
+        <locationY>674</locationY>
+        <assignmentItems>
+            <assignToReference>rvCC_Order.ccrz__OrderStatus__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>StatusMap</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>rvCC_Order.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>CC_Order.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CC_Order_Update</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Evaluate the tax amount from the Oracle order to determine if the tax amount in the CC Order needs to be revised.</description>
+        <name>Evaluate_Tax_Amount</name>
+        <label>Evaluate Tax Amount</label>
+        <locationX>182</locationX>
+        <locationY>566</locationY>
+        <defaultConnector>
+            <targetReference>Only_CC_Order_Status_Update</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Revise_Tax_Amount</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CC_Order.Tax_Amount_Revised__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Order.Tax_Amount__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>CC_Order.ccrz__TaxAmount__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Order.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Booked</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CC_Order_Tax_Amount_Update</targetReference>
+            </connector>
+            <label>Revise Tax Amount</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Found_CC_Order</name>
+        <label>Found CC Order</label>
+        <locationX>512</locationX>
+        <locationY>458</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CC_Order.Id</leftValueReference>
+                <operator>WasSet</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Evaluate_Tax_Amount</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description>Updates the status of the CC Order when the status of the Sales Order Changes, and if applicable, the tax amount is revised.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>StatusMap</name>
+        <dataType>String</dataType>
+        <expression>case({!Sales_Order.Oracle_Order_Status__c},
+&quot;Booked&quot;, &quot;In Process&quot;,
+&quot;Cancelled&quot;, &quot;Cancelled&quot;,
+&quot;Closed&quot;, &quot;Completed&quot;,
+TEXT({!CC_Order.ccrz__OrderStatus__c})
+)</expression>
+    </formulas>
+    <interviewLabel>CC Order Status Update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>CC Order Status Update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>CC_Order</name>
+        <label>CC Order</label>
+        <locationX>512</locationX>
+        <locationY>350</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Found_CC_Order</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Sales_Order__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ccrz__E_Order__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get the related Order__c record to obtain the tax amount</description>
+        <name>Order</name>
+        <label>Order</label>
+        <locationX>512</locationX>
+        <locationY>242</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>CC_Order</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Sales_Order.Oracle_Sales_Order_Number__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Order__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Sales_Order</name>
+        <label>Sales Order</label>
+        <locationX>512</locationX>
+        <locationY>134</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Order</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Sales_Order__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>updates the status of the cc order with the status of the Sales Order and the tax amount if applicable</description>
+        <name>CC_Order_Update</name>
+        <label>CC Order Update</label>
+        <locationX>182</locationX>
+        <locationY>866</locationY>
+        <faultConnector>
+            <targetReference>Update_Error</targetReference>
+        </faultConnector>
+        <inputReference>rvCC_Order</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>386</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Sales_Order</targetReference>
+        </connector>
+    </start>
+    <status>Obsolete</status>
+    <textTemplates>
+        <name>FaultEmailSubject</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>CC Order status could not be updated - CCOrder #{!CC_Order.Name} - Sales Order #{!Sales_Order.Name}</text>
+    </textTemplates>
+    <textTemplates>
+        <name>FaultMessage</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>⚠ The CC Order Status Update flow encountered an issue while attempting to update the status of a CC Order.
+Sales Order:
+ID -- {!Sales_Order.Id}
+Number -- {!Sales_Order.Name}
+
+CC Order:
+ID -- {!CC_Order.Id}
+Number -- {!CC_Order.Name}
+
+Error Message: 
+{!$Flow.FaultMessage}</text>
+    </textTemplates>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>CC Order variable to capture changes for update</description>
+        <name>rvCC_Order</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ccrz__E_Order__c</objectType>
+    </variables>
+</Flow>

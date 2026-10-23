@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Related_SPR</name>
+        <label>Related SPR</label>
+        <locationX>549</locationX>
+        <locationY>50</locationY>
+        <assignmentItems>
+            <assignToReference>Originating_SDO_ID.Related_SPR_parent__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Parent_SPR_ID</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_SDO</targetReference>
+        </connector>
+    </assignments>
+    <description>Launched by Process &quot;Opportunity&quot;</description>
+    <interviewLabel>SPR adopts child SDO {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SPR adopts child SDO</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_SDO_to_adopt</name>
+        <label>Get SDO to adopt</label>
+        <locationX>390</locationX>
+        <locationY>50</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Related_SPR</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>SDOID</elementReference>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <outputReference>Originating_SDO_ID</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+    <recordUpdates>
+        <description>Makes the cloned SPR the parent of the Originating SDO. Flow called by Process &quot;Opportunity&quot;</description>
+        <name>Update_SDO</name>
+        <label>Update SDO</label>
+        <locationX>716</locationX>
+        <locationY>50</locationY>
+        <inputReference>Originating_SDO_ID</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>29</locationX>
+        <locationY>31</locationY>
+        <connector>
+            <targetReference>Get_SDO_to_adopt</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>Originating_SDO_ID</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Opportunity</objectType>
+    </variables>
+    <variables>
+        <name>Parent_SPR_ID</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>SDOID</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

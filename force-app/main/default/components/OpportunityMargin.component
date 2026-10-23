@@ -1,0 +1,4 @@
+<apex:component controller="Opportunity_Margin_Utility" access="global">
+	<apex:attribute name="opptyId" description="Opportunity Id" required="false" type="String" assignTo="{!sOpportunityId}" />
+	<apex:outputText value="Overall Product Margin: {!dOverallProductMargin}%"/>
+</apex:component>

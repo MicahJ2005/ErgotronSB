@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Flow trigger - before save. To populate fields to be used later in the quote business process as conditions or flags.</description>
+    <environments>Default</environments>
+    <interviewLabel>Quote Line Item {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Quote Line Item</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Update fields on the triggering quote line item</description>
+        <name>QuoteLineItem</name>
+        <label>QuoteLineItem</label>
+        <locationX>176</locationX>
+        <locationY>287</locationY>
+        <inputAssignments>
+            <field>Product_Family__c</field>
+            <value>
+                <elementReference>$Record.Product2.Family</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Requires_Service_Approval__c</field>
+            <value>
+                <elementReference>$Record.Product2.Requires_Service_Approval__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>T_E_Required__c</field>
+            <value>
+                <elementReference>$Record.Product2.TE_Required__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>QuoteLineItem</targetReference>
+        </connector>
+        <object>QuoteLineItem</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

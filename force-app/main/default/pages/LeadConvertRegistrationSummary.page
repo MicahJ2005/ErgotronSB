@@ -1,0 +1,12 @@
+<apex:page standardController="Opportunity" docType="html-5.0">
+	<apex:form id="mainForm">
+		<apex:pageMessage severity="info" strength="3" summary="{!$Label.Deal_Reg_Conversion_Confirmation}" /><br/>
+		<apex:pageBlock title="Opportunity Details">
+			<apex:pageBlockSection columns="1" collapsible="false" >
+				<apex:outputField value="{!Opportunity.Name}" />
+				<apex:outputLink target="_parent" value="{!'/'+Opportunity.Id}">View Opportunity</apex:outputLink>
+				<apex:outputLink target="_parent" value="{!'/'+Opportunity.Related_Deal_Registration__r.Id}">Return To Lead</apex:outputLink>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>	
+</apex:page>

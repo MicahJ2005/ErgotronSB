@@ -1,0 +1,49 @@
+<!-- This page will be launched from the "Select End User Location" button on the Service Contract page and will display the list of ship to locations from Oracle for
+the End User Customer Name associated with the Service_Contract__c-->
+
+<!--<apex:page standardController="Service_Contract__c" extensions="Service_Contract_Select_Location_Cntrl" docType="html-5.0">-->
+<apex:page standardController="Service_Contract__c" docType="html-5.0">
+	
+    <!--
+    <apex:form id="formMain">
+		<apex:pageMessage severity="info" strength="3" summary="{!$Label.Ship_To_Location_Select}" rendered="{!bShipToLocations}" />
+		<apex:pageMessage severity="info" strength="3" summary="{!$Label.No_Ship_To_Locations}" rendered="{!!bShipToLocations}"/><br/>
+		<apex:commandButton action="{!returnToServiceContract}" value="Cancel" rendered="{!!bShipToLocations}"/>
+		<apex:pageMessages id="pageMessages"/>
+
+		<apex:outputField rendered="false" value="{!Service_Contract__c.Customer_Name__c}" />
+
+		<apex:pageBlock id="pbLocations" rendered="{!bShipToLocations}">	
+			<apex:pageBlockButtons id="pbbButtons">
+				<apex:commandButton action="{!returnToServiceContract}" value="Cancel" />
+			</apex:pageBlockButtons>
+
+			<apex:pageBlockTable value="{!listShipToSiteUseLookupResponses}" var="shipToLocOracle" id="pbtLocations">
+				<apex:column headervalue="Select Location">                    
+                	<apex:commandLink value="Select" action="{!shipToSelect}">
+                		<apex:param name="shipLocId" value="{!shipToLocOracle.SiteUseId}" assignTo="{!sSelectedLocationId}" />
+                	</apex:commandLink>
+				</apex:column>
+				
+				<apex:column headervalue="Location">
+					<apex:outputText value="{!shipToLocOracle.LocationName}" />
+				</apex:column>				
+				
+				<apex:column headervalue="Address">
+					<apex:outputText value="{!shipToLocOracle.Address1}"/><br/>
+					<apex:outputText rendered="{!shipToLocOracle.Address2!=NULL}">
+						<apex:outputText value="{!shipToLocOracle.Address2}" /><br/>
+					</apex:outputText>
+					<apex:outputText rendered="{!shipToLocOracle.Address3!=NULL}">
+						<apex:outputText value="{!shipToLocOracle.Address3}" /><br/>
+					</apex:outputText>
+					<apex:outputText rendered="{!shipToLocOracle.Address4!=NULL}">
+						<apex:outputText value="{!shipToLocOracle.Address4}" /><br/>
+					</apex:outputText>
+					<apex:outputText value="{!shipToLocOracle.CityStateZipCountry}" />
+				</apex:column>
+			</apex:pageBlockTable>
+		</apex:pageBlock>
+	</apex:form>
+        -->
+</apex:page>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Bypass_Opportunity</name>
+        <label>Bypass Opportunity</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <actionName>BypassTriggers</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Bypass_Flow</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>objectNames</name>
+            <value>
+                <stringValue>Opportunity</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>BypassTriggers</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>58.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Bypass_Flow</name>
+        <label>Bypass Flow</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>Update_MDM_Eligible_Date_on_Site</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Bypass_Opportunity</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Setup.ProcessSwitches__c.Bypass_Flows__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description>Update the MDM Eligible Date field on the account related to the case triggering the flow.</description>
+    <environments>Default</environments>
+    <interviewLabel>MDM Eligible Date Opportunity {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>MDM Eligible Date Opportunity</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_MDM_Eligible_Date_on_Cust_Org</name>
+        <label>Update MDM Eligible Date on Cust-Org</label>
+        <locationX>308</locationX>
+        <locationY>647</locationY>
+        <connector>
+            <targetReference>Update_MDM_Eligible_Date_on_Party</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>MDM_Eligible_Date__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Account.Parent</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_MDM_Eligible_Date_on_Party</name>
+        <label>Update MDM Eligible Date on Party</label>
+        <locationX>308</locationX>
+        <locationY>755</locationY>
+        <inputAssignments>
+            <field>MDM_Eligible_Date__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Account.Parent.Parent</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_MDM_Eligible_Date_on_Site</name>
+        <label>Update MDM Eligible Date on Site</label>
+        <locationX>308</locationX>
+        <locationY>539</locationY>
+        <connector>
+            <targetReference>Update_MDM_Eligible_Date_on_Cust_Org</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>MDM_Eligible_Date__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Account</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Bypass_Opportunity</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterFormula>AND(
+    NOT(ISBLANK( {!$Record.AccountId} )),
+    {!$Record.Account.RecordType.Name} = &apos;Site&apos;,
+    ISBLANK( {!$Record.Account.Enterprise_ID__c} )
+)</filterFormula>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Draft</status>
+</Flow>

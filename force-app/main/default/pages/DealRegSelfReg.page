@@ -1,0 +1,137 @@
+<apex:page id="SelfRegistrationPage" docType="html-5.0" standardStylesheets="false" showHeader="false" sidebar="false" controller="Deal_Reg_Self_Reg_Cntrl">
+    <apex:includeScript value="{!$Resource.jQuery211}" />
+    <apex:stylesheet value="{!URLFOR($Resource.DealRegResources, 'css/main.css')}"/>
+    
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+        
+        function noenter(ev){
+            if(window.event && window.event.keycode==13 || ev.which==13) {
+            	return false;
+            }
+            else {
+            	return true;
+            }
+        }
+
+        function validateForm() {
+        	var PWord=document.getElementById("{!$Component.SelfRegistrationPage.mainForm.Password}").value;
+        	var ConfirmPWord=document.getElementById("{!$Component.SelfRegistrationPage.mainForm.ConfirmPassword}").value;
+
+        	//Check for entered password values
+        	if(PWord.length<1 || ConfirmPWord.length<1) {
+        		alert("{!$Label.Alert_Password_Missing}");
+        		return false;
+        	}
+
+        	//Check for matching password values
+        	if(PWord!=ConfirmPWord) {
+        		alert("{!$Label.Alert_Password_Mismatch}");
+        		return false;
+        	}
+
+        	//Check for miniumum password requirements - per org settings on 11/17/2014, password must be 8 characters and must contain alpha and numeric characters.
+		    if (PWord.length < 8) {
+        		alert("{!$Label.Password_Requirement}");
+        		return false;
+		    } 
+		    else if (PWord.search(/\d/) == -1) {
+        		alert("{!$Label.Password_Requirement}");
+        		return false;
+		    } 
+		    else if (PWord.search(/[a-zA-Z]/) == -1) {
+        		alert("{!$Label.Password_Requirement}");
+        		return false;
+		    }
+        }
+
+    </script>
+
+	<head>
+		<title>Ergotron Deal Registration Self Registration</title>
+		<style>
+			#container {
+			    width: 800px;
+			    position: relative;
+			    background: none repeat scroll 0% 0% #FFF;
+			    border-radius: 5px;
+			    border: 1px solid #ccc;
+			    box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
+			    margin:0 auto;
+			    overflow: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<apex:form id="mainForm" onkeydown="return noenter(event)" forceSSL="true">
+			<div id="container">
+		        <div id="pageImages">
+		            <apex:outputLink value="http://www.ergotron.com" id="home">
+		            	<apex:image styleClass="img" url="{!URLFOR($Resource.DealRegResources, 'images/ergotron-TEXT-logo.png')}" />
+		        	</apex:outputLink>
+		        </div>
+		        <div id="h2companydetails" class="column2">
+		        	<h2>{!$Label.Your_Company_Details}</h2>
+		        </div>
+		        <div id="h2contactdetails" class="column2">
+					<h2>{!$Label.Your_Contact_Details}</h2>
+		        </div>
+		        <div id="CompanyDetails" class="column2">
+	        		<apex:outputLabel for="CompanyName" value="*{!$ObjectType.User.fields.CompanyName.label}" />
+					<apex:inputField id="CompanyName" value="{!oNewUser.CompanyName}" html-placeholder="{!$ObjectType.User.fields.CompanyName.label}" required="true" />
+	        		<apex:outputLabel for="Street" value="*{!$ObjectType.User.fields.Street.label}" />
+					<apex:inputText id="Street" maxlength="255" value="{!oNewUser.Street}" html-placeholder="{!$ObjectType.User.fields.Street.label}" required="true" />
+		          	<apex:outputLabel for="City" value="*{!$ObjectType.User.fields.City.label}" />
+					<apex:inputField id="City" value="{!oNewUser.City}" html-placeholder="{!$ObjectType.User.fields.City.label}" required="true" />
+					<apex:outputLabel for="State" value="{!$ObjectType.User.fields.State.label}" />
+					<apex:inputField id="State" value="{!oNewUser.StateCode}" />
+					<apex:outputLabel for="Country" value="*{!$ObjectType.User.fields.Country.label}" />
+					<apex:inputField id="Country" value="{!oNewUser.CountryCode}" required="true" />
+					<apex:outputLabel for="PostalCode" value="*{!$ObjectType.User.fields.PostalCode.label}" />
+					<apex:inputField id="PostalCode" value="{!oNewUser.PostalCode}" html-placeholder="{!$ObjectType.User.fields.PostalCode.label}" required="true" />
+					<apex:outputLabel for="Language" value="*{!$ObjectType.User.fields.LanguageLocaleKey.label}" />
+					<apex:selectList id="Language" value="{!sLanguage}" multiselect="false" size="1" required="true">
+						<apex:selectOption itemValue="en_US" itemLabel="English" />
+						<apex:selectOption itemValue="fr" itemLabel="Français" />
+						<apex:selectOption itemValue="de" itemLabel="Deutsch" />
+						<!--<apex:selectOption itemValue="ja" itemLabel="Japanese" />
+						<apex:selectOption itemValue="zh_CN" itemLabel="Chinese" />-->
+					</apex:selectList>
+					<apex:outputLabel for="Currency" value="*{!$Label.Default_Currency}" />
+					<apex:inputField id="Currency" value="{!oNewUser.CurrencyIsoCode}" required="true" />
+		        </div>
+
+		        <div id="ContactDetails" class="column2">
+		          	<apex:outputLabel for="FirstName" value="*{!$ObjectType.User.fields.FirstName.label}" />
+					<apex:inputField id="FirstName" value="{!oNewUser.FirstName}" html-placeholder="{!$ObjectType.User.fields.FirstName.label}" required="true" />
+		          	<apex:outputLabel for="LastName" value="*{!$ObjectType.User.fields.LastName.label}" />
+					<apex:inputField id="LastName" value="{!oNewUser.LastName}" html-placeholder="{!$ObjectType.User.fields.LastName.label}" required="true" />
+	        		<apex:outputLabel for="Title" value="{!$ObjectType.User.fields.Title.label}" />
+					<apex:inputField id="Title"  html-placeholder="{!$ObjectType.User.fields.Title.label}" value="{!oNewUser.Title}" />
+	        		<apex:outputLabel for="Email" value="*{!$ObjectType.User.fields.Email.label}" />
+					<apex:inputField id="Email" html-placeholder="someone@example.com" value="{!oNewUser.Email}" required="true" />
+	        		<apex:outputLabel for="Phone" value="*{!$ObjectType.User.fields.Phone.label}" />
+					<apex:inputField id="Phone" value="{!oNewUser.Phone}" html-placeholder="{!$ObjectType.User.fields.Phone.label}" required="true" />
+	        		<apex:outputLabel for="Fax" value="{!$ObjectType.User.fields.Fax.label}" />
+					<apex:inputField id="Fax" html-placeholder="{!$ObjectType.User.fields.Fax.label}" value="{!oNewUser.Fax}" />	
+					<apex:outputLabel for="Password" value="*{!$Label.site.password}" />
+	              	<apex:inputSecret id="Password" value="{!sPassword}" html-placeholder="{!$Label.site.password}" required="true" />
+	              	<apex:outputLabel for="ConfirmPassword" value="*{!$Label.site.confirm_password}" />
+	              	<apex:inputSecret id="ConfirmPassword" value="{!sConfirmPassword}" html-placeholder="{!$Label.site.confirm_password}" required="true" />					
+		        </div>
+
+		        <div id="RequiredMessage" class="message">
+		        	<apex:outputText value="{!$Label.Fields_Required}" />
+		        </div>
+		        <div id="Errors" class="message">
+		        	<apex:pageMessages id="pageMessages" rendered="true" />	
+		        </div>
+		        <div id="buttons" class="btnbottom">
+					<apex:commandButton action="{!cancelRegistration}" value="{!$Label.Cancel}" id="cancelbtn" immediate="true" html-formnovalidate="formnovalidate" />
+					<apex:commandButton action="{!registerUser}" value="{!$Label.site.submit}" id="submitbtn" onclick="return validateForm();" />
+		        </div>
+			</div>
+		</apex:form>	
+	</body>
+</apex:page>

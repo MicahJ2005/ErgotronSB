@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Email_return_labels_to_customer</name>
+        <label>Email return labels to customer</label>
+        <locationX>242</locationX>
+        <locationY>768</locationY>
+        <actionName>zkmulti__InvocableSendLabels</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailTemplateId</name>
+            <value>
+                <elementReference>Email_Template_Return_Labels.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>shipmentId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>toAddresses</name>
+            <value>
+                <elementReference>Return_Sales_Order.Ship_To_Contact_Email__c</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>zkmulti__InvocableSendLabels</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>The shipment record failed to be linked to the order__c record</description>
+        <name>Shipment_update_failed</name>
+        <label>Shipment update failed</label>
+        <locationX>770</locationX>
+        <locationY>528</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>updateFailedBody</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>esau.sanchez@ergotron.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Shipment update failed</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>55.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Sales_Order_Type</name>
+        <label>Sales Order Type</label>
+        <locationX>374</locationX>
+        <locationY>528</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Ecommerce_Return</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Return_Sales_Order.Order_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>ECOMMERCE RETURN</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Return_Sales_Order.Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>B2BCommerce</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_Template_Return_Labels</targetReference>
+            </connector>
+            <label>Ecommerce Return</label>
+        </rules>
+    </decisions>
+    <description>Link the shipment to the Order__c record related to the Sales_Order__c</description>
+    <environments>Default</environments>
+    <interviewLabel>Bringg Shipment - email labels - Async Path {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Bringg Shipment - email labels - Async Path</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get the id of the email template named return labels</description>
+        <name>Email_Template_Return_Labels</name>
+        <label>Email Template - Return Labels</label>
+        <locationX>242</locationX>
+        <locationY>648</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Email_return_labels_to_customer</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Return Labels</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>TemplateType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>visualforce</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>EmailTemplate</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get the return sales order associated to the shipment to get the email address of the customer</description>
+        <name>Return_Sales_Order</name>
+        <label>Return Sales Order</label>
+        <locationX>374</locationX>
+        <locationY>288</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Link_Shipment_to_Order_c</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Sales_Order__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Sales_Order__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Links the shipment record to the Oracle order record.</description>
+        <name>Link_Shipment_to_Order_c</name>
+        <label>Link Shipment to Order__c</label>
+        <locationX>374</locationX>
+        <locationY>408</locationY>
+        <connector>
+            <targetReference>Sales_Order_Type</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Shipment_update_failed</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Order__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Order__c</field>
+            <value>
+                <elementReference>Return_Sales_Order.Oracle_Sales_Order_Number__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>zkmulti__Shipment_Processing_Completed__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>zkmulti__MCShipment__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Return_Sales_Order</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>text for the body of the email notification for fail paths</description>
+        <name>updateFailedBody</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;Flow name: &quot;Bringg Shipment - email labels&quot;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Fault message:&lt;/p&gt;&lt;p&gt;{!$Flow.FaultMessage}&lt;/p&gt;&lt;p&gt;Current Record: {!$Flow.CurrentRecord}&lt;/p&gt;&lt;p&gt;Salesforce Sales Order: {!Return_Sales_Order.Name}&lt;/p&gt;&lt;p&gt;Oracle Order: {!Return_Sales_Order.Oracle_Sales_Order_Number__r.Name}&lt;/p&gt;</text>
+    </textTemplates>
+    <variables>
+        <name>UserIDs</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

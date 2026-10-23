@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Bringg_Create_Shipment</name>
+        <label>Bringg - Create Shipment</label>
+        <locationX>176</locationX>
+        <locationY>335</locationY>
+        <actionName>zkmulti__InvocableShipmentCreate</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Shipment_Created</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Shipment_Creation_Failure_Notification</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customAddressId</name>
+            <value>
+                <stringValue>a801M000000ALhpQAG</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>zkmulti__InvocableShipmentCreate</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>Shipment_Creation_Failure_Notification</name>
+        <label>Shipment Creation Failure Notification</label>
+        <locationX>440</locationX>
+        <locationY>455</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Shipment_Created</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>FaultEmailBody</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>esau.sanchez@ergotron.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>RMA Shipment Creation Failed</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>55.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Creates the shipment record on ecommerce return orders created by the automated returns process (public form)</description>
+    <environments>Default</environments>
+    <interviewLabel>Sales Order - Bringg Shipment {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Sales Order - Bringg Shipment</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Mark the sales order so it won&apos;t be picked up by this flow again.</description>
+        <name>Shipment_Created</name>
+        <label>Shipment Created</label>
+        <locationX>176</locationX>
+        <locationY>455</locationY>
+        <inputAssignments>
+            <field>Shipment_Created__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Bringg_Create_Shipment</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>OracleSalesOrderRefNumber__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Order_Type_Id__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>3068</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Source__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>B2BCommerce</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Shipment_Created__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Sales_Order__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>FaultEmailBody</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>{!$Flow.CurrentDateTime}
+Fault Message:
+{!$Flow.FaultMessage}
+
+Flow current record: {!$Flow.CurrentRecord}
+Sales Order: {!$Record.Name}
+Sales Order Id: {!$Record.Id}</text>
+    </textTemplates>
+</Flow>

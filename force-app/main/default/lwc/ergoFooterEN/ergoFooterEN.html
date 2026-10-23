@@ -1,0 +1,43 @@
+<template>
+  <div class="footer-bottom">
+    <div class="container-fluid">
+      <div class="copyright">
+        <a class="ergo-mark" href="https://www.ergotron.com" target="_blank"><img alt="Ergotron" src="https://www.ergotron.com/Portals/0/Images/Pages/Partner/ergotronemarkwhite.png" /></a>
+        <!-- <span>&copy; 2022</span> -->
+        <span>&copy; {currentYearEN}</span>
+      </div>
+      <ul class="h-list social">
+        <!-- <li><a href="https://twitter.com/Ergotron" target="_blank"><i class="fa fa-twitter"></i><span class="sr-only">Twitter</span></a></li> -->
+        <li><a href="https://www.facebook.com/ErgotronInc" target="_blank"><i class="fa fa-facebook"></i><span class="sr-only">Facebook</span></a></li>
+        <li><a href="https://www.linkedin.com/company/ergotron/" target="_blank"><i class="fa fa-linkedin"></i><span class="sr-only">LinkedIn</span></a></li>
+        <li><a href="https://www.youtube.com/user/ErgotronGuy" target="_blank"><i class="fa fa-youtube-play"></i><span class="sr-only">YouTube</span></a></li>
+      </ul>
+      <!-- <ul class="legal-links">
+        <template if:true={langIsEN}>
+          <li>
+            <lightning-formatted-url value={legalurlEN} label="Legal" target="_blank" class="legal-link-item"></lightning-formatted-url>
+          </li>
+          <li>
+            <lightning-formatted-url value={privpolicyurlEN} label="Privacy" target="_blank" class="legal-link-item"></lightning-formatted-url>
+          </li>
+          <li>
+            <lightning-formatted-url value={cookiesurlEN} label="Cookie Notice" target="_blank" class="legal-link-item"></lightning-formatted-url>
+          </li>
+          <li>
+            <lightning-formatted-url value={termsurlEN} label="Terms and Conditions of Sale" target="_blank" class="legal-link-item"></lightning-formatted-url>
+          </li>
+        </template>
+      </ul> -->
+      <ul class="legal-links">
+        <template if:true={langIsEN}>
+          <li>
+            <lightning-formatted-url value={privpolicyurlEN} label="Privacy" target="_blank" class="legal-link-item"></lightning-formatted-url>
+          </li>
+          <li>
+            <lightning-formatted-url value={termsurlEN} label="Terms of Use" target="_blank" class="legal-link-item"></lightning-formatted-url>
+          </li>
+        </template>
+      </ul>
+    </div>
+  </div>
+</template>

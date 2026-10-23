@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>Assigns the total number of events and tasks to the corresponding variables. Which are added together in the totalActivities formula.</description>
+        <name>Count_Activities</name>
+        <label>Count Activities</label>
+        <locationX>182</locationX>
+        <locationY>398</locationY>
+        <assignmentItems>
+            <assignToReference>eventCount</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>Events</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>taskCount</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>Tasks</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>First_Activity</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Check the total activity count for the related lead. If it is 1, update the status. Otherwise, END.</description>
+        <name>First_Activity</name>
+        <label>First Activity?</label>
+        <locationX>182</locationX>
+        <locationY>518</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Set_the_status_to_Working</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>totalActivities</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>1.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lead_status_Working</targetReference>
+            </connector>
+            <label>Set the status to &quot;Working&quot;</label>
+        </rules>
+    </decisions>
+    <description>Updates the lead status if the total number of activities is 1.  This flow is called by the task and event trigger flows.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Adds the total count of tasks and events. This number is used in the decision node to determine whether to update the status or not.</description>
+        <name>totalActivities</name>
+        <dataType>Number</dataType>
+        <expression>{!taskCount} + {!eventCount}</expression>
+        <scale>0</scale>
+    </formulas>
+    <interviewLabel>subFlow-updateLeadStatus {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>subFlow-updateLeadStatus</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get all the events under the lead.</description>
+        <name>Events</name>
+        <label>Events</label>
+        <locationX>182</locationX>
+        <locationY>278</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Count_Activities</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>WhoId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>LeadId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Event</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get all the tasks under the lead.</description>
+        <name>Tasks</name>
+        <label>Tasks</label>
+        <locationX>182</locationX>
+        <locationY>158</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Events</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>WhoId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>LeadId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Task</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Lead_status_Working</name>
+        <label>Lead status = Working</label>
+        <locationX>50</locationX>
+        <locationY>638</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>LeadId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Working</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Lead</object>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Tasks</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Stores the total number of events under the related lead.</description>
+        <name>eventCount</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+    <variables>
+        <description>The ID of the lead for which the task or event was created. This Id comes from the calling flow.</description>
+        <name>LeadId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Stores the total number of tasks under the related lead.</description>
+        <name>taskCount</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+</Flow>

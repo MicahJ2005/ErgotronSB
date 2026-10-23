@@ -1,0 +1,44 @@
+<apex:page standardController="Account" extensions="AddSiteToCustomer_Ctrl" title="Add New Site to Customer">
+
+    <apex:form id="frmMain">
+        <apex:sectionHeader title="Add New Site to Customer" />
+
+        <apex:pageMessages />
+
+        <apex:pageBlock title="Account Information">
+            <apex:pageblockbuttons >
+                <apex:commandButton value="Save" action="{!save}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageblockbuttons>
+
+            <apex:pageBlockSection title="Company Identification">
+                <apex:inputField value="{!objNewAccount.Name}" />
+            </apex:pageBlockSection>
+
+            <apex:pageblocksection title="Address Information" columns="1">
+                <apex:inputField value="{!objNewAccount.BillingCountryCode}" required="true"/>
+                <apex:inputField value="{!objNewAccount.BillingStreet}"/>
+                <apex:inputField value="{!objNewAccount.BillingCity}"/>
+                <apex:inputField value="{!objNewAccount.BillingStateCode}"/>
+                <apex:inputField value="{!objNewAccount.BillingPostalCode}"/>
+            </apex:pageblocksection>
+
+            <apex:pageblocksection title="Segmentation">
+                <apex:inputField required="true" value="{!objNewAccount.Region__c}" />
+                <apex:inputField required="true" value="{!objNewAccount.Sub_Region__c}" />
+                <apex:inputField value="{!objNewAccount.Type}" />
+                <apex:inputField value="{!objNewAccount.Ergotron_Vertical_Market__c}" />
+                <apex:inputField value="{!objNewAccount.Customer_Sub_Type__c}" />
+                <apex:inputField value="{!objNewAccount.Industry_Focus__c}" />
+            </apex:pageblocksection>
+
+            <apex:inputHidden value="{!account.Name}" />
+            <apex:inputHidden id="bolProcessHierarchy" value="{!account.Process_Account_Hierarchy__c}" />
+            <apex:inputHidden id="txtSiteDedupe" value="{!account.Site_Deduplication__c}" />
+            <apex:inputHidden id="txtRecordTypeId" value="{!account.RecordTypeId}" />
+
+        </apex:pageBlock>
+
+    </apex:form>
+
+</apex:page>

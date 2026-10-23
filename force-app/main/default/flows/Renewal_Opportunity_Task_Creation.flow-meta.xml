@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Creates five renewal-related Tasks for a given Opportunity, each due at fixed offsets from the Opportunity&apos;s Expected Close Date. Designed to be invoked by the Create_Renewal_Opportunity flow. Upon invocation with the Opportunity ID, Expected Close Date, Task Owner, and (optionally) Primary Contact, the subflow creates a standardized five-step renewal task cadence on the Opportunity, scheduled at 180/120/90/60/30 days prior to close.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Calculates 120 days before the renewal opportunity expected close date. This is the due date of the Strategic Value Highlight task.</description>
+        <name>dueDate120</name>
+        <dataType>Date</dataType>
+        <expression>{!expectedCloseDate} - 120</expression>
+    </formulas>
+    <formulas>
+        <description>Calculates 180 days before the renewal opportunity expected close date. This is the due date of the Initial Touchpoint task.</description>
+        <name>dueDate180</name>
+        <dataType>Date</dataType>
+        <expression>{!expectedCloseDate} - 180</expression>
+    </formulas>
+    <formulas>
+        <description>Calculates 30 days before the renewal opportunity expected close date. This is the due date of the Final Reminder task.</description>
+        <name>dueDate30</name>
+        <dataType>Date</dataType>
+        <expression>{!expectedCloseDate} - 30</expression>
+    </formulas>
+    <formulas>
+        <description>Calculates 60 days before the renewal opportunity expected close date. This is the due date of the Engagement Push task.</description>
+        <name>dueDate60</name>
+        <dataType>Date</dataType>
+        <expression>{!expectedCloseDate} - 60</expression>
+    </formulas>
+    <formulas>
+        <description>Calculates 90 days before the renewal opportunity expected close date. This is the due date of the Renewal Package task.</description>
+        <name>dueDate90</name>
+        <dataType>Date</dataType>
+        <expression>{!expectedCloseDate} - 90</expression>
+    </formulas>
+    <interviewLabel>Renewal Opportunity {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Renewal Opportunity Task Creation</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>Due 60 calendar days before renewal Expected Close Date</description>
+        <name>Engagement_Push</name>
+        <label>Engagement Push</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Final_Reminder_Task</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>dueDate60</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>taskOwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>Normal</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>Engagement Push</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>renewalOpportunityId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhoId</field>
+            <value>
+                <elementReference>primaryContactId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Due 30 calendar days before renewal Expected Close Date</description>
+        <name>Final_Reminder_Task</name>
+        <label>Final Reminder Task</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>dueDate30</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>taskOwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>Normal</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>Final Reminder</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>renewalOpportunityId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhoId</field>
+            <value>
+                <elementReference>primaryContactId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Due 180 calendar days before renewal Expected Close Date</description>
+        <name>Initial_Touchpoint_Task</name>
+        <label>Initial Touchpoint Task</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Strategic_Value_Highlight_Task</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>dueDate180</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>taskOwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>Normal</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>Initial Touchpoint</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>renewalOpportunityId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhoId</field>
+            <value>
+                <elementReference>primaryContactId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Due 90 calendar days before renewal Expected Close Date</description>
+        <name>Renewal_Package_Task</name>
+        <label>Renewal Package Task</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Engagement_Push</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>dueDate90</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>taskOwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>Normal</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>Renewal Package</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>renewalOpportunityId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhoId</field>
+            <value>
+                <elementReference>primaryContactId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Due 120 calendar days before renewal Expected Close Date</description>
+        <name>Strategic_Value_Highlight_Task</name>
+        <label>Strategic Value Highlight Task</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Renewal_Package_Task</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>dueDate120</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>taskOwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>Normal</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>Strategic Value Highlight</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>renewalOpportunityId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhoId</field>
+            <value>
+                <elementReference>primaryContactId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Initial_Touchpoint_Task</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>The renewal opportunity expected close date. This date will be used to set each task due date:
+1. Initial Touchpoint — Due 180 calendar days before renewal Expected Close Date
+2. Strategic Value Highlight — Due 120 calendar days before renewal Expected Close Date
+3. Renewal Package — Due 90 calendar days before renewal Expected Close Date
+4. Engagement Push — Due 60 calendar days before renewal Expected Close Date
+5. Final Reminder — Due 30 calendar days before renewal Expected Close Date</description>
+        <name>expectedCloseDate</name>
+        <dataType>Date</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>If the original SDO has Contact Roles, the primary Contact is set on WhoId of each Task; if none, WhoId remains blank.</description>
+        <name>primaryContactId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Id of the renewal opportunity that launched this sub-flow. Each task created will be associated to this opportunity.</description>
+        <name>renewalOpportunityId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>The record Id of the renewal opportunity owner. Each task will be owned by this user.</description>
+        <name>taskOwnerId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

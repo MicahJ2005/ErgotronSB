@@ -1,0 +1,20 @@
+<!--
+  @File Name          : Recaptcha.page
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 12/27/2019, 9:48:39 AM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    12/27/2019   James Loghry (Demand Chain)     Initial Version
+-->
+<apex:page showHeader="false">
+    <script src="https://www.google.com/recaptcha/api.js" async="true" defer="true" />
+    <div class="g-recaptcha" data-sitekey="{!$Setup.reCaptchaGoogle__c.PublicKey__c}" data-callback="handleVerification"></div>
+    <script type="text/javascript">
+        function handleVerification(message){
+            parent.postMessage(message, location.origin);
+        }
+    </script>
+</apex:page>

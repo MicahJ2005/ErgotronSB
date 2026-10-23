@@ -1,0 +1,16 @@
+<!-- Displays campaign hierarchy - This page is specific to child campaigns of record type "Marketing Spend" and is displayed inline on the Ergotron VIR/MDF Campaign page layout.  The
+native campaign hierarchy related list is not used due to the limitation (as of Winter '15) of not being able to customize the fields displayed on the campaign hiearchy related list-->
+
+<apex:page standardController="Campaign" extensions="Campaign_Spend_Hierarchy_Controller" rendered="{!bRendered}">
+	<apex:pageBlock >
+        <apex:pageBlockTable value="{!listSpendCampaigns}" var="spendcamp">
+            <apex:column value="{!spendcamp.Partner__r.Name}" rendered="{!IF(Campaign.RecordType.Name='Ergotron MDF Bucket Campaign',true,false)}"/>
+            <apex:column headerValue="Spend Campaign">
+            	<apex:outputLink value="/{!spendcamp.Id}" target="_top">{!spendcamp.Name}</apex:outputLink>
+            </apex:column> 
+            <apex:column value="{!spendcamp.StartDate}"/>
+            <apex:column value="{!spendcamp.EndDate}"/>
+            <apex:column value="{!spendcamp.Actual_Spend__c}"/>
+        </apex:pageBlockTable> 
+    </apex:pageBlock> 
+</apex:page>

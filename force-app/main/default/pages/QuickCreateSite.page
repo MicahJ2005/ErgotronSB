@@ -1,0 +1,48 @@
+<apex:page standardController="Account" title="Create New Site Account">
+    
+    <apex:form id="frmMain">
+        <apex:sectionHeader title="Create New Account" />
+
+        <apex:pageMessages />
+
+        <apex:pageBlock title="Account Information">
+            <apex:pageblockbuttons >
+                <apex:commandButton value="Save" action="{!save}" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageblockbuttons>
+
+            <apex:pageBlockSection title="Company Identification">
+                <apex:inputField value="{!account.Name}" />
+            </apex:pageBlockSection>
+
+            <apex:pageblocksection title="Address Information" columns="1">
+                <apex:inputField value="{!account.BillingCountryCode}" required="true"/>
+                <apex:inputField value="{!account.BillingStreet}"/>
+                <apex:inputField value="{!account.BillingCity}"/>
+                <apex:inputField value="{!account.BillingStateCode}"/>
+                <apex:inputField value="{!account.BillingPostalCode}"/>
+            </apex:pageblocksection>
+
+            <apex:pageblocksection title="Segmentation">
+                <apex:inputField value="{!account.Region__c}" required="true"/>
+                <apex:inputField value="{!account.Sub_Region__c}" />
+                <apex:inputField value="{!account.Type}" />
+                <apex:inputField value="{!account.Ergotron_Vertical_Market__c}" />
+                <apex:inputField value="{!account.Customer_Sub_Type__c}" />
+                <apex:inputField value="{!account.Industry_Focus__c}" />
+            </apex:pageblocksection>
+
+        </apex:pageBlock>
+
+        <apex:inputHidden id="bolProcessHierarchy" value="{!account.Process_Account_Hierarchy__c}" />
+        <apex:inputHidden id="txtSiteDedupe" value="{!account.Site_Deduplication__c}" />
+        <!--<apex:inputHidden id="txtRecordTypeId" value="{!account.RecordTypeId}" />-->
+
+        <script>
+            document.getElementById('{!$Component.frmMain}').elements['{!$Component.bolProcessHierarchy}'].value = 'true';
+            document.getElementById('{!$Component.frmMain}').elements['{!$Component.txtSiteDedupe}'].value = 'yes';
+        </script>
+
+    </apex:form>
+
+</apex:page>

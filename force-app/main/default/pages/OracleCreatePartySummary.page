@@ -1,0 +1,12 @@
+<apex:page standardController="Account" docType="html-5.0">
+	<apex:form id="mainForm">
+		<apex:pageMessage severity="info" strength="3" summary="{!$Label.Oracle_Create_Party_Summary}" /><br/>
+		<apex:pageBlock title="New Oracle Party Details">
+			<apex:pageBlockSection columns="1" collapsible="false" >
+				<apex:outputField value="{!Account.Oracle_Party_Name__c}" />
+				<apex:outputField value="{!Account.Oracle_Party_Number__c}" />
+				<apex:outputLink target="_parent" value="{!'/'+Account.Id}">Return To Account</apex:outputLink>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>	
+</apex:page>

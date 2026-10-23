@@ -1,0 +1,2241 @@
+<!--
+  @description       : 
+  @author            : Unknown
+  @group             : 
+  @last modified on  : 05-11-2022
+  @last modified by  : Nandika Sharma
+  Modifications Log 
+  Ver   Date         Author         Modification
+  1.0   08-25-2020   Unknown   Initial Version
+-->
+<apex:page id="cc_Footer" docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false"
+    controller="CC_ERG_Header_PLOT" extensions="CC_ERG_ValidateUser_ext">
+<!--<site:googleAnalyticsTracking />-->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+ <!--Vinay(2021-10-10): commenting out as per request from Bill-->
+<script async = "true" src="https://www.googletagmanager.com/gtag/js?id={!$Label.B2B_GTMUA_Code}"></script>
+<script>
+    let configVal = '{!$Label.B2B_GTMUA_Code}';
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', configVal);
+</script>
+ 
+ 
+
+<!-- Google Tag Manager -->
+<!-- Vinay(2021-10-10): commenting out as per request from Bill -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','{!$Label.B2B_GTM_Code}');</script>
+    
+<!-- End Google Tag Manager -->
+
+
+   <!-- Google Tag Manager (noscript) -->
+   <!-- Vinay(2021-10-10): commenting out as per request from Bill -->
+   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={!$Label.B2B_GTM_Code}"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    
+<!-- End Google Tag Manager (noscript) -->
+
+    
+
+    <style>
+    .ergomods #MyAccount_navSection .panel.cc_myaccount_nav{
+        background-color: unset !important;
+        border: none !important;
+    }
+    .ergomods #MyAccount_navSection .panel.cc_myaccount_nav ul.side_navigation_dropdown{
+        border: 1px solid #ccc;
+        background-color: #f5f5f5;
+    }
+
+    .ergomods #newCustomerForm .btn-default.cc_another_submit{
+        font-family: 'proxima-nova', helvetica, arial, sans-serif !important;
+        display: inline-block;
+        position: relative;
+        padding: .556em 1.222em;
+        font-size: 18px;
+        line-height: 1.2;
+        font-weight: normal;
+        text-align: center;
+        white-space: normal;
+        text-transform: none;
+        border: 0;
+        border-radius: 50px;
+        z-index: 1;
+        cursor: pointer;
+        width: auto;
+        margin-top: 64px;
+    }
+
+    @media (min-width:450px) {
+        .ergomods #newCustomerForm .btn-default.cc_another_submit {
+            width: 200px
+        }
+    }
+
+    .ergomods #newCustomerForm .btn-default.cc_another_submit:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 50px;
+        transition: all .4s;
+        z-index: -1
+    }
+    .ergomods #newCustomerForm .btn-default.cc_another_submit:focus, 
+    .ergomods #newCustomerForm .btn-default.cc_another_submit:hover {
+        text-decoration: none;
+        background-color: #fff;
+        border: solid 1px #1F3662;
+    }
+
+    #overlayRelProd{
+        position: fixed; 
+        display: none; 
+        width: 100%; 
+        height: 100%; 
+        top: 0; 
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5); 
+        z-index: 2; 
+        cursor: pointer; 
+    }
+
+    @media (max-width: 358px) {
+      .ergomods .signup-section { display: none; }
+    }
+
+    .order_confirmation_subsBox{
+        max-width: 24em;
+        margin: 0 auto 3rem;
+        background: #00264f;
+        padding: 15px 15px 15px 15px;
+        border-radius: 5px;
+    }
+
+    .cc_order_confirmation_subsText{
+        color: #fff;
+        font-size: 1.6rem;
+        margin-bottom: 0;
+        margin-left: 3rem;
+    }
+
+    .subBtn{
+        margin-left: 11%;
+        border-radius: 3rem !important;
+        color: #000;
+        font-size: 1.5rem !important;
+        text-transform: capitalize !important;
+    }
+
+    .signup-text{
+        max-width: 400px;
+        margin: 3rem auto auto;
+        padding: 15px 15px;
+        border-radius: 3px;
+    }
+
+    .signup-text p {
+      text-align: center;
+      font-size: 17px !important;
+    }
+
+    </style>
+
+    <script src="https://twitter.github.io/typeahead.js/js/handlebars.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.typekit.net/dab0yye.css" />
+
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="survey-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;right: 5px;top: 5px;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-body">
+                    <iframe src="http://survey.alchemer.com/s3/6285181/EPP-Pilot-Survey" frameborder="0" height="500" style="overflow:hidden">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id='PLOT'>
+        Ordertype = {!theOrderType} &nbsp;&nbsp;&nbsp; Pricelist = {!thePriceList}
+    </div>
+
+    <div id="topHeaderLinks" class="top-link hidden">
+        <apex:repeat value="{!topHeaderLinks}" var="link">
+            
+            <apex:variable var="v" value="1" rendered="{!link.DeveloperName == 'RESELLERS'}">
+                <!-- <a href="{!link.Link__c}" class="resellers" id="resellers">
+                    <i class="icon icon-pin"></i>
+                    <span class="text">{!link.label}</span>
+                </a> -->
+                <li id="resellers" style="display: none">
+                    <a class="resellers where-btn" href="{!link.Link__c}">
+                        <i class="icon icon-pin"></i>
+                        <span class="text">{!link.label}</span>
+                    </a>
+                </li>
+            </apex:variable>
+            <apex:variable var="v" value="1" rendered="{!link.DeveloperName == 'MY_LIST'}">
+                <!-- <a href="{!link.Link__c}" class="my-list" id="my-list">
+                    <i class="icon icon-ribbon"></i>
+                    <span class="text">{!link.label}</span>
+                </a> -->
+                <li id="my-list" style="display: none">
+                    <a class="my-list list-btn" href="{!link.Link__c}">
+                        <i class="icon icon-ribbon"></i>
+                        <span class="text">{!link.label}</span>
+                    </a>
+                </li>
+            </apex:variable>
+
+            <apex:variable var="v" value="1" rendered="{!link.DeveloperName == 'SEARCH'}">
+                <a data-url="{!link.Link__c}" class="search" id="topHeaderLinkSearch">
+                </a>
+            </apex:variable>
+        </apex:repeat>
+    </div>
+
+    <div id="headerLinksData" class="hidden">
+        <apex:repeat value="{!headerLinks}" var="link">
+            <li class="nav-item px-2">
+                <a href="{!link.Link__c}" class="nav-link text-uppercase">{!link.DeveloperName}</a>
+            </li>
+        </apex:repeat>
+    </div>
+    <script id="HeaderDesktop" type="text/template">
+ 
+        <!-- <div class="navbar-inverse cc_navbar-inverse">
+            <div class="container cc_container">
+                <div class="row cc_navbar_row">
+                  
+                    <small>
+                        <div class="col-md-4 col-xs-12 cc_navbar_col_misc">
+                            <p class="header-spacer visible-md-* cc_header_spacer"></p>
+                            <div class="navbar-header pull-left cc_navbar-header">
+                                <span class="misc-function cc_misc_function" />
+                                <span class="lssec cc_lssec"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-5 col-xs-12 cc_navbar_col_acct">
+                            <p class="header-spacer visible-md-* cc_header_spacer"></p>
+                            <div class="navbar-header pull-right cc_navbar-header">
+                           
+                                <ul class="list-inline navbar-nav cc_list-inline">
+                                    {{#isErgotronStoreCart}}
+                                    <li class="cc_my_chead"><a href="#" id="cartHeader" class="chead cartHeaderLink"></a></li>
+                                    <li class="loginoutsec cc_loginoutsec"></li>
+                                    {{else}}
+                                        {{#ifEquals '{!isCSR}' 'true'}}
+                                        <li class="cc_my_chead"><a href="#" id="cartHeader" class="chead cartHeaderLink"></a></li>
+                                        {{/ifEquals}}
+                                        {{#ifEquals '{!isGuest}' 'false'}}
+                                            <li class="cc_my_account"><a href="#" id="goToAccount"><i class="fa fa-user" aria-hidden="true"></i><span>&nbsp;{{pageLabelMap 'Component_SiteHeader_MyAccount'}} </span></a></li>
+                                            <li class="loginoutsec cc_loginoutsec"></li>
+                                        {{else}}
+                                        <li><a href="#" class="doLogout">{{pageLabelMap 'Component_SiteHeader_Logout'}}</a></li>
+                                        {{/ifEquals}} 
+                                    {{/isErgotronStoreCart}}
+                                     
+                                 </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-xs-12 pull-right cc_col_search">
+                            {{#ifEquals '{!isCSR}' 'true'}}
+                            <ul class="nav cc_nav">
+                                <li><div class="search_form cc_search_form" /></li>
+                            </ul>
+                            {{/ifEquals}}
+                        </div>
+                    </small>
+                </div>
+            </div>
+        </div> 
+        {{#ifEquals '{!isCSR}' 'true'}}
+            <a href="#" id="logoUrl"><div id="cc_store_logo_img" class="cc_store_logo_img center-block"></div></a>
+        {{else}}
+            <div id="cc_store_logo_img" class="cc_store_logo_img center-block"></div>
+        {{/ifEquals}}
+    -->
+        
+        <!--  New header start  -->
+        <div class="ergomods">
+            <div class="msg text-center" id="headerMessage">
+            </div>
+            <div class="navbar">
+                <div class="nav-wrapper">
+                    <div class="secondary-nav primary-header-top container-fluid">
+                        <ul class="first-section header-left">
+                            {{#ifEquals '{!isCSR}' 'true'}}
+                                <div class="search_form cc_search_form"/> 
+                            {{else}}
+                                <li class="header-search">
+                                    <a href="#" class="search" id="search-btn" title="Search">
+                                        <i class="icon icon-search"></i>
+                                        <span class="search-box search-label">
+                                            <span class="search-input" aria-hidden="true">
+                                                <input type="text" placeholder="Search">
+                                                <button class="search-btn">
+                                                <i class="icon icon-chevron-right"></i>
+                                                </button>
+                                            </span>
+                                            <span class="text">Search</span>
+                                        </span>
+                                    </a>
+                                </li>
+                            {{/ifEquals}}
+                        </ul>
+                        <ul class="third-section header-right" id="topHeaderOther">
+                            {{#ifEquals '{!isCSR}' 'true'}}
+                                {{#ifEquals '{!isGuest}' 'false'}}
+                                    <li class="cc_my_account">
+                                        <a href="#" id="goToAccount">
+                                            <i class="fa fa-user" aria-hidden="true"></i>
+                                            <span>&nbsp;{{pageLabelMap 'Component_SiteHeader_MyAccount'}} </span>
+                                        </a>
+                                    </li>
+                                {{else}}
+                                {{/ifEquals}} 
+                            {{else}}
+                                <li id="custom-cart">
+                                    <a href="" class="shop">
+                                        <i class="icon icon-shoppingcart"></i>
+                                        <span class="text carttxt">Shopping Cart</span>
+                                        <!--<span class="badge cartcount">{{this.attributes.totalQuantity}}</span>-->
+                                        {{#if '{!cartTotalQuantity}'}}
+                                        {{#ifNotEquals '{!cartTotalQuantity}' '0'}}
+                                            <span class="badge cartcount">{!cartTotalQuantity}</span>
+                                        {{/ifNotEquals}}
+                                        {{/if}}
+                                    </a>
+                                </li>
+                                {{#ifEquals '{!isGuest}' 'false'}}
+                                    <!-- <li class="cc_my_account">
+                                        <a href="#" id="goToAccount">
+                                            <i class="fa fa-user" aria-hidden="true"></i>
+                                            <span>&nbsp;{{pageLabelMap 'Component_SiteHeader_MyAccount'}} </span>
+                                        </a>
+                                    </li> -->
+                                    <li class="loginoutsec cc_loginoutsec"></li>
+                                {{else}}
+                                    <li><a href="#" class="doLogout">{{pageLabelMap 'Component_SiteHeader_Logout'}}</a></li>
+                                {{/ifEquals}} 
+                            {{/ifEquals}} 
+                        </ul>
+                        <div class="second-section logo">
+                          <a id="dnn_Header_logo_hypLogo" title="Ergotron" aria-label="Ergotron" href="{!logoURL}"><div id="cc_store_logo_img" class="cc_store_logo_img logo"></div></a>
+                        </div>
+                    </div>
+                </div>
+                <ul class="primary-nav" id="externalLinks">
+                </ul>
+            </div>
+        </div>
+        <!--  New header end  -->
+        
+    </script>
+    <script id="menu-desktop-template" type="text/template">
+         <div id="secnav cc_secnav" class="hide">
+            <nav class="navbar navbar-default navbar-static-top cc_navbar">
+                <div class="container cc_container">
+                    <div class="navbar-header cc_navbar_header">
+                        <button type="button" class="navbar-toggle collapsed cc_navbar_toggle" data-toggle="collapse" data-target="#navbar"
+                            aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                                <!-- hamburger -->
+                                <span class="icon-bar cc_icon-bar"></span>
+                                <span class="icon-bar cc_icon-bar"></span>
+                                <span class="icon-bar cc_icon-bar"></span>
+                        </button>
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse cc_navbar_collapse">
+                        <ul class="nav navbar-nav cc_navbar-nav">
+                            {{#ifEquals '{!isCSR}' 'true'}}
+                           <li>{{goHome this 'cc_phone_logo' 'phoneLogo' icon=(displayIcon 'home')}}<span class="sr-only">Home</span></li>
+                            {{#each .}}
+                                {{#if children}}
+                                    <li class="dropdown cc_dropdown">
+                                        <a href="{{linkURL}}" class="dropdown-toggle cc_dropdown_toggle" data-toggle="dropdown" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}} role="button" aria-haspopup="true" aria-expanded="false">{{displayName}}<span class="caret"></span></a>
+                                        <ul class="dropdown-menu cc_dropdown-menu">
+                                            {{> subMenuItem}}
+                                        </ul>
+                                    </li>
+                                {{else}}
+                                    {{#ifEquals mType 'Category'}}
+                                        <li class="dropdown cc_dropdown">{{categoryLink this 'cc_category' text=displayName}}</li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals mType 'Product'}}
+                                        <li class="dropdown cc_dropdown">{{productLink this 'cc_product' text=displayName}}</li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals mType 'URL'}}
+                                        <li class="dropdown cc_dropdown"><a class="menuTypeURL cc_menu_type_url" href="{{linkURL}}" data-href="{{linkURL}}" data-menuid="{{menuId}}" {{linkTarget openInNewWindow}}>{{displayName}}</a></li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals mType 'None'}}
+                                        <li class="dropdown cc_dropdown"><a href="javascript:void(0);" class="cc_display_name" data-menuid="{{menuId}}">{{displayName}}</a></li>
+                                    {{/ifEquals}}
+                                {{/if}}
+                            {{/each}}
+                            {{/ifEquals}}
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </nav>
+        </div>
+    </script>
+
+    <!--  my account -->
+    <!--  my account nav-->
+    <script id="MyAccount-Nav-Desktop" type="text/template">
+        <div class="panel panel-default cc_panel cc_myaccount_nav">
+         <div class="panel-heading cc_heading">
+          <h3 class="panel-title cc_title">{{pageLabelMap 'Component_SiteHeader_MyAccount'}}</h3>
+         </div>
+            <ul class="side_navigation_dropdown list-group cc_myaccount_nav_list" id="side_nav">
+                {{#actNav this}} {{/actNav}}   
+                {{#each this}}
+                    <li class="acctStep{{this.index}} acctStepNav list-group-item cc_acc_step_nav">
+                        <a href="#" class="gotoSection cc_goto_section" data-index="{{this.index}}">{{{pageLabelMap this.title}}}</a>
+                    </li>
+                {{/each}}
+                <li class="acctStepNav list-group-item cc_acc_step_nav">
+                    <a href="#" class="cc_goto_section" onclick="logOut()">Logout</a>
+                </li>
+            </ul>
+            {{#isGuestUser}}
+            {{else}}
+            <div class="username text-center cartpage-li-user">
+              Signed in as: <span>{{username}}</span>
+          </div>
+            {{/isGuestUser}}
+        </div>
+    </script>
+     <!--  my account order start -->
+    <script id="CC_ERG_MyAccount-MyOrders-Desktop" type="text/template">
+        <div class="panel panel-default cc_panel cc_myaccount_myorders">
+            <div class="panel-heading cc_heading">
+                <h3 class="panel-title cc_title">{{pageLabelMap 'MyAccount_MyOrders'}}</h3>
+            </div>
+            <div class="panel-body cc_body cc_myaccount_content">
+                <div class="messagingSection-orderhistory-Error" role="alert" style="display: none"></div>
+                <div class="messagingSection-orderhistory-Info" role="alert" style="display: none">
+                    <button type="button" class="close cc_close" data-dismiss="alert" 
+                        aria-label="{{pageLabelMap 'Modal_Aria_Close'}}"><span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {{#ifDisplay 'srch.ord'}}
+                    <form id="searchOrderForm" class="form-inline searchOrderForm cc_search_order_form cc_form-inline">
+                        <div class="form-group form-group-sm ">
+                            <label for="searchOrderInput" class="sr-only">Search order</label>
+                            <input id="searchOrderInput" type="text" 
+                                class="form-control searchOrderInput input-text cc_search_order_input" 
+                                name="searchOrderInput" value="{{searchOrder}}" 
+                                placeholder="{{pageLabelMap 'MyOrdersInc_SearchOrders'}}"/>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <select name="searchOrderStatus" value="{{searchOrderStatus}}" 
+                                class="form-control cc_search_order_status">
+                                <option value="">{{pageLabelMap 'MyOrdersInc_AllOrderStatus'}}</option>
+                                {{#each this.orderStatusOpts}}
+                                    <option value="{{this.value}}" {{#ifEquals ../searchOrderStatus this.value}} selected {{/ifEquals}}>{{this.label}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="form-group form-group-sm date">
+                            <label for="fromDateStr" class="cc_from_date_str">{{pageLabelMap 'MyOrdersInc_SearchFrom'}}</label>
+                            <div class="input-group date">
+                                <input type="text" id="fromDateStr" name="fromDateStr" 
+                                    value="{{this.fromDateStr}}" 
+                                    class="form-control requestedDate fromDate cc_from_date" 
+                                    readonly="true" />
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="cc_order_search_action">
+                        <input type="button" class="btn btn-default btn-sm searchOrder cc_search_order" 
+                            value="{{pageLabelMap 'MyOrdersButton_SearchOrders'}}"/>
+                        <input type="button" class="btn btn-default btn-sm resetOrder cc_reset_order" 
+                            value="{{pageLabelMap 'MyOrdersButton_ResetOrders'}}"/>
+                    </div>
+                {{/ifDisplay}}
+            </div>
+        </div>
+        <div class="orderPaginationSec" />
+        <div class="panel panel-default cc_panel cc_paginator">
+            <div class="table-responsive">
+                <table id="orderTable" class="table table-hover shopping_cart cc_table cc_order_search_table">
+                    <tr class="cc_table_header_row">
+                        <th class="cc_table_header">
+                            <span class="cc_table_header_order_number">{{pageLabelMap 'MyOrdersInc_OrderNumber'}}</span>
+                        </th>
+                        {{#ifDisplay 'MO.DsplExtOrderNumber'}}
+                            <th class="cc_table_header">
+                                <span class="cc_table_header_external_order_id">{{pageLabelMap 'ExternalOrderID'}}</span>
+                            </th>
+                        {{/ifDisplay}}
+                        {{#ifDisplay 'MO.DsplPONumber'}}
+                            <th class="cc_table_header">
+                                <span class="cc_table_header_po_number">{{pageLabelMap 'PO Number'}}</span>
+                            </th>
+                        {{/ifDisplay}}
+                        <th class="cc_table_header">
+                            <span class="cc_table_header_order_date">{{pageLabelMap 'MyOrdersInc_OrderDate'}}</span>
+                        </th>
+                        <th class="cc_table_header">
+                            <span class="cc_table_header_order_amount">{{pageLabelMap 'MyOrdersInc_OrderAmount'}}</span>
+                        </th>
+                        <th class="cc_table_header">
+                            <span class="cc_table_header_order_status">{{pageLabelMap 'MyOrdersInc_Status'}}</span>
+                        </th>
+                        {{#ifStoreSetting 'Filter_Orders_Based_on_Owner__c'}}
+                            &nbsp;
+                        {{else}}
+                            <th class="cc_table_header">
+                                <span class="cc_table_header_order_owner ord_owner_hdr">
+                                    {{pageLabelMap 'MyOrdersInc_Owner'}}
+                                </span>
+                            </th>
+                        {{/ifStoreSetting}}
+                        {{#ifDisplay 'MO.ShActOnOrd'}}
+                            <th class="cc_table_header">
+                                <span class="cc_table_header_order_actions">{{pageLabelMap 'MyCartsInc_Actions'}}</span>
+                            </th>
+                        {{/ifDisplay}}
+                    </tr>
+                    {{#each this.orderList}}
+                        <tr class="myAccOrderRows cc_table_row">
+                            <td class="cc_table_col">
+                                <span class="cc_col_order_number">
+                                    <a href="#" data-id="{{encryptedId}}" 
+                                    class="gotoOrderDetails cc_goto_order_detailss">{{getOrderId sfid name}}</a>
+                                </span>
+                            </td>
+                            {{#ifDisplay 'MO.DsplExtOrderNumber'}}
+                                <td class="cc_table_col">
+                                    <span class="cc_col_external_order_id">{{externalOrderId}}</span>
+                                </td>
+                            {{/ifDisplay}}
+                            {{#ifDisplay 'MO.DsplPONumber'}}
+                                <td class="cc_table_col">
+                                    <span class="cc_col_po_number">{{poNumber}}</span>
+                                </td>
+                            {{/ifDisplay}}
+                            <td class="cc_table_col">
+                                <span class="cc_col_order_date">{{orderDateStr}}</span>
+                            </td>
+                            <td class="cc_table_col">
+                                <span class="cc_col_order_amount">{{price totalAmount currencyIsoCode}}</span>
+                            </td>
+                            <td class="cc_table_col">
+                                <span class="cc_col_order_statust">{{pageLabelMap status}}</span>
+                            </td>
+                            {{#ifStoreSetting 'Filter_Orders_Based_on_Owner__c'}}
+                                &nbsp;
+                            {{else}}
+                                <td class="cc_table_col">
+                                    <span class="cc_col_order_owner ord_owner">{{ownerName}}</span>
+                                </td>
+                            {{/ifStoreSetting}}
+                            {{#ifDisplay 'MO.ShActOnOrd'}}
+                                <td class="cc_table_col">
+                                    {{#ifDisplay 'MO.ShReOrdBt'}}
+                                        {{#if this.canReOrder}}
+                                            <input type="button" class="btn btn-default btn-sm reorder cc_col_reorder" 
+                                                data-id="{{sfid}}" value="{{pageLabelMap 'MyOrdersInc_Reorder'}}"/>
+                                            &nbsp;
+                                        {{/if}}
+                                    {{/ifDisplay}}
+                                </td>
+                                <td class="cc_table_col">
+                                    {{#if this.canCancel}}
+                                        {{#ifDisplay 'MO.ShAmdBt'}}
+                                            {{#if this.canAmend}}
+                                                <input type="button" class="btn btn-default btn-sm promptCancel promptAmend cc_col_prompt_amend" 
+                                                data-id="{{sfid}}" data-mode="Edit" 
+                                                value="{{pageLabelMap 'Amend'}}"/>
+                                            {{/if}}
+                                        {{/ifDisplay}}
+                                    {{/if}}
+                                </td>
+                                <td class="cc_table_col">
+                                    {{#if this.canCancel}}
+                                        {{#ifDisplay 'MO.ShCanBt'}}
+                                            <input type="button" class="btn btn-default btn-sm promptCancel cc_col_prompt_cancel" 
+                                                data-id="{{sfid}}" data-mode="Cancel" value="{{pageLabelMap 'Cancel'}}"/>
+                                        {{/ifDisplay}}
+                                    {{/if}}
+                                </td>
+                            {{/ifDisplay}}
+                        </tr>
+                    {{/each}}
+                </table>
+            </div>
+            <div id="modalSec"></div>
+        </div>
+        <div class="modal fade" tabindex="-1" role="dialog" id="order-number-change"></div>
+    </script>
+    <!--  my account order end-->
+    <!--  my account end -->
+
+
+    <script id="OrderDetails-View-Desktop" type="text/template">
+     <div class="row">
+       <div class="col-xs-12">
+         <div class="cc_order_details">
+          {{#if this.isConfirmation}}
+          <!-- {{{json this}}} -->
+          <div class="survey-modal-cta hidden-print">
+            <p class="link_button cc_link_button">
+              <input class="btn btn-default btn-sm btn-base btn-blue" type="button" value="Take our Survey" alt="Take our Survey" data-toggle="modal" data-target="#survey-modal">
+            </p>
+          </div>
+           <div class="panel panel-default cc_panel cc_order_confirmation">
+            <div class="panel-heading cc_heading">
+              <h3 class="panel-title cc_title hidden-print">{{pageLabelMap 'OrderConfirmation_Title'}}</h3>
+              <div class="visible-print-block text-center" style="margin: 20px"><img src="https://www.ergotron.com/portals/0/ergotron-logo-blue.svg" alt="Ergotron logo"></div>
+              <h3 class="panel-title cc_title visible-print-block">Thank you for shopping with Ergotron!</h3>
+            </div>
+            <div class="panel-body cc_body">
+             <!-- <p class="cc_order_confirmation_date">
+                 {{#if this.salesOrderR.oracleSalesOrderRefNumber}}
+                     <span class="cc_order_number">{{pageLabelMap 'OrderView_OrderNumber'}}&#58;&#160;</span>
+                     <span class="cc_order_name">{{this.salesOrderR.oracleSalesOrderRefNumber}}</span>
+                 {{else}}
+                     <p>{{pageLabelMap 'orderConfirmation_PlacedOrderMsg'}}</p>
+                 {{/if}}
+                 {{pageLabelMap 'OrderConfirmation_PlacedOrder' this.name this.orderDateStr}}
+             </p> -->
+             <p class="panel-subtitle">{{pageLabelMap 'orderConfirmation_PlacedOrderMsg'}}
+            </p>
+             {{#unless this.userIsGuest}}
+             <!-- <p class="cc_order_confirmation_status">
+              <span class="cc_order_status_info">{{pageLabelMap 'OrderConfirmation_StatusInfo'}}&#160;</span>
+              <span class="cc_order_history"><a href="#" class="orderHistory cc_order_history">{{pageLabelMap 'OrderConfirmation_OrderHistory'}}</a>.</span>
+             </p> -->
+             {{/unless}}
+             <p class="order-id-wrap">{{pageLabelMap 'OrderIdText'}} <span class="cc_order_id">{{this.orderNumber}}</span></p>
+             <div class="order_confirmation_shipalertbox">
+              <p class="cc_order_confirmation_guidingtext1 shipalert">{{pageLabelMap 'OrderConfirmation_ShipAlertText'}}</p>
+            </div>
+             <p class="cc_order_confirmation_guidingtext1 hidden-print">
+              <span style="color: rgb(62, 62, 60);">{{pageLabelMap 'OrderConfirmation_GuidingText'}}</span><br><span class="cc_buyer_email">{{this.buyerEmail}}</span>
+             </p>
+             <p class="cc_order_confirmation_guidingtext2 hidden-print">
+              <a href="javascript:window.print()">{{pageLabelMap 'OrderConfirmation_GuidingText2'}}</a>
+             </p>
+             <div class="cc_order_confirmation_payments">
+              {{#each this.payments}}
+               {{#ifEquals paymentMethod "PO Number"}}
+                <p class="cc_order_confirmation_payment">{{pageLabelMap 'CheckOut_POGuidingText'}}</p>
+               {{/ifEquals}}
+              {{/each}}
+             </div>
+            </div>
+           </div>
+          {{else}}
+           <div class="panel panel-default cc_panel cc_order_information">
+            <div class="panel-heading cc_heading">
+             <h3 class="panel-title cc_title">{{pageLabelMap 'OrderInformation'}}</h3>
+            </div>
+            <div class="panel-body cc_body">
+             <p class="cc_order_information_number hi">
+              {{#if this.salesOrderR.oracleSalesOrderRefNumber}}
+                 <span class="cc_order_number">{{pageLabelMap 'OrderView_OrderNumber'}}&#58;&#160;</span>
+                 <span class="cc_order_name">{{this.salesOrderR.oracleSalesOrderRefNumber}}</span>
+             {{else}}
+                 <p>{{pageLabelMap 'OrderConfirmation_PlacedOrderMsg'}}</p>
+             {{/if}}
+              {{#ifDisplay 'OD.DsplExtOrderNumber'}}
+               <span class="cc_order_ext_number">{{pageLabelMap 'ExternalOrderID'}}&#58;&#160;</span>
+               <span class="cc_order_ext_id">{{this.externalOrderId}}</span>
+              {{/ifDisplay}}
+             </p>
+             <p class="cc_order_information_date">
+              <span class="cc_order_date_label">{{pageLabelMap 'MyOrdersInc_OrderDate'}}&#58;&#160;</span>
+              <span class="cc_order_date">{{this.orderDateStr}}</span>
+             </p>
+             <p class="cc_order_information_status">
+              <span class="cc_order_status_label">{{pageLabelMap 'MyOrdersInc_Status'}}&#160;</span>
+              <span class="cc_order_status">{{pageLabelMap this.status}}</span>
+             </p>
+             <p class="pull-right">
+              <a href="#" class="orderHistory cc_order_history">{{pageLabelMap 'OrderConfirmation_OrderHistory'}}</a>
+             </p>
+             <div class="cc_order_information_payments">
+              {{#each this.payments}}
+               {{#ifEquals paymentMethod "PO Number"}}
+                <p class="cc_order_information_payment">{{pageLabelMap 'CheckOut_POGuidingText'}}</p>
+               {{/ifEquals}}
+              {{/each}}
+             </div>
+            </div>
+           </div>
+          {{/if}}
+          <div class="well cc_well cc_order_information">
+           <h4 class="cc_order_information_title">{{pageLabelMap 'CheckOut_GeneralInformation'}}</h4>
+            <div class="row user-info-wrap">
+             <!-- <div class="col-xs-12 col-md-4"> -->
+             <div class="col-xs-12 col-sm-6 receipt-leftcol">
+              <h5 class="cc_buyer_information">{{pageLabelMap 'PurchaseDateLabel'}}</h5>
+              <p class="purchase-date">{{this.orderDateStr}}</p>
+              <h5 class="cc_buyer_information">{{pageLabelMap 'CheckOut_BuyerInformation'}}</h5>
+              <p class="cc_buyer">
+                <!-- <span class="cc_shipping_method_label">Name:</span> -->
+               <span class="cc_buyer_firstname">{{this.buyerFirstName}} {{this.buyerLastName}}</span></br>
+               <!-- <span class="cc_shipping_method_label">Email:</span> -->
+               <span class="cc_buyer_email">{{this.buyerEmail}}</span></br>
+               <!-- <span class="cc_shipping_method_label">Phone:</span> -->
+               <span class="cc_buyer_phone">{{this.buyerPhone}}</span>
+              </p>
+              <h5 class="cc_shipping_address_label">{{pageLabelMap 'CheckOut_ShippingAddress'}}</h5>
+              <p class="cc_shipping">
+               <span class="cc_shipping_address">{{> addressDisplay this.shippingAddress}}</span>
+              </p>
+              <!-- <p class="cc_shipping">
+               {{#if this.shippingMethod}}
+                <h5 class="cc_shipping_information">{{pageLabelMap 'CheckOut_ShippingInformation'}}</h5>
+                <p class="cc_shipping_method_section">
+                 <span class="cc_shipping_method_label">{{pageLabelMap 'CheckOut_ShippingMethod'}}&#58;&#160;</span>
+                 <span class="cc_shipping_method">{{this.shippingMethod}}</span>
+                </p>
+               {{/if}}
+               {{#if this.shippingInst}}
+                <p class="cc_shipping_notes_section">
+                 <span class="cc_shipping_notes_label">{{pageLabelMap 'CheckOut_ShippingNotes'}}&#58;&#160;</span>
+                 <span class="cc_shipping_notes">{{this.shippingInst}}</span>
+                </p>
+               {{/if}}
+               {{#if this.requestedDate}}
+                <p class="cc_shipping_delivery_section">
+                 <span class="cc_shipping_delivery_date_label">{{pageLabelMap 'Checkout_RequestedDeliveryDt'}}&#58;&#160;</span>
+                 <span class="cc_shipping_delivery_date">{{this.requestedDateStr}}</span>
+                </p>
+               {{/if}}
+              </p> -->
+             <!-- </div>
+             <div class="col-xs-12 col-md-4"> -->
+            </div>
+            <div class="col-xs-12 col-sm-6">
+              <h5 class="cc_payment_information">{{pageLabelMap 'CheckOut_PaymentInformationLeg'}}</h5>
+              <p class="cc_payment">
+               {{#each this.payments}}
+                {{#ifEquals paymentMethod "Credit Card"}}
+                 <span class="cc_payment_information_cc_type">{{cardType}}&#160;</span>
+                 <span class="cc_payment_information_cc_number_label">{{pageLabelMap 'CheckOut_CCCardNumber'}}&#58;&#160;</span>
+                 <span class="cc_payment_information_cc_number">************{{cardNumber}}</span>
+                 <span class="cc_payment_information_cc_expdate_label">{{pageLabelMap 'CheckOut_CCExpDate'}}&#58;&#160;</span>
+                 <span class="cc_payment_information_cc_expdate">{{expMonth}}/{{expYear}}</span>
+                {{else}}
+                 <span class="cc_payment_information_payment_method_label">{{pageLabelMap paymentMethod}}&#58;&#160;</span>
+                 <span class="cc_payment_information_payment_method">{{accountNumber}}</span>
+                {{/ifEquals}}
+               {{/each}}
+                {{#creditCardPayment payments transactionPayments}}
+                	<span class="cc_payment_information_transaction_payments">{{pageLabelMap 'PaymentMethod_CC'}}</span>
+                {{/creditCardPayment}}
+                {{#each this.transactionPayments}}
+                {{#ifEquals accountType "po"}}
+                    <span class="cc_payment_information_transaction_payments">{{pageLabelMap 'PaymentMethod_PO'}} - {{accountNumber}}</span>
+                {{/ifEquals}}
+                {{#ifEquals accountType "Credit Card"}}
+                <span class="cc_payment_information_transaction_payments">{{pageLabelMap 'PaymentMethod_CC'}}</span>
+                {{/ifEquals}}
+                    <!-- <span class="cc_payment_information_transaction_payments">{{pageLabelMapMultiString 'PaymentDisplay_' this.accountType this.accountType this.accountNumber this.subAccountNumber (pageLabelMapMultiString 'PaymentType_' this.paymentType) (pageLabelMapMultiString 'PaymentExpMonth_' this.expirationMonth) (pageLabelMap this.expirationYear)}}</span> -->
+                {{/each}}
+              </p>
+              <h5 class="payment-amount-title">{{pageLabelMap 'PaymentAmount_Label'}}</h5>
+              <p class="payment-amount cc_grand_total"><span class="cc_total_amount">{{price this.totalAmount}}</span>
+              </p>
+              <h5 class="cc_billing_address_label">{{pageLabelMap 'CheckOut_BillingAddress'}}</h5>
+              <p class="cc_billing">
+               <span class="cc_billing_address">{{> addressDisplay this.billingAddress}}</span>
+              </p>
+              {{#if this.hasCoupon}}
+               <h5 class="cc_coupon_label">{{pageLabelMap 'CartInc_AppliedCoupon'}}</h5>
+               <p class="cc_coupon_section">
+                <span class="cc_coupon">{{this.couponName}}</span>
+               </p>
+              {{/if}}
+             </div>
+             <!-- <div class="col-xs-12 col-md-4">
+              
+             </div> -->
+            </div>
+           </div>
+
+
+           <div class="well cc_well cc_order_item_list">
+            <!-- <div class="panel-body a5o3C000000LmWiQAK row cc_body"> -->
+              <div class="row cc_body">
+                <div class="col-xs-12">
+                  <!-- <p>Click the names to see more data.</p> -->
+                  <table>
+                    <thead>
+                      <tr class="table-headers price cc_price">
+                        <th><span class="checkout_product_label">{{pageLabelMap 'CartInc_ProductName'}}</span></th>
+                        <th class="cc_external"><span class="cc_checkout_sku_label">{{pageLabelMap 'PartNum'}}</span></th>
+                        <th>{{pageLabelMap 'CheckOut_UnitPrice'}}</th>
+                        <th class="cc_order_quantity"><span class="cc_quantity_label">
+                            {{pageLabelMap 'CartInc_AttributeQuantity'}}
+                        </span></th>
+                        <th>{{pageLabelMap 'LineTotal_Label'}}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {{#each this.orderItems}}
+                            {{setVar "discount" 0}}
+                            {{#ifNotEquals this.productType 'Coupon'}}
+                                <tr class="price cc_price">
+                                    <td>
+                                        {{#if this.mockProduct.externalURL}}
+                                            <a href="{{baseUrl}}{{this.mockProduct.externalURL}}" >
+                                                <span class="cc_item_title">
+                                                    {{#if this.mockProduct.alternateName}}
+                                                    {{this.mockProduct.alternateName}}
+                                                    {{else}}
+                                                {{this.translatedProductName}}
+                                                {{/if}}
+                                                </span>
+                                            </a>
+                                        {{else}}
+                                            <span class="cc_item_title">
+                                                {{#if this.mockProduct.alternateName}}
+                                                {{this.mockProduct.alternateName}}
+                                                {{else}}
+                                            {{this.translatedProductName}}
+                                            {{/if}}
+                                            </span>
+                                        {{/if}}
+                                    </td>
+                                    <th class="mobile-header cc_external">
+                                        <span class="cc_checkout_sku_label">{{pageLabelMap 'PartNum'}}</span>
+                                    </th>
+                                    <td class="cc_external">
+                                      {{#ifEquals this.pricingType 'external'}}
+                                          {{#if this.extName}}
+                                              <span class="cc_checkout_sku">{{this.extSKU}}</span>
+                                          {{else}}
+                                              <span class="cc_checkout_sku">{{this.mockProduct.sku}}</span>
+                                          {{/if}}
+                                      {{else}}
+                                          {{#if this.mockProduct}}
+                                          <span class="cc_checkout_sku">{{this.mockProduct.sku}}</span>
+                                          {{else}}
+                                          <span class="cc_checkout_sku">{{this.productR.sku}}</span>
+                                          {{/if}}
+                                      {{/ifEquals}}
+                                    </td>
+                                    <th class="mobile-header">{{pageLabelMap 'CheckOut_UnitPrice'}}</th>
+                                    <td class="currencylayout">
+                                        {{#if this.absoluteDiscount}}
+                                            <span class="cc_price">{{price (perQtyPrice this.price this.absoluteDiscount this.quantity )}}</span>
+                                            {{else}}
+                                                <span class="cc_price">{{price this.price}}</span>
+                                            {{/if}}
+                                        <!--{{#if this.absoluteDiscount}}
+                                        <div class="youSave">{{pageLabelMap 'Checkout_YouSave'}}  {{price this.absoluteDiscount}}</div>
+                                        {{/if}}-->
+                                    </td>
+                                    <th class="mobile-header cc_order_quantity">
+                                        <span class="cc_quantity_label">{{pageLabelMap 'CartInc_AttributeQuantity'}}</span>
+                                    </th>
+                                    <td class="cc_order_quantity">
+                                        <span class="cc_quantity">{{this.quantity}}</span>
+                                    </td>
+                                    <th class="mobile-header">{{pageLabelMap 'LineTotal_Label'}}</th>
+                                    <td class="currencylayout">
+                                        <div>
+                                            <!-- <span>$</span>  {{ price (mul this.quantity this.price) }}-->
+                                            {{price this.itemTotal}}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {{/ifNotEquals}}
+                            {{#ifEquals this.productType 'Coupon'}}
+                                {{setVar "discount" this.itemTotal}}
+                            {{/ifEquals}}
+                        {{/each}}
+
+                        {{#if this.orderItems}}
+                        <!-- {{#each this.orderItems}} -->
+                            <!-- {{#if this.absoluteDiscount}} -->
+                            {{#showYouSave this.orderItems}}
+                                {{else}}
+                                <tr class='cc_totals_section total first youSave'>
+                                    <th colspan="4">{{pageLabelMap 'Checkout_YouSave'}}</th>
+                                    <td class="total-val currencylayout" colspan="4">
+                                    <!-- ({{price this.absoluteDiscount}}) -->
+                                    {{#absDiscOrder this.orderItems}} {{/absDiscOrder}}
+                                    </td>
+                                </tr>
+                            {{/showYouSave}}
+                            <!-- {{/if}} -->
+                        <!-- {{/each}} -->
+                    {{/if}}
+
+                        
+
+                        <tr class='cc_totals_section total '>
+                            <th colspan="4">{{pageLabelMap 'CartInc_Subtotal'}}</th>
+                            <td class="total-val currencylayout" colspan="4">
+                            {{changeSign 'positiveDiscount' discount}}
+                            <div><!-- <span>$</span>  -->{{sum this.subTotal positiveDiscount}}</div>
+                            </td>
+                        </tr>
+                        {{#if discount}}
+                        <tr class='cc_totals_section total'>
+                            <th colspan="4">Discount</th>
+                            <td class="total-val currencylayout" colspan="4">
+                            <div><!-- <span>$</span>  -->{{price discount}}</div>
+                            </td>
+                        </tr>
+                        {{/if}}
+                        <tr class='cc_totals_section total'>
+                            <th colspan="4">{{pageLabelMap 'CheckOut_EstimatedTax'}}</th>
+                            <td class="total-val currencylayout" colspan="4">
+                            <div><!-- <span>$</span>  -->{{price this.tax}}</div>
+                            </td>
+                        </tr>
+                        <tr class='cc_totals_section total last'>
+                            <th colspan="4">{{pageLabelMap 'CartInc_Shipping'}}</th>
+                            {{#ifStoreSetting 'Skip_Shipping_Calculation__c'}}
+                                <td class="total-val currencylayout" colspan="4">
+                                    <div><!-- <span>$</span> -->$0.00</div>
+                                </td>
+                            {{else}}
+                                <td class="total-val currencylayout" colspan="4">
+                                    <div><!-- <span>$</span>  -->{{#if this.shippingCharge}}
+                                            {{price this.shippingCharge}}
+                                        {{else}}
+                                            $0.00
+                                        {{/if}}
+                                    </div>
+                                </td>
+                            {{/ifStoreSetting}}
+                        </tr>
+                        <tr class='cc_totals_section total grand-total'>
+                            <th colspan="4">Grand Total</th>
+                            <td class="total-val currencylayout" colspan="4">
+                            <div> {{sum this.subTotal this.tax this.shippingCharge this.adjustment this.surchargeAmount}}</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+  
+              <!-- </div> -->
+            <!-- </div> -->
+            <!-- <hr style="border-top: 2px solid #c7c7c7;margin-top: 20px;"> -->
+          </div>
+
+
+           <!-- {{> orderItemsDesktop}} -->
+           <!-- <div class="cc_totals_section">
+            {{> totalsSection}}
+           </div> -->
+
+           {{#if this.shipments}}
+            <table class="shopping_cart orderShipments cc_order_shipments_table">
+             <tr class="cc_tr">
+              <th class="cc_th_tracking_url">&#160;</th>
+              <th class="cc_th_date">{{pageLabelMap 'OrderShipment_ShipmentDate'}}</th>
+              <th class="cc_th_carrier">{{pageLabelMap 'OrderShipment_Carrier'}}</th>
+              <th class="cc_th_method">{{pageLabelMap 'OrderShipment_ShipmentMethod'}}</th>
+              <th class="cc_th_tracking_num">{{pageLabelMap 'OrderShipment_TrackingNumber'}}</th>
+              <th class="cc_th_deliver_date">{{pageLabelMap 'OrderShipment_DeliveryDate'}}</th>
+             </tr>
+             {{#each this.shipments}}
+              <tr class="cc_tr_values {{sfid}}">
+               <td class="cc_td_tracking_url"><a target="shiptracking" href="{{{trackingUrl}}}">{{pageLabelMap 'OrderShipment_Track'}}</a></td>
+               <td class="cc_td_date">{{shipmentDateStr}}</td>
+               <td class="cc_td_carrier">{{carrier}}</td>
+               <td class="cc_td_method">{{shippingMethod}}</td>
+               <td class="cc_td_tracking_num">{{trackingNo}}</td>
+               <td class="cc_td_deliver_date">{{deliveryDateStr}}</td>
+              </tr>
+              {{#each this.items}}
+               <tr class="cc_tr_details">
+                <td />
+                <td colspan="5" class="cc_td_detail_line {{sfid}}">
+                 <span class="cc_sku_label">{{pageLabelMap 'CartInc_SKU'}}</span>&#58;&#160;<span class="cc_sku_value">{{sku}}</span>, <span class="cc_qty_label">{{pageLabelMap 'CartInc_Qty'}}</span>&#58;&#160;<span class="cc_qty">{{quantity}}</span>
+                </td>
+               </tr>
+              {{/each}}
+             {{/each}}
+            </table>
+           {{/if}}
+
+          </div>
+         </div>
+       </div>
+       <div class="row">
+        <div class="col-xs-12">
+          <a class="purchase-faqs hidden-print" href="https://www.ergotron.com/en-us/support/resource-library/faq" title="Questions About My Purchases" target="_blank">
+            <h3>Questions About My Purchases</h3>
+            <p><i class="fa fa-question-circle-o"></i><span>View FAQ</span></p>
+          </a>
+        </div>
+      </div>
+      <!-- Subscribe button -->
+        <div class="signup-section">
+          <div class="row">
+              <div class="col-xs-12">
+                  <section class="signup-text">
+                      <p>Sign up for access to the latest Ergotron promotions, product news and more:</p>
+                  </section>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-xs-12">
+                  <div class="order_confirmation_subsBox">
+                      <p class="cc_order_confirmation_subsText"> Get Ergotron updates
+                          <a href="https://www.ergotron.com/en-us/support/contact?email-opt-in=true" target="_blank">
+                              <button type="button" class="btn btn-secondary subBtn">Subscribe</button>
+                          </a>
+                      </p>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+     </div>
+    </script>
+    
+    <script id="Erg-TotalSection" type="text/template">
+        <div class="total cc_total text-right">
+            <!-- {{{json this}}} -->
+         <p class="cc_subTotal">
+          <span class="cc_subTotal_label">{{pageLabelMap 'CartInc_Subtotal'}}&#58;&#160;</span>
+          <span class="cc_subTotal">{{price this.subTotal this.currencyCode}}</span>
+         </p>
+         {{#ifStoreSetting 'Skip_Tax_Calculation__c'}}
+          &#160;
+         {{else}}
+          {{#if this.tax }}
+           <p class="cc_taxes">
+            <span class="cc_tax_label">{{pageLabelMap 'CheckOut_EstimatedTax'}}&#58;&#160;</span>
+            <span class="cc_tax">{{price this.tax this.currencyCode}}</span>
+           </p>
+          {{/if}}
+         {{/ifStoreSetting}}
+         {{#ifStoreSetting 'Skip_Shipping_Calculation__c'}}
+          &#160;
+         {{else}}
+          <p class="cc_shipping">
+            <span class="cc_shipping_label">{{pageLabelMap 'CartInc_Shipping'}}&#58;&#160;</span>
+            {{#if this.shippingCharge }}
+                <span class="cc_shipping_charge">{{price this.shippingCharge this.currencyCode}}</span>
+            {{else}}
+                <span class="cc_shipping_charge">Free</span>
+            {{/if}}
+          </p>
+         {{/ifStoreSetting}}
+         {{#ifDisplay 'OR.ShowTotalSurcharge' }}
+          {{#if this.surchargeAmount }}
+           <p class="cc_surcharge">
+            <span class="cc_surcharge_label">{{pageLabelMap 'CartInc_Surcharge'}}&#58;&#160;</span>
+            <span class="cc_surcharge_amount">{{price this.surchargeAmount this.currencyCode}}</span>
+           </p>
+          {{/if}}
+         {{/ifDisplay}}
+         <p class="cc_grand_total">
+          <span class="cc_total_label">{{pageLabelMap 'CartInc_GrandTotal'}}&#58;&#160;</span>
+          <span class="cc_total_amount">{{sum this.subTotal this.tax this.shippingCharge this.adjustment this.surchargeAmount this.currencyCode}}</span>
+         </p>
+        </div>
+    </script>
+
+    <script id="CC_ERG_CheckoutHeader-Desktop" type="text/template">
+        <div class="container tab-nav-container">
+            <div class="row fb-justify-content-center">
+                <div class="col-xs-12 tabbable">
+                    <ul class="nav nav-pills nav-justified thumbnail">
+                        {{#each this.views}}
+                        <li class="{{#ifEquals @index ../index}}active{{else}}disabled{{/ifEquals}} cc_checkoutStep {{@index}} cc_checkoutStep">
+                            <a>
+                                <h4 class="list-group-item-heading">{{{this.title}}}</h4>
+                            </a>
+                        </li>
+                        {{/each}}
+                        <li class="disabled cc_checkoutStepOrderConfirmation cc_checkoutStep">
+                            <a>
+                                <h4 class="list-group-item-heading">{{pageLabelMap 'CheckOut_OrderConfirmationStep'}}</h4>
+                            </a>
+                        </li> 
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script id="CC_ERG_AddressDisplay" type="text/template">
+        <div class="address_selection_display">
+            {{#ifDisplay 'SO.DsplAddrName'}}
+                {{#if this.firstName }}
+                <p class="cc_addr_name">
+                    <span class="cc_firstname">{{this.firstName}}</span>
+                    {{#if this.lastName }}
+                        <span class="cc_lastname">{{this.lastName}}</span>
+                    {{/if}}
+                </p>
+                {{else}}
+                {{#if this.lastName }}
+                    <p class="cc_addr_name">
+                        <span class="cc_lastname">{{this.lastName}}</span>
+                    </p>
+                {{/if}}
+                {{/if}}
+            {{/ifDisplay}}
+            {{#ifDisplay 'SO.DsplAddrCompany'}}
+                {{#if this.companyName}}
+                <p class="cc_addr_company">{{this.companyName}}</p>
+                {{/if}}
+            {{/ifDisplay}}
+            {{#if this.address1}}
+                <span class="addr_line1 cc_addr_line">{{this.address1}}</span><br/>
+            {{else}}
+                {{#if this.addressFirstline}}
+                <span class="addr_line1 cc_addr_line">{{this.addressFirstline}}</span><br/>
+                {{/if}}
+            {{/if}}
+            {{#if this.address2}}
+                <span class="addr_line2 cc_addr_line">{{this.address2}}</span><br/>
+            {{else}}
+                {{#if this.addressSecondline}}
+                <span class="addr_line1 cc_addr_line">{{this.addressSecondline}}</span><br/>
+                {{/if}}
+            {{/if}}
+            {{#if this.address3}}
+                <span class="addr_line3 cc_addr_line">{{this.address3}}</span><br/>
+            {{else}}
+                {{#if this.addressThirdline}}
+                <span class="addr_line1 cc_addr_line">{{this.addressThirdline}}</span><br/>
+                {{/if}}
+            {{/if}}
+            <span class="cc_addr_city">{{this.city}}</span>{{#if this.state}}<span class="cc_addr_state">&#44;&nbsp;{{this.state}}</span>
+            {{else}}
+                {{#if this.stateCode}}
+                <span class="cc_addr_state">&#44;&nbsp;{{this.stateCode}}</span>{{else}}{{#if this.stateISOCode}}<span class="cc_addr_state">&#44;&nbsp;{{this.stateISOCode}}</span>
+                    {{/if}}
+                {{/if}}
+            {{/if}}
+            <span class="cc_addr_postal">&nbsp;{{this.postalCode}}</span>
+            <span class="cc_addr_country">{{this.country}}</span>
+            <span class="cc_addr_extId">{{this.partnerId}}</span>
+        </div>
+    </script>
+
+    <script id="CC_ERG_SiteRegister-NewCustomer-Desktop" type="text/template">
+      <div class="error_messages_section" style="display:none;"></div>
+      <form id="newCustomerForm" forceSSL="true" class="form-horizontal">
+          <div class="panel panel-default cc_panel cc_new_customer_panel">
+              <div class="panel-heading cc_heading">
+                  <h3 class="panel-title cc_title">{{pageLabelMap 'SiteRegistration_PersonalInfo'}}</h3>
+              </div>
+              <div class="panel-body cc_body">
+                    <div class="form-group hidden">
+                        <label for="salutation" class="col-sm-3 cc_salutation_label">{{pageLabelMap 'Title'}}</label>
+                        <div class="col-sm-4">
+                            <select id="salutation" name="salutation" class="form-control cc_salutation">
+                                {{#each salutationOptions}}
+                                <option value="{{this.value}}">{{this.label}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group required-field">
+                        <label for="firstName" class="col-sm-3 cc_firstname_label">{{pageLabelMap 'CheckOut_FirstName'}}</label>
+                        <div class="col-sm-4">
+                            <input id="firstName" name="firstName" type="text" class="form-control cc_firstname" value="{{firstName}}" onfocus="myFocus(this);" onblur="myBlur(this);setCompanyName();">
+                        </div>
+                    </div>
+                    <div class="form-group required-field">
+                        <label for="lastName" class="col-sm-3 cc_lastname_label">{{pageLabelMap 'CheckOut_LastName'}}</label>
+                        <div class="col-sm-4">
+                            <input id="lastName" name="lastName" type="text" class="form-control cc_lastname" value="{{lastName}}" onfocus="myFocus(this);" onblur="myBlur(this);setCompanyName();">
+                        </div>
+                    </div>
+                    <div class="form-group required-field">
+                        <label for="primaryPhone" class="col-sm-3 cc_phone_label">{{pageLabelMap 'CheckOut_PrimaryPhone'}}</label>
+                        <div class="col-sm-4">
+                            <input id="primaryPhone" name="primaryPhone" type="text" class="form-control cc_phone" value="{{primaryPhone}}" onfocus="myFocus(this);" onblur="myBlur(this);">
+                        </div>
+                    </div>
+                    <div class="form-group hidden">
+                        <label for="language" class="col-sm-3 cc_language_label">{{pageLabelMap 'SiteRegistration_Language'}}</label>
+                        <div class="col-sm-4">
+                            <select id="language" name="language" class="form-control cc_language">
+                                {{#each languageOptions}}
+                                <option value="{{this.value}}">{{this.label}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group hidden">
+                        <label for="currencyCode" class="col-sm-3 cc_currency_label">{{pageLabelMap 'SiteRegistration_Currency'}}</label>
+                        <div class="col-sm-4">
+                            <select id="currencyCode" name="currencyCode" class="form-control cc_currency">
+                                {{#each currencyOptions}}
+                                <option value="{{this.value}}">{{this.label}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                    {{#ifDisplay 'reg.tmZn'}}
+                    <div class="form-group">
+                        <label for="timeZone" class="col-sm-3 cc_timezone_label">{{pageLabelMap 'SiteRegistration_TimeZone'}}</label>
+                        <div class="col-sm-6">
+                            <select id="timeZone" name="timeZone" class="form-control cc_timezone">
+                            {{#each timeZoneOptions}}
+                            {{#ifEquals this.value ../timeZone}}
+                            <option value="{{this.value}}" selected>{{this.label}}</option>
+                            {{else}}
+                            <option value="{{this.value}}">{{this.label}}</option>
+                            {{/ifEquals}}
+                            {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                    {{/ifDisplay}}
+                </div>
+            </div>
+            {{#ifDisplay 'reg.addlInf'}}
+              <div class="panel panel-default cc_panel cc_addtl_info">
+                  <div class="panel-heading cc_heading">
+                  <h3 class="panel-title cc_title">{{pageLabelMap 'SiteRegistration_AdditionalInfo'}}</h3>
+                  </div>
+                  <div class="panel-body cc_body">
+                      {{#ifStoreSettingEquals 'eCommerceType__c' 'B2B'}}
+                          <div class="form-group">
+                              <div class="row">
+                                <div class="col-sm-3">&nbsp;</div>
+                                <div class="col-sm-4"><p style="color: #f26859;font-size: 17px;padding-left: 10px;"><span style="font-weight: bold;">Important: </span>if you plan to register with Tax Exempt status, a company name is required.</p></div></div>
+                              <label for="companyName" class="col-sm-3 cc_companyname_label">{{pageLabelMap 'CheckOut_CompanyName'}}</label>
+                              <div class="col-sm-4">
+                                  <input id="companyName" name="companyName" type="text" class="form-control cc_companyname" value="{{companyName}}" onfocus="myFocus(this);" onblur="myBlur(this);">
+                              </div>
+                          </div>
+                          <div class="form-group hidden">
+                              <label for="companyType" class="col-sm-3 cc_companytype_label">{{pageLabelMap 'SiteRegistration_CompanyType'}}</label>
+                              <div class="col-sm-4">
+                                  <select id="companyType" name="companyType" class="form-control cc_companytype">
+                                      {{#each companyTypeOptions}}
+                                      <option value="{{this.value}}">{{this.label}}</option>
+                                      {{/each}}
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="form-group hidden">
+                              <div class="col-sm-offset-3 col-sm-9">
+                                  <div class="checkbox">
+                                      <label for="taxExemptFlag" class="cc_taxexempt_flag_label">
+                                      <input id="taxExemptFlag" type="checkbox" name="taxExemptFlag" value="true" class="cc_taxexempt_flag" {{#if this.taxExemptFlag}} checked {{/if}}  />{{pageLabelMap 'SiteRegistration_TaxExempt'}}
+                                      </label>
+                                  </div>
+                              </div>
+                          </div>
+                      {{/ifStoreSettingEquals}}
+                      {{#ifDisplay 'UR.ShowCF1'}}
+                          <div class="form-group">
+                              <label for="customField1" class="col-sm-3 cc_custom_field1_label">{{pageLabelMap 'SiteRegistration_CustomField1'}}</label>
+                              <div class="col-sm-4">
+                                  <input id="customField1" type="text" class="form-control cc_custom_field1" value="{{customField1}}" name="customField1" onfocus="myFocus(this);" onblur="myBlur(this);">
+                              </div>
+                          </div>
+                      {{/ifDisplay}}
+                      {{#ifDisplay 'UR.ShowCF2'}}
+                          <div class="form-group">
+                              <label for="customField2" class="col-sm-3 cc_custom_field2_label">{{pageLabelMap 'SiteRegistration_CustomField2'}}</label>
+                              <div class="col-sm-4">
+                                  <input id="customField2" type="text" class="form-control cc_custom_field2" value="{{customField2}}" name="customField2" onfocus="myFocus(this);" onblur="myBlur(this);">
+                              </div>
+                          </div>
+                  {{/ifDisplay}}
+                  </div>
+              </div>
+          {{/ifDisplay}}
+          <div class="panel panel-default cc_panel cc_login_info">
+              <div class="panel-heading cc_heading">
+                  <h3 class="panel-title cc_title">{{pageLabelMap 'SiteRegistration_LoginInfo'}}</h3>
+              </div>
+              <div class="panel-body cc_body">
+                  <div class="form-group required-field">
+                      <label for="username" class="col-sm-3 cc_username_label">{{pageLabelMap 'SiteRegistration_UsernameEmail'}}</label>
+                      <div class="col-sm-4">
+                          <input id="username" name="username" type="text" class="form-control cc_username" value=" " onfocus="myFocus(this);" onblur="myBlur(this);setTimeout(() => {validate(true);},200);">
+                      </div>
+                  </div>
+                  <div class="form-group required-field">
+                    <label for="username" class="col-sm-3 cc_username_label">{{pageLabelMap 'SiteRegistration_ConfirmUsername'}}</label>
+                    <div class="col-sm-4">
+                        <input id="confirmUsername" name="confirm username" type="text" class="form-control cc_confirmusername" value="" onfocus="myFocus(this);" onblur="myBlur(this);setTimeout(() => {validate(true);},200);">
+                    </div>
+                </div>
+                  {{#ifDisplay 'UR.DirLogin'}}
+                      <div class="form-group required-field">
+                          <label for="NewPassword" class="col-sm-3 cc_newpassword_label">{{pageLabelMap 'SiteRegistration_NewPassword'}}</label>
+                          <div class="col-sm-4">
+                              <input id="NewPassword" name="NewPassword" type="password" class="form-control cc_newpassword" value="{{NewPassword}}" onblur="myBlur(this);setTimeout(() => {validate(true);},200);">
+                          </div>
+                      </div>
+                      <div class="form-group required-field">
+                          <label for="ConfirmPassword" class="col-sm-3 cc_confirmpassword_label">{{pageLabelMap 'SiteRegistration_ConfirmPassword'}}</label>
+                          <div class="col-sm-4">
+                              <input id="ConfirmPassword" name="ConfirmPassword" type="password" class="form-control cc_confirmpassword" value="{{ConfirmPassword}}" onblur="myBlur(this);setTimeout(() => {validate(true);},200);">
+                          </div>
+                      </div>
+                  {{/ifDisplay}}
+              </div>
+          </div>
+          <div class="panel panel-default cc_panel cc_billing_address_panel">
+              <div class="panel-heading cc_heading">
+                  <h3 class="panel-title cc_title">{{pageLabelMap 'CheckOut_BillingAddress'}}</h3>
+              </div>
+              <div class="panel-body">
+                  <div class="form-group required-field">
+                      <!-- <label for="billingAddress.address1" class="col-sm-3 cc_checkoutaddress_label">{{pageLabelMap 'CheckOut_Address'}}</label> -->
+                      <label for="billingAddress.address1" class="col-sm-3 cc_checkoutaddress_label">Street address *</label>
+                      <div class="col-sm-4">
+                          <input id="billingAddress.address1" name="billingAddress.address1" type="text" class="form-control cc_checkoutaddress" value="{{billingAddress.address1}}" onfocus="myFocus(this);" onblur="myBlur(this);">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <!-- <label for="billingAddress.address2" class="col-sm-3 cc_profileaddress_label">{{pageLabelMap 'Profile_Address_2'}}</label> -->
+                      <label for="billingAddress.address2" class="col-sm-3 cc_profileaddress_label">Apt, suite, unit, building, floor, etc.</label>
+                      <div class="col-sm-4">
+                              <input id="billingAddress.address2" name="billingAddress.address2" type="text" class="form-control cc_profileaddress" value="{{billingAddress.address2}}" id="billingAddress.address2" onfocus="myFocus(this);" onblur="myBlur(this);">
+                      </div>
+                  </div>
+                  <div class="form-group required-field">
+                      <label for="billingAddress.city" class="col-sm-3 cc_checkoutcity_label">{{pageLabelMap 'CheckOut_City'}}</label>
+                      <div class="col-sm-4">
+                          <input id="billingAddress.city" name="billingAddress.city" type="text" class="form-control cc_checkoutcity" value="{{billingAddress.city}}" onfocus="myFocus(this);" onblur="myBlur(this);">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="billingStateSection" class="col-sm-3 cc_checkoutstate_label">{{pageLabelMap 'CheckOut_State'}}</label>
+                      <div class="col-sm-4 billStateErr">
+                          <div class="billingStateSection" />
+                      </div>
+                      <br/><br/>
+                      <span id="billState-error" class="error help-block" style="display:none;margin-left: 26.5%;color: #a94442;">Billing State is required</span>
+                  </div>
+                  <div class="form-group required-field">
+                      <label for="billingAddress.postalCode" class="col-sm-3 cc_checkoutpostalcode_label">{{pageLabelMap 'CheckOut_PostalCode'}}</label>
+                      <div class="col-sm-4">
+                          <input id="billingAddress.postalCode" name="billingAddress.postalCode" type="text" class="form-control cc_checkoutpostalcode" value="{{billingAddress.postalCode}}" onfocus="myFocus(this);" onblur="myBlur(this);">
+                  </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="billingStateSection" class="col-sm-3 cc_country_label">{{pageLabelMap 'CheckOut_Country'}}</label>
+                      <div class="col-sm-4">
+                          {{{selectGeo 'country' this.countryList billingAddress.country 'billing wide countryListing form-control cc_country' 'billingAddress.'}}}
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="panel panel-default cc_panel cc_shipping_address_panel">
+              <div class="panel-heading cc_heading">
+                  <h3 class="panel-title cc_title">{{pageLabelMap 'CheckOut_ShippingAddress'}}</h3>
+              </div>
+              <div class="panel-body cc_body">
+                  <div class="form-group">
+                      <label for="useBillingAddress" class="col-sm-12 cc_usebillingaddress_label">
+                          <a class="useBillingAddress cc_usebillingaddress" id="useBillingAddress">{{pageLabelMap 'Checkout_UseBillingAddress'}}</a>
+                      </label>
+                  </div>
+                  <div class="form-group required-field">
+                      <!-- <label for="shippingAddress.address1" class="col-sm-3 cc_shippingaddress1_label">{{pageLabelMap 'CheckOut_Address'}}</label> -->
+                      <label for="shippingAddress.address1" class="col-sm-3 cc_shippingaddress1_label">Street address *</label>
+                      <div class="col-sm-4">
+                          <input id="shippingAddress.address1" name="shippingAddress.address1" type="text" class="form-control cc_shippingaddress1" value="{{shippingAddress.address1}}" onfocus="myFocus(this);" onblur="myBlur(this);">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <!-- <label for="shippingAddress.address2" class="col-sm-3 cc_profileaddress2_label">{{pageLabelMap 'Profile_Address_2'}}</label> -->
+                      <label for="shippingAddress.address2" class="col-sm-3 cc_profileaddress2_label">Apt, suite, unit, building, floor, etc.</label>
+                      <div class="col-sm-4">
+                          <input id="shippingAddress.address2" name="shippingAddress.address2" type="text" class="form-control cc_profileaddress2" value="{{shippingAddress.address2}}" onfocus="myFocus(this);" onblur="myBlur(this);">
+                  </div>
+                  </div>
+                  <div class="form-group required-field">
+                      <label for="shippingAddress.city" class="col-sm-3 cc_checkoutcity_label">{{pageLabelMap 'CheckOut_City'}}</label>
+                      <div class="col-sm-4">
+                              <input id="shippingAddress.city" name="shippingAddress.city" type="text" class="form-control cc_shippingcity cc_checkoutcity" value="{{shippingAddress.city}}" onfocus="myFocus(this);" onblur="myBlur(this);">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="shippingStateSection" class="col-sm-3 cc_checkoutstate_label">{{pageLabelMap 'CheckOut_State'}}</label>
+                      <div class="col-sm-4 shipStateErr">
+                          <div id="shippingStateSection" class="shippingStateSection cc_checkoutstate" />
+                      </div>
+                      <br/><br/>
+                      <span id="shipState-error" class="error help-block" style="display:none;margin-left: 26.5%;color: #a94442;">Shipping State is required</span>
+                  </div>
+                  <div class="form-group required-field">
+                      <label for="shippingAddress.postalCode" class="col-sm-3 cc_checkoutpostalcode_label">{{pageLabelMap 'CheckOut_PostalCode'}}</label>
+                      <div class="col-sm-4">
+                          <input id="shippingAddress.postalCode" name="shippingAddress.postalCode" type="text" class="form-control cc_shippingpostalcode cc_checkoutpostalcode" value="{{shippingAddress.postalCode}}" onfocus="myFocus(this);" onblur="myBlur(this);">
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="shippingStateSection" class="col-sm-3 cc_country_label">{{pageLabelMap 'CheckOut_Country'}}</label>
+                      <div class="col-sm-4">
+                          {{{selectGeo 'country' this.countryList shippingAddress.country 'shipping wide countryListing form-control' 'shippingAddress.'}}}
+                      </div>
+                  </div>
+                  <div class="tax-exempt-msg"><p>If you will be purchasing tax exempt, you will upload your tax certificate at time of checkout.</p></div>
+                  <div class="form-group">
+                      <div class="col-sm-offset-32 col-sm-9">
+                          <p class="pull-right cc_required_fields">{{pageLabelMap 'Required_Fields'}}</p>
+                          <div class="has-error">
+                            <p id="user-reg-error" class="error help-block"></p>
+                          </div>
+                          <input name="" type="button" value="{{pageLabelMap 'Site_Submit'}}" class="btn btn-default cc_another_submit" onclick="validate();"/>
+                          <input name="" type="button" value="{{pageLabelMap 'Site_Submit'}}" class="hidden btn btn-default submit cc_submit"/>
+                        </div>
+                  </div>
+              </div>
+          </div>
+      </form>
+    </script>
+
+    <script type="text/template" id="CC_ERG_SiteLogin-Desktop">
+      <div class="messagingSection-Error" style="display: none"></div>
+      <div class="messagingSection-Info" style="display: none"></div>
+      <div class="messagingSection-Warning" style="display: none"></div>
+      {{#ifDisplay 'Login.DsplReg'}}
+      <h1 class="panel-title cc_title">My Account</h1>
+      <div class="vert-rule-wrap">
+        <div class="vertical-rule">
+          <svg width="2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <path d="M0,2 v-100%" /></svg>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-sm-push-6 col-lg-5 col-lg-push-7">
+          <div class="panel panel-default cc_panel cc_register_account">
+            <div class="panel-heading cc_heading">
+              <!-- <h3 class="panel-title cc_title">{{pageLabelMap 'SiteLogin_NewCustomers'}}</h3> -->
+              <h3 class="panel-title cc_title">Register as a new user</h3>
+            </div>
+            <div class="panel-body cc_body">
+              <!-- <p class="cc_create_account">{{pageLabelMap 'SiteLogin_CreatingAccount'}}</p> -->
+              <div class="form-group fb-justify-content-center">
+                <!-- <input type="button" class="btn btn-default register cc_register" value="{{pageLabelMap 'SiteLogin_CreateAccount'}}" /> -->
+                <input type="button" class="btn btn-default btn-sm btn-base btn-white register cc_register" value="Create Account" />
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/ifDisplay}}
+        <div class="col-sm-6 col-sm-pull-6 col-lg-5 col-lg-pull-5">
+          <div class="panel panel-default cc_panel cc_user_login">
+            <div class="panel-heading cc_heading">
+              <!-- <h3 class="panel-title cc_title">{{pageLabelMap 'Component_ExistingCustomer_ExistingCustomer'}}</h3> -->
+              <h3 class="panel-title cc_title">Login for faster checkout</h3>
+            </div>
+            <div class="panel-body cc_body">
+              <!-- <p class="cc_login">{{pageLabelMap 'SiteLogin_HaveAccount'}}</p> -->
+              <form id="loginFormDsk" class="cc_login_form q">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="sr-only" for="emailField">{{pageLabelMap 'SiteLogin_UsernameEmail'}} *</label>
+                      <!-- <input id="emailField" name="emailField" type="email" class="loginInput form-control cc_login_input" value="{{displayUsername}}" title="{{pageLabelMap 'SiteLogin_UsernameEmail'}}" placeholder="{{pageLabelMap 'SiteLogin_UsernameEmail'}}" /> -->
+                      <input id="emailField" name="emailField" type="email" class="loginInput form-control cc_login_input" value="{{displayUsername}}" title="{{pageLabelMap 'SiteLogin_UsernameEmail'}}" placeholder="Email" />
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="sr-only" for="passwordField">{{pageLabelMap 'SiteLogin_Password'}} *</label>
+                      <input id="passwordField" name="passwordField" type="password" class="loginInput form-control cc_password_input" placeholder="{{pageLabelMap 'SiteLogin_Password'}}" />
+                    </div>
+                  </div>
+                  <div class="col-md-12 fb-justify-content-center">
+                    <input type="button" id="send2Dsk" class="btn btn-default btn-sm btn-base btn-orange cc_login_button" value="{{pageLabelMap 'Component_SiteHeader_Login'}}" />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <!-- <p class="cc_forgot_password"><a href="javascript:void(0);" class="forgotPass cc_forgot_pass">{{pageLabelMap 'ForgotPassword_ForgotPassword'}}</a></p> -->
+                    <p class="cc_forgot_password"><a href="javascript:void(0);" class="forgotPass cc_forgot_pass">Forgot password?</a></p>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
+
+
+    <script>
+        const isExternalCart = JSON.parse('{!isExternalCart}');
+        console.log(isExternalCart);
+        function logOut(){
+            $('.doLogout.cc_do_logout').click();
+        }
+        function setCompanyName() {
+            const company = $('.cc_companyname').val();
+            const fName = $('.cc_firstname').val();
+            const lname = $('.cc_lastname').val();
+            $('.cc_companyname').val(`${fName} ${lname}`);
+        }
+        function validate(isBlur) {
+            $('#user-reg-error').html('');
+            $('.cc_newpassword').nextAll().remove();
+            $('.cc_newpassword').parent().removeClass('has-error has-success');
+            $('.cc_confirmpassword').nextAll().remove();
+            $('.cc_confirmpassword').parent().removeClass('has-error has-success');
+            $('.cc_confirmusername').nextAll().remove();
+            $('.cc_confirmusername').parent().removeClass('has-error has-success');
+
+            let isAlterError = false;
+            const company = $('.cc_companyname').val();
+            const fName = $('.cc_firstname').val();
+            const lname = $('.cc_lastname').val();
+            const phone = $('.cc_phone').val();
+            const username = $('.cc_username').val();
+            const confirmusername = $('.cc_confirmusername').val();
+            const pass = $('.cc_newpassword').val();
+            const confirmPass = $('.cc_confirmpassword').val();
+            const cAdd = $('.cc_checkoutaddress').val();
+            const cCity = $('.cc_checkoutcity').val();
+            const cPostalCode = $('.cc_checkoutpostalcode').val();
+            const sAdd = $('.cc_shippingaddress1').val();
+            const sCity = $('.cc_shippingcity').val();
+            const sPostalCode = $('.cc_shippingpostalcode').val();
+            const billState = $('.billingstate').val();
+            const shipState = $('.shippingstate').val();
+
+            if(fName.trim() === '' || lname.trim() === '' || phone.trim() === '' 
+            || username.trim() === '' || cAdd.trim() === '' || cCity.trim() === '' 
+            || cPostalCode.trim() === '' || sAdd.trim() === '' || sCity.trim() === ''
+            || sPostalCode.trim() === '' || billState.trim() === '' || billState.trim() === 'AA' 
+            || shipState.trim() === '' || shipState.trim() === 'AA' || confirmusername.trim() === '') {
+                isAlterError = true;
+            }
+
+            if(shipState.trim() === '' || shipState.trim() === 'AA'){
+                $('#shipState-error').show();
+                $('.shipStateErr').addClass('has-error');
+            } else{
+                $('#shipState-error').hide();
+                $('.shipStateErr').removeClass('has-error');
+            }
+
+            if(billState.trim() === '' || billState.trim() === 'AA'){
+                $('#billState-error').show();
+                $('.billStateErr').addClass('has-error');
+            } else{
+                $('#billState-error').hide();
+                $('.billStateErr').removeClass('has-error');
+            }
+
+            let isError = false;
+            let isUserNameErr = false;
+            let errConfirmuserName = '<span id="ConfirmUserName-error" style="font-style: italic;" class="error help-block">';
+            if(username && confirmusername && confirmusername === username){  
+            $('.cc_confirmusername').parent().addClass('has-success');
+            } else{
+                if(confirmusername == "" || confirmusername !== username) {
+                    isUserNameErr = true;
+                }
+            }
+
+            let errPass = '<span id="NewPassword-error" style="font-style: italic;" class="error help-block">';
+            let errConfirmPas = '<span id="ConfirmPassword-error" style="font-style: italic;" class="error help-block">';
+            //let isError = false;
+            const passRegex = /^(?=.*[0-9])(?=.*[a-z]).{8,20}$/gm;
+            if(pass != "" && passRegex.test(pass)){
+                $('.cc_newpassword').parent().addClass('has-success');
+            } else{
+                if(pass) {
+                    isError = true;
+                }
+            }
+            if(pass && confirmPass && confirmPass === pass){  
+                $('.cc_confirmpassword').parent().addClass('has-success');
+            } else{
+                if(confirmPass) {
+                    isError = true;
+                }
+            }
+
+            if(!isBlur ){
+                if( !isUserNameErr && (!isError || isAlterError)) {
+                    if(!isError && !isAlterError) {
+                        CC_ERG_ValidateUser_ext.checkUserAlreadyExist(username ,
+                            function(result,event){
+                                if(event.status && result && !result?.isError){
+                                    $('.cc_submit').click();
+                                } else {
+                                    $('#user-reg-error').html(result?.errorMessage);
+                                }
+                            }
+                        );
+                    } else {
+                        $('.cc_submit').click();
+                    }
+                } else{
+                    var topPos = $("#firstName").position();
+                    $('html, body').animate({
+                    scrollTop: topPos.top
+                    }, 500);
+                }
+            }
+            
+            setTimeout(() => {
+                $('.cc_newpassword').parent().removeClass('has-success');
+                $('.cc_confirmpassword').parent().removeClass('has-success');
+                $('.cc_confirmusername').parent().removeClass('has-success');
+                /* console.log(isError);
+                console.log(pass);
+                console.log(passRegex.test(pass)); */
+                if(isUserNameErr && confirmusername == "" && username !== "") {
+                    
+                    errConfirmuserName += 'Username/E-Mail is required</span>';
+
+                    $('.cc_confirmusername').after(errConfirmuserName);
+                    $('.cc_confirmusername').parent().addClass('has-error');
+                }
+                if(isUserNameErr && confirmusername && confirmusername !== username) {
+                    
+                    errConfirmuserName += 'Username/E-Mail does not match</span>';
+
+                    $('.cc_confirmusername').after(errConfirmuserName);
+                    $('.cc_confirmusername').parent().addClass('has-error');
+                }
+
+                if(isError && pass != "" && pass.match(passRegex) == null ) {                                           //!passRegex.test(pass)
+                    errPass += 'Minimum 8 characters required with at least 1 number and 1 letter</span>';
+                    $('.cc_newpassword').after(errPass);
+                    $('.cc_newpassword').parent().addClass('has-error');
+                }
+                if(isError && confirmPass && confirmPass !== pass) {
+                    errConfirmPas += 'Password does not match</span>';
+                    $('.cc_confirmpassword').after(errConfirmPas);
+                    $('.cc_confirmpassword').parent().addClass('has-error');
+                }
+            },200);
+        }
+        $(document).ready(function () {
+            setTimeout(() => {
+                $('.billingstate').val('AA');
+                $('.shippingstate').val('AA');
+            },1500);
+            var cnt = $("span:first").contents();
+            $("span:first").replaceWith(cnt);
+            const currentPage = `${window.location.origin}${window.location.pathname}`;
+            const thepage = 'ccrz__Cart';
+            let cartID = CCRZ.pagevars.currentCartID || CCRZ.pagevars.queryParams.cartId || CCRZ.pagevars.queryParams.cartID;
+
+            let queryParam = '?cartID=';
+            if (cartID) {
+                queryParam = `?cartID=${cartID}`;
+            }
+
+            for (const [key, value] of Object.entries(CCRZ.pagevars.queryParams)) {
+                if (key?.toLowerCase() !== 'cartid') {
+                    queryParam = queryParam + `&${key}=${value}`;
+                }
+            }
+
+            let cartURL = thepage + queryParam;
+            if(!cartID || cartID == 'undefined' || cartID == 'null' || cartID == '') {
+                cartID = '{!encCartId}';
+                const orderNum = CCRZ.pagevars.queryParams.o;
+                if((!orderNum || orderNum=='') && (cartID || cartID.trim() != '')) {
+                    queryParam = queryParam.replace('?cartID=', '');
+                    window.location =  currentPage+`?cartID=${cartID}${queryParam}`;
+                    cartURL = thepage+`?cartID=${cartID}${queryParam}`;
+                }
+            }
+            
+            const currentPageName = CCRZ.pagevars.currentPageName;
+            // if (isExternalCart && currentPageName?.toLowerCase() === 'ccrz__orderconfirmation') {
+            //     setTimeout(() => {
+            //         $('#survey-modal').modal({
+            //             backdrop: 'static',
+            //             keyboard: false,
+            //         });
+            //     }, 3000);
+            // }
+
+
+             //CCRZ.setCookie("ls.sessionCartID", CCRZ.pagevars.currentCartID);//,domain='.ergotron.com/');
+             //CCRZ.setCookie("apex__currCartId", CCRZ.pagevars.currentCartID);//,domain='.ergotron.com/');
+
+            // CCRZ.setCookie("ls.sessionCartID", CCRZ.pagevars.currentCartID,"domain",'.ergotron.com/');
+            // CCRZ.setCookie("apex__currCartId", CCRZ.pagevars.currentCartID,"domain",'.ergotron.com/');
+
+            //document.cookie = "sf_sessionCartID" + "=" + CCRZ.pagevars.currentCartID + ";domain=ergotron.com";
+            //document.cookie = "sf_CartID" + "=" + CCRZ?.currentCart?.attributes?.sfid + ";domain=ergotron.com";
+            document.cookie = "sf_EncryptedCartID" + "=" + CCRZ.pagevars.currentCartID + ";domain=ergotron.com";
+           // currentCart.sfid
+           // encryptedId
+            //document.cookie = "apex__currCartId" + "=" + CCRZ.pagevars.currentCartID +  ";domain=ergotron.com";
+
+
+            // $.cookie("ls.sessionCartID",CCRZ.pagevars.currentCartID,{
+            //     domain :"ergotron.com"
+            // })
+            
+            const headerMessage = '{!$Label.ERG_B2B_Header_Message}';
+            setTimeout(() => {
+                $('#headerMessage').html(headerMessage);
+                $('#topHeaderOther.third-section').prepend($('#topHeaderLinks.top-link #my-list'));
+                if ($("#topHeaderOther.third-section #custom-cart").length > 0) {
+                    $("#topHeaderOther.third-section #custom-cart").after($('#topHeaderLinks.top-link #resellers'));
+                } else {
+                    $("#topHeaderOther.third-section #my-list").after($('#topHeaderLinks.top-link #resellers'));
+                }
+                $('#externalLinks').html($('#headerLinksData').html());
+                $('#custom-cart a').attr("href", cartURL);
+
+                var searchURL = $('#topHeaderLinkSearch.search').attr('data-url');
+                var searchText = $(".search .search-box .text");
+                var searchIcon = $(".search i");
+                var searchInputBox = $(".search .search-box .search-input");
+                var searchInputText = $(".search .search-box .search-input input[type='text']");
+                var isOpen = false;
+                // search js start
+                searchText.click(function (event) {
+                    event.preventDefault();
+                    toggleSearchBar();
+                });
+                searchIcon.click(function (event) {
+                    event.preventDefault();
+                    toggleSearchBar($(searchInputText).val());
+                });
+
+                searchText.mouseup(function () {
+                    return false;
+                });
+
+                searchInputBox.mouseup(function () {
+                    return false;
+                });
+
+                $(document).mouseup(function () {
+                    if (isOpen == true) {
+                        searchText.click();
+                    }
+                });
+
+                $(document).scroll(function () {
+                    if (isOpen == true) {
+                        searchText.click();
+                    }
+                });
+
+                function toggleSearchBar(searchTxt) {
+                    if (isOpen == false) {
+                        searchText.css("opacity", "0");
+                        searchInputBox.addClass("open");
+                        $(".search .search-box .search-input input").focus();
+                        isOpen = true;
+                    } else {
+                        if (searchTxt?.trim()) {
+                            window.open(`${searchURL}?s=${encodeURI(searchTxt)}`,"_self");
+                            $(searchInputText).val('');
+                        }
+                        searchText.css("opacity", "1");
+                        searchInputBox.removeClass("open");
+                        isOpen = false;
+                    }
+                }
+
+                // search js end
+            }, 1500);
+
+            if (isExternalCart) {
+                $('#PLOT').hide();
+            }
+
+            Handlebars.registerHelper('absDisc', function (cartItemList) {
+                console.log('cartItemList: '+cartItemList);
+                let discVal = 0 ;
+                $(cartItemList).each(function( index,value ) { 
+                    discVal +=  value.attributes.absoluteDiscount;
+                }); 
+                console.log(discVal.toFixed(2));
+                
+                return '$' +discVal.toFixed(2);
+            });
+                            
+            Handlebars.registerHelper('creditCardPayment', function (payments, transactionPayments, options) {
+                if ((!payments || payments.length === 0) && (!transactionPayments || transactionPayments.length === 0)) {
+                    let orderId = CCRZ?.orderDetailModel?.attributes?.sfid;
+                    CC_ERG_Header_PLOT.setOrderAsAuthorized(orderId, function(result,event){
+                    if(result) {
+                    }
+                });
+                    return options.fn(this);
+                }
+                return options.inverse(this);
+            });
+
+            Handlebars.registerHelper('absDiscOrder', function (cartItemList) {
+                console.log('cartItemList: '+cartItemList);
+                let discVal = 0 ;
+                $(cartItemList).each(function( index,value ) { 
+                    discVal +=  value.absoluteDiscount;
+                }); 
+                console.log(discVal.toFixed(2));
+                
+                return '$' +discVal.toFixed(2);
+            });
+
+            Handlebars.registerHelper('showYouSave', function(cartItemList, block) {
+                console.log('cartItemList: '+cartItemList);
+                let discVal = 0 ;
+                $(cartItemList).each(function( index,value ) { 
+                    discVal +=  value.absoluteDiscount;
+                }); 
+            if (discVal == 0) {
+                return block.fn(this);
+            } else {
+                return block.inverse(this);
+            }
+        });
+                            
+
+            Handlebars.registerHelper('getOrderId', function(orderId) {
+                setTimeout(() => {
+                    $('#order-number-change').modal({
+                        show: true,
+                        backdrop: 'static'
+                    });
+                }, 0);
+                CC_ERG_Header_PLOT.fetchOrderNumber(orderId , function(result,event){
+                    if(result) {
+                        const resultDetail = result.split("=");
+                        const elem = document.querySelector(`[data-id="${resultDetail[0]}"]`);
+                        elem.innerHTML = resultDetail[1];
+                    }
+                    setTimeout(() => {
+                         $('#order-number-change').modal('hide');
+                    }, 100);
+                });
+            });
+
+            Handlebars.registerHelper('json', function (context) {
+                return JSON.stringify(context);
+            });
+
+            Handlebars.registerHelper('username', function () {
+                return CCRZ?.currentUser?.Email;
+            });
+            
+            Handlebars.registerHelper('baseUrl', function () {
+                let baseUrl ='';
+                if(CCRZ?.pagevars?.currSiteURL.includes('full')){
+                    baseUrl = 'https://testepp.ergotron.com';
+                } else{
+                    baseUrl = 'https://www.ergotron.com';
+                }
+                return baseUrl;
+            });
+
+            Handlebars.registerHelper("changeSign", function(varName, varValue, options) {
+                if(!isNaN(varValue)) {
+                    if(varValue < 0) {
+                        varValue *= -1;
+                    }
+                    options.data.root[varName] = varValue;
+                } else {
+                    options.data.root[varName] = varValue;
+                }
+                
+            });
+
+            Handlebars.registerHelper("setVar", function(varName, varValue, options) {
+                options.data.root[varName] = varValue;
+            });
+
+            Handlebars.registerHelper('addTwoNum', function(num1, num2, options) {
+                return num1 + num2;
+            });
+
+            Handlebars.registerHelper('mul', function(price, qty, options) {
+                return price * qty;
+            });
+
+            Handlebars.registerHelper('isErgotronStoreCart', function (options) {
+                if (isExternalCart) {
+                    return options.fn(this);
+                }
+                return options.inverse(this);
+            });
+            Handlebars.registerHelper('perQtyPrice', function (itemPrice, absDisc, qty, options) {
+                let oneQtyDisc = absDisc/qty;
+                return itemPrice - oneQtyDisc;
+            });
+            CCRZ.uiProperties.OrderReviewView.partial.totalsSection = '#Erg-TotalSection';
+            CCRZ.uiProperties.OrderDetailView.partial.totalsSection = '#Erg-TotalSection';
+            CCRZ.uiProperties.OrderDetailView.partial.addressDisplay= "#CC_ERG_AddressDisplay";
+            CCRZ.uiProperties.CheckoutNav.desktop.tmpl = 'CC_ERG_CheckoutHeader-Desktop';
+            CCRZ.uiProperties.newCustomerView.desktop.tmpl = 'CC_ERG_SiteRegister-NewCustomer-Desktop';
+            CCRZ.uiProperties.loginView.desktop.tmpl = 'CC_ERG_SiteLogin-Desktop';
+            CCRZ.uiProperties.myOrdersView.desktop.tmpl = 'CC_ERG_MyAccount-MyOrders-Desktop';
+            
+            Handlebars.registerHelper('actNav', function (navMenus, options) {
+                console.log(navMenus);
+                var navArr = navMenus.reverse();
+                $(navMenus).each(function (index, value) {
+                    if (CCRZ && CCRZ.pagevars && CCRZ.pagevars.portalUserId != '') {
+                        if (value.title == 'My Wallet') {
+                            navArr.splice(value.index, 1);
+                        }
+                    } else {
+                        if (value.title == 'My Carts') {
+                            navArr.splice(value.index - 1, 1);
+                        }
+                        if (value.title == 'Manage Address Book') {
+                            navArr.splice(value.index, 1);
+                        }
+                    }
+                    if (value.title == 'My Tax Certificates') {
+                        navArr.splice(value.index - 1, 1);
+                    }                  
+                });
+
+                  
+                return options.fn(this);
+            });
+
+            CCRZ.pubSub.on('view:myaccountView:refresh', function (actView) {
+                if (CCRZ.pagevars.portalUserId == '' || CCRZ.pagevars.portalUserId == undefined) {
+                    CCRZ.myaccountView.gotoSection(3);
+                    let searchParams = new URLSearchParams(window.location.search)
+                    if (searchParams.has('welcome')) {
+                        let param = searchParams.get('welcome');
+                        CCRZ.myaccountView.gotoSection(3);
+                    }
+                    if(CCRZ.headerModel != undefined){
+                        if($('.cartcount').length == 0){
+                            $( ".carttxt" ).after( "<span class='badge cartcount'></span>" );
+                            $('.cartcount').html(CCRZ.headerModel.attributes.header.attributes.cartCount);
+                        }
+                    }
+                }
+            });
+            CCRZ.pubSub.on('view:cartHeaderView:refresh', function(view){
+                if(CCRZ.cartDetailModel != undefined){
+                    $('.cartcount').html(CCRZ.cartDetailModel.attributes.totalQuantity);
+                }
+            });
+
+            CCRZ.pubSub.on('view:CartDetailView:refresh', function(view){
+                let isCsr = CCRZ && CCRZ.pagevars && CCRZ.pagevars.portalUserId != '';
+                let prodListIds=[];
+                let prodList = [];
+                let prodsList = [];
+                prodList = CCRZ?.cartDetailModel?.attributes?.ECartItemsS?.models;
+                console.log(view);
+                if(!isCsr){
+                    prodsList = prodList;  //view.model.attributes.ECartItemsS.models;
+                    
+                    maxPrice = Math.max(...prodList.map(o=>o.attributes.price));
+                    if(prodsList.length > 0 && prodsList != undefined){
+                        $.each(prodsList, function( index, value ) {                            
+                            prodListIds.push(value.attributes.product.sfid);
+                            if(maxPrice === value.attributes.price){
+                                prodSfid = value.attributes.product.sfid;
+                            }
+                        });
+                    }
+                    console.log('prodListIds : '+prodListIds);
+                    // $.each(prodList, function( index, value ) {
+                    //     console.log( index + ": " + value );
+                    //     index= 0;
+                    //     if(prodList.length > 1){
+                    //         if(prodList[index].attributes.itemTotal > prodList[index +1].attributes.itemTotal){
+                    //             prodList.splice(index +1, 1);
+                    //         }else{
+                    //             prodList.splice(index, 1);
+                    //         }
+                            
+                    //     } 
+                        
+                    // });
+                    console.log('prodList1 : '+prodList);
+                    
+                    //let prodModel = CCRZ?.cartDetailModel?.attributes?.ECartItemsS?.models?.[0];
+                   // let prodSfid = prodList[0].attributes.product.sfid;
+                   if(prodSfid != undefined && prodListIds !=undefined){
+                        Visualforce.remoting.Manager.invokeAction(
+                            '{!$RemoteAction.CC_ERG_Header_PLOT.fetchPliOfProd}',
+                            prodSfid, prodListIds,
+                            function(result, event){
+                                if (event.status) {
+                                    if(result.success){
+                                        //prodList = result.prodList;
+                                        if(result.prodList.length > 0){
+                                            console.log('result : ' + result.prodList);
+                                            var theScriptHtml = $('#handlebars-relProd').html();
+                                            var theTemplate = Handlebars.compile(theScriptHtml);
+                                            var prodList = result.prodList;
+                                            var compiledData = theTemplate(prodList);
+                                            $('#relProdSec').html(compiledData);
+                                        }
+                                        else{
+                                            $('#relProd')?.parent()?.addClass('hide');
+                                        }
+                                        //location.reload();
+                                    }
+                                    else{
+                                        $('#relProd').parent().addClass('hide');
+                                    }
+                                } 
+                                else if (event.type === 'exception') {
+                                
+                                }
+                            }, 
+                            {escape: true}
+                        );
+                    }
+                    onCartCheckout();
+                }
+            });
+            
+            CCRZ.pubSub.on('view:myOrdersView:refresh', function (orderView) {
+                 $('div').removeClass('modal-backdrop');
+            }); 
+
+            CCRZ.pubSub.on('view:OrderDetailView:refresh', function (orderDetailView) {
+            let csrFlow = false;
+            let step = 4;
+            if (CCRZ && CCRZ.pagevars && CCRZ.pagevars.portalUserId != '') {
+                csrFlow = true;
+            }
+            if(csrFlow){
+                step = 5;
+            }
+            onCheckout('purchase', step);
+            }); 
+
+            /*console.log('out-----');
+            $("#overlay").on('DOMNodeRemoved', function(e) {
+            console.log('In1-----');
+            $("#customOverlay").hide();
+            });
+
+            $("#overlay").onremoval( function(e) {
+            console.log('In2-------');
+            $("#customOverlay").hide();
+            });  */          
+        });
+        //$('#overlay').append('<div class="loading-msg-wrapper"><div class="loading-msg">Processing your order.<span> Thanks for your patience.</span></div></div>');
+    </script>
+    <script>
+
+        function addToCartRelProd(sku){
+            console.log('sku : '+sku);
+            var currCartParamId = CCRZ.pagevars.queryParams.cartID || CCRZ.pagevars.queryParams.cartId;
+            //Add To Cart
+            if(sku != undefined){
+                $("#overlayRelProd").css("display", "block");
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.CC_ERG_Header_PLOT.addToCartRelProd}',
+                    sku, currCartParamId,
+                    function(result, event){
+                        if (event.status) {
+                            if(result.success){
+                                location.reload();
+                            }
+                        } 
+                        else if (event.type === 'exception') {
+                        
+                        }
+                        $("#overlayRelProd").css("display", "none");
+                    }, 
+                    {escape: true}
+                );
+            }
+        }
+        
+        function onCheckout(title,step) {
+            //setTimeout(function(){ 
+                var productDetails = [];
+                var shipping;
+                var eventName;
+                
+                if(title == 'User Information')
+                    eventName = 'begin_checkout';
+                else if(title == 'Order Review')
+                    eventName = 'add_shipping_info';
+                else if(title == 'Payment')
+                    eventName = 'add_payment_info';
+                        
+                    
+                    
+                   if(CCRZ.pagevars.currentPageName === 'ccrz__CheckoutNew' ){
+                        for (let i = 0; i < CCRZ?.cartCheckoutModel?.attributes?.cartItems?.length; i++) {
+                        let product = {
+                                        'item_name' : CCRZ.cartCheckoutModel.attributes.cartItems[i].sfdcName,
+                                        'item_id' : CCRZ.cartCheckoutModel.attributes.cartItems[i].productR.SKU,
+                                        'price' : CCRZ.cartCheckoutModel.attributes.cartItems[i].price,
+                                        'quantity' : CCRZ.cartCheckoutModel.attributes.cartItems[i].quantity,
+                                        'item_brand'  : "ERGOTRON",
+                                        'title' : title
+                        };
+                        productDetails.push(product);
+                        }
+                        ecommerce = null;
+                        //dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+                        dataLayer.push({
+                        'ecommerce': {
+                            'checkout': {
+                                currency:CCRZ.cartCheckoutModel.attributes.currencyISOCode ,
+                                value: CCRZ.cartCheckoutModel.attributes.totalAmount,
+                                coupon: '',
+                                items: productDetails
+                            
+                            }
+                        },
+                        'event' : eventName
+
+                        });
+                        //gtag('event', title);
+                        //console.log('event=  '+title);
+                    } 
+                    if(CCRZ.pagevars.currentPageName === 'ccrz__OrderConfirmation') {
+                        let pageLoadCount = Number(localStorage.getItem("confPgLdCounter")) + 1;
+                        localStorage.setItem("confPgLdCounter", pageLoadCount);
+                        if(pageLoadCount === 1){
+                            for (let i = 0; i < CCRZ?.orderDetailModel?.attributes?.orderItems?.length; i++) {
+                            let product = {
+                                            'item_name' : CCRZ.orderDetailModel.attributes.orderItems[i].mockProduct.sfdcName,
+                                            'item_id' : CCRZ.orderDetailModel.attributes.orderItems[i].mockProduct.SKU,
+                                            'price' : CCRZ.orderDetailModel.attributes.orderItems[i].price,
+                                            'quantity' : CCRZ.orderDetailModel.attributes.orderItems[i].quantity,
+                                            'discount' : CCRZ.orderDetailModel.attributes.orderItems[i].absoluteDiscount / CCRZ.orderDetailModel.attributes.orderItems[i].quantity,
+                                            'item_brand'  : "ERGOTRON",
+                                            'title' : title
+                            };
+                            productDetails.push(product);
+                            }
+                            
+                            if(typeof(CCRZ?.orderDetailModel?.attributes?.shipping) !== 'undefined'){
+                                shipping = CCRZ?.orderDetailModel?.attributes?.shipping;
+                            }else{
+                                shipping  = 0;
+                            }
+
+                            let transactionDetails = {
+                                //fix added - a size check
+                                'item_id': CCRZ?.orderDetailModel?.attributes?.transactionPayments.length>0 ? CCRZ?.orderDetailModel?.attributes?.transactionPayments[0].transactionCode : '',                         // Transaction ID. Required for purchases and refunds.
+                                'affiliation': 'Online Store',
+                                'transaction_id': CCRZ?.orderDetailModel?.attributes?.sfid,
+                                'amount': CCRZ?.orderDetailModel?.attributes?.subTotal, 
+                                'currency': CCRZ?.orderDetailModel?.attributes?.currencyCode,
+                                'value': CCRZ?.orderDetailModel?.attributes?.subTotal,                     // Total transaction value (incl. tax and shipping)
+                                'tax':CCRZ?.orderDetailModel?.attributes?.tax,
+                                'shipping': shipping,
+                                'discount': CCRZ?.orderDetailModel?.attributes?.totalDiscount,
+                                'coupon': CCRZ?.orderDetailModel?.attributes?.couponName
+                            }
+                            ecommerce = null;
+                            //dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+                        dataLayer.push({
+                        'ecommerce': {
+                            'transaction': {
+                            'transactionDetails' : transactionDetails   
+                            },
+                            'purchase': {
+                                'products': productDetails,
+                            'actionField' :  transactionDetails,
+                                
+                            
+                            }
+                        },
+                        'event' : title
+                        
+                        });
+                        }
+                    }
+                    
+
+                    // Send transaction data with a pageview if available
+                    // when the page loads. Otherwise, use an event when the transaction
+                    // data becomes available.
+                
+            //}, 6000);
+        }
+        function onCartCheckout() {
+                debugger;
+                var productDetails = [];
+            for (let i = 0; i < CCRZ?.cartDetailModel?.attributes?.ECartItemsS?.length; i++) {
+                        let product = {
+                                        'item_name' : CCRZ.cartDetailModel.attributes.ECartItemsS.models[i].attributes.product.sfdcName,
+                                        'item_id' : CCRZ.cartDetailModel.attributes.ECartItemsS.models[i].attributes.product.SKU,
+                                        'price' : CCRZ.cartDetailModel.attributes.ECartItemsS.models[i].attributes.price,
+                                        'quantity' : CCRZ.cartDetailModel.attributes.ECartItemsS.models[i].attributes.quantity,
+                                        'discount' : CCRZ.cartDetailModel.attributes.ECartItemsS.models[i].attributes.absoluteDiscount / CCRZ.cartDetailModel.attributes.ECartItemsS.models[i].attributes.quantity,
+                                        'item_brand'  : "ERGOTRON",
+                                        'title' :'view_cart'
+                        };
+                        productDetails.push(product);
+                    }
+                console.log('productDetails: '+productDetails);
+                dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+                dataLayer.push({
+                    'ecommerce': {
+                        'cart': {
+                            currency:CCRZ.cartDetailModel.attributes.currencyISOCode ,
+                            value: CCRZ.cartDetailModel.attributes.totalAmount,
+                            coupon: '',
+                            items: productDetails
+                        
+                        }
+                    },
+                    'event' :'view_cart'
+
+                });
+            }
+
+            var checkExist = setInterval(function() {
+                if ($('#overlay').is(":visible")) {
+                    console.log("Exists!");
+                    $("#customOverlay").show();
+                    //clearInterval(checkExist);
+                }
+                else{$("#customOverlay").hide();}
+            }, 100);
+
+
+        </script>
+
+        <div id="customOverlay" class="modal-backdrop fade in" data-overlay="custom" >
+            <div class="loading-msg-wrapper">
+                <div class="loading-msg">Processing your request.<span> Thanks for your patience.</span></div>
+            </div>
+        </div>
+
+        <div id="overlayRelProd" >
+            <div class="loading-msg-wrapper"><div class="loading-msg">Processing your order.<span> Thanks for your patience.</span></div></div>
+        </div>
+        
+</apex:page>

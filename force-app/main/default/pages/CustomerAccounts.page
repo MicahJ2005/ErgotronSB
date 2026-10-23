@@ -1,0 +1,12 @@
+<apex:page standardController="Account" extensions="Customer_Account_Controller">
+	<apex:pageBlock >
+        <apex:pageBlockTable value="{!listCustomerAccounts}" var="custacct">
+            <apex:column value="{!custacct.Name}"/> 
+            <apex:column value="{!custacct.Account_Number__c}"/>
+            <apex:column value="{!custacct.Freight_Terms__c}"/>
+            <apex:column value="{!custacct.Price_List__c}"/>
+            <apex:column value="{!custacct.Payment_Terms__c}"/>
+            <apex:column value="{!custacct.Account_Description__c}"/>
+        </apex:pageBlockTable> 
+    </apex:pageBlock> 
+</apex:page>

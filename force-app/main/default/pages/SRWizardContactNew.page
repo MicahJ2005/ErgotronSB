@@ -1,0 +1,22 @@
+<apex:page showHeader="true" sidebar="true" standardController="Contact" extensions="SRWizardController">
+	<apex:sectionHeader title="Service Request" subtitle="SR Creation Wizard" />
+
+    <apex:form id="frmMain">
+
+		<apex:pageBlock title="Contact Edit">
+			<apex:pageBlockButtons location="top">
+				<apex:commandButton id="cmdSave" action="{!saveContact}" value="Save and Return to SR" />
+				<apex:commandButton id="cmdCancel" action="{!cancel}" value="Cancel" />
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection title="Contact Information">
+				<apex:inputField value="{!soContact.FirstName}" />
+				<apex:inputField value="{!soContact.LastName}" />
+				<apex:inputField value="{!soContact.Email}" />
+				<apex:inputField value="{!soContact.Phone}" />
+				<apex:inputField value="{!soContact.MobilePhone}" />
+				<apex:outputField value="{!soContact.AccountId}" />
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+
+	</apex:form>
+</apex:page>

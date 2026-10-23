@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Is_it_a_Req</name>
+        <label>Is it a Req?</label>
+        <locationX>179</locationX>
+        <locationY>251</locationY>
+        <defaultConnector>
+            <targetReference>Integration_Project_Create</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Req</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Req</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>PONum</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>Req Number</stringValue>
+                </rightValue>
+            </conditions>
+            <label>Yes Req</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_there_a_Sales_Order</name>
+        <label>Is there a Sales Order?</label>
+        <locationX>180</locationX>
+        <locationY>142</locationY>
+        <defaultConnector>
+            <targetReference>Is_it_a_Req</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Sales Order</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Sales_Order</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>SalesOrderId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Sales_Order</targetReference>
+            </connector>
+            <label>Yes Sales Order</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Req_or_PO</name>
+        <label>Req or PO</label>
+        <locationX>586</locationX>
+        <locationY>142</locationY>
+        <defaultConnector>
+            <targetReference>Update_Case_PO</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>PO Number</defaultConnectorLabel>
+        <rules>
+            <name>Requisition_number</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>PONum</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>Req Number</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Case_Req</targetReference>
+            </connector>
+            <label>Requisition number</label>
+        </rules>
+    </decisions>
+    <description>Populates the Ergotron PO field when a PO record is updated with PO number (fired in process builder)</description>
+    <interviewLabel>Case - Populate Ergotron PO {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Case - Populate Ergotron PO</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Oracle_Order</name>
+        <label>Get Oracle Order</label>
+        <locationX>179</locationX>
+        <locationY>36</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_there_a_Sales_Order</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>OrderId</elementReference>
+            </value>
+        </filters>
+        <object>Order__c</object>
+        <outputAssignments>
+            <assignToReference>SalesOrderId</assignToReference>
+            <field>Salesforce_Sales_Order__c</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Sales_Order</name>
+        <label>Get Sales Order</label>
+        <locationX>428</locationX>
+        <locationY>140</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Req_or_PO</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>SalesOrderId</elementReference>
+            </value>
+        </filters>
+        <object>Sales_Order__c</object>
+        <outputAssignments>
+            <assignToReference>CaseId</assignToReference>
+            <field>Service_Request__c</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Case_PO</name>
+        <label>Update Case PO</label>
+        <locationX>789</locationX>
+        <locationY>249</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>CaseId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Ergotron_PO__c</field>
+            <value>
+                <elementReference>PONum</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Case</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Case_Req</name>
+        <label>Update Case Req</label>
+        <locationX>777</locationX>
+        <locationY>40</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>CaseId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Requisition_Number__c</field>
+            <value>
+                <elementReference>ReqNum</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Case</object>
+    </recordUpdates>
+    <startElementReference>Get_Oracle_Order</startElementReference>
+    <status>Active</status>
+    <subflows>
+        <name>Integration_Project_Create</name>
+        <label>Integration Project Create</label>
+        <locationX>180</locationX>
+        <locationY>361</locationY>
+        <flowName>Tech_Deploy_Integration_Project_Creation</flowName>
+        <inputAssignments>
+            <name>OrderId</name>
+            <value>
+                <elementReference>OrderId</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <variables>
+        <name>CaseId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>OrderId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>PONum</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>ReqNum</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>SalesOrderId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

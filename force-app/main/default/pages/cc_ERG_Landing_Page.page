@@ -1,0 +1,14 @@
+<apex:page id="cc_ERG_Landing_Page" docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false">
+    <script>
+        var cartID;
+        cartID = CCRZ.pagevars.currentCartID || CCRZ.pagevars.queryParams.cartID || CCRZ.pagevars.queryParams.cartId; //urlParams.get('cartID')
+        window.location = '/ccrz__MyAccount?cartID=' + cartID;
+    </script>
+    <!-- Your password has been successfully set.<br/>
+    Please look for an email from Ergotron about you order.
+    <br/><br/>
+    In the meantime you just need to logout.
+    <br/><br/>
+    If you have any question or did not request to be an Ergotron Customer,<br/>
+    please contact the Ergotron <b></b>Customer Engagement Team - 1-800-888-8458 <b/> -->
+</apex:page>

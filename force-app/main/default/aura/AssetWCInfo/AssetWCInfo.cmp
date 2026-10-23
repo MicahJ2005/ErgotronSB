@@ -1,0 +1,77 @@
+<aura:component access="global" controller="AssetWCInfo_Cntrl" implements="lightning:availableForFlowScreens,flexipage:availableForRecordHome,force:hasRecordId">
+	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <!-- <aura:handler event="aura:waiting" action="{!c.showSpinner}"/> -->
+    <!-- <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/> -->
+	<aura:attribute name="recordId" type="String"/>
+	<aura:attribute name="AssetId" type="String" access="global"/>
+    <aura:attribute name="input_WONumber" type="String" access="global"/>
+    <aura:attribute name="wcINFO" type="Asset[]"/>
+    <aura:attribute name="wcParent" type="Asset"/>
+    <aura:attribute name="display" type="Boolean" default="True"/>
+    <aura:attribute name="displayContract" type="Boolean" default="True"/>
+    <aura:attribute name="displayChild" type="Boolean" default="True"/>
+    <aura:attribute name="Spinner" type="boolean" default="False"/>
+	<aura:attribute name="headerTitle" type="Aura.Component[]">
+        <h2><b>Contract or Extended Warranty Info</b></h2>
+    </aura:attribute>
+    
+    <!--loading spinner start... style=Brand Medium (blue dots)-->
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- Loading spinner end--> 
+    
+    <lightning:card iconName="standard:shipment" title="{!v.headerTitle}">
+	<!-- <div> -->
+    	<aura:if isTrue="{!v.display}">
+			<article class="slds-tile">
+				<!-- 🚩 Hiding this section until further notice - the dates displayed here are not calculated correctly  es.1/6/2021 -->
+<!-- 				
+				<div class="slds-p-horizontal_medium"> 
+					<h3 class="slds-tile__title slds-truncate" title="Warranty Information"><b>Warranty Information</b></h3>
+					<div class="slds-tile__detail">					
+						<div class="slds-text-title">Warranty Start Date: {!v.wcParent.Warranty_Start_Date__c}</div>
+						<div class="slds-text-title">Warranty End Date: {!v.wcParent.Warranty_End_Date__c}</div>
+						<div class="slds-text-title">Warranty Term: {!v.wcParent.Warranty_Terms_in_Months__c}</div>
+					</div>
+					<br />
+				</div>
+ -->
+				<aura:if isTrue="{!v.displayContract}">
+				<div class="slds-p-horizontal_medium">
+					<h3 class="slds-tile__title slds-truncate" title="Contract Information"><b>Contract or Extended Warranty Information</b></h3>
+					<div class="slds-tile__detail">
+						<!-- <div class="slds-text-title_caps"><b>Contract Information</b></div><br/> -->
+						<div class="slds-text-title">Type: {!v.wcParent.ContractLineItems[0].Contract_Type__c}</div>
+						<div class="slds-text-title">Start Date: {!v.wcParent.ContractLineItems[0].StartDate}</div>
+						<div class="slds-text-title">End Date: {!v.wcParent.ContractLineItems[0].EndDate}</div>
+					</div>
+					<br />
+				</div>
+				</aura:if>
+				
+				<aura:if isTrue="{!v.displayChild}">
+				<div class="slds-p-horizontal_medium">
+					<h3 class="slds-tile__title slds-truncate" title="Child Assets"><b>Child Assets</b></h3>
+					<div class="slds-tile__detail">
+						<!-- <div class="slds-text-title_caps"><b>Child Assets</b></div><br/>-->
+						<!-- <aura:iteration items="{!v.wcINFO}" var="child"> -->
+						<div class="slds-text-title">Battery SN#: {!v.wcParent.Battery_Serial_Number__c}</div>
+						<div class="slds-text-title">PM SN#: {!v.wcParent.Power_Module_Serial_Number__c}</div>
+						<!-- </aura:iteration> -->
+					</div>
+					<br />
+				</div>
+				</aura:if>
+
+			</article>
+		</aura:if>
+	<!-- </div> -->
+	</lightning:card>
+</aura:component>

@@ -1,0 +1,84 @@
+<!--
+This page creates a new Salesforce account and Oracle party and relates the account back to a Lead via the Lead.End_User_Account__c field
+-->
+<apex:page standardController="Lead" extensions="Lead_Create_Account_Party_Cntrl" docType="html-5.0">
+	<apex:includeScript value="{!$Resource.jQuery1111}" />
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+
+	    function disableButtons()
+	    {    
+            j$("input[type='button']").prop({disabled: true});
+            j$("input[type='submit']").prop({disabled: true});
+	    }
+
+	    function enableButtons()
+	    {
+            j$("input[type='button']").prop({disabled: false});
+            j$("input[type='submit']").prop({disabled: false});           
+	    }
+    </script>
+
+	<apex:form id="formAlreadyEndUser" rendered="{!bAlreadyEndUser}">
+		<apex:pageMessage severity="error" strength="3" summary="{!$Label.Lead_Create_Account_Already_Exists}" /><br/>
+		<apex:pageMessages id="pageMessagesPartyExists"/>
+		<apex:pageBlock title="Existing Account/Oracle Party Details">
+			<apex:pageBlockSection columns="1" collapsible="false" >
+				<apex:outputField value="{!Lead.End_User_Account__c}" />
+				<apex:outputField value="{!Lead.End_User_Account__r.Oracle_Party_Number__c}" />
+				<apex:outputLink target="_parent" value="{!'/'+Lead.Id}">Return To Lead</apex:outputLink>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+
+	<apex:form id="formRequiredFields" rendered="{!!bAlreadyEndUser && !bRequiredFields}">
+		<apex:pageMessage severity="error" strength="3" summary="{!$Label.Lead_Create_Account_Required_Fields}" /><br/>
+		<apex:pageMessages id="pageMessagesRequiredFields"/>
+		<apex:pageBlock >
+			<apex:pageBlockSection columns="1" collapsible="false" >
+				<apex:outputField value="{!Lead.Company}" />
+				<apex:outputField value="{!Lead.Territory_Account_Manager__r.Name}" label="{!$ObjectType.Lead.fields.Territory_Account_Manager__c.Label}" />
+				<apex:outputField value="{!Lead.Ergotron_Vertical_Market__c}" />
+				<apex:outputField value="{!Lead.Street}" />
+				<apex:outputField value="{!Lead.City}" />
+				<apex:outputField value="{!Lead.StateCode}" label="{!$ObjectType.Lead.fields.State.Label}" />
+				<apex:outputField value="{!Lead.PostalCode}" />
+				<apex:outputField value="{!Lead.CountryCode}" label="{!$ObjectType.Lead.fields.Country.Label}" />
+				<apex:outputLink target="_parent" value="{!'/'+Lead.Id}">Return To Lead</apex:outputLink>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+
+	<apex:form id="formNewAccountParty" rendered="{!!bAlreadyEndUser && bRequiredFields}">
+		<apex:pageMessage severity="confirm" strength="3" summary="{!$Label.Lead_Create_Account_Party_Confirmation}" /><br/>
+
+		<apex:actionFunction action="{!createAccount}" name="InsertAccount_JS" reRender="statuses,Submit,msg" status="Status1" oncomplete="CreatePartyWS_JS();" />
+		<apex:actionFunction action="{!createParty}" name="CreatePartyWS_JS" reRender="statuses,Submit,msg" status="Status2" />
+
+		<apex:outputPanel id="msg">
+			<apex:pageMessages />
+		</apex:outputPanel>
+
+		<apex:outputPanel id="statuses">
+			<apex:actionStatus id="Status1" onstart="disableButtons()" startText="...Creating Salesforce Account..."/>
+			<apex:actionStatus id="Status2" onstart="disableButtons()" startText="...Creating Oracle Party..."/>
+		</apex:outputPanel><br></br>
+
+		<apex:commandButton id="Submit" value="Create Account/Party" onclick="InsertAccount_JS();return false;" oncomplete="enableButtons()" rerender="Submit,msg" /><br></br><br></br>
+
+		<apex:pageBlock title="New Account/Party Details">
+			<apex:pageBlockSection columns="1" collapsible="false">
+				<apex:outputField value="{!Lead.Company}" label="{!$ObjectType.Account.fields.Name.Label}"/>
+				<apex:outputField value="{!Lead.Street}" label="{!$ObjectType.Account.fields.BillingStreet.Label}" />
+				<apex:outputField value="{!Lead.City}" label="{!$ObjectType.Account.fields.BillingCity.Label}" />
+				<apex:outputField value="{!Lead.StateCode}" label="{!$ObjectType.Account.fields.BillingState.Label}" />
+				<apex:outputField value="{!Lead.PostalCode}" label="{!$ObjectType.Account.fields.BillingPostalCode.Label}" />
+				<apex:outputField value="{!Lead.CountryCode}" label="{!$ObjectType.Account.fields.BillingCountry.Label}"/>
+				<apex:outputField value="{!Lead.Territory_Account_Manager__r.Name}" label="{!$ObjectType.Lead.fields.Territory_Account_Manager__c.Label}" />
+				<apex:outputField value="{!Lead.Ergotron_Vertical_Market__c}" />
+				<apex:outputLink target="_parent" value="{!'/'+Lead.Id}">Return To Lead</apex:outputLink>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>  
+</apex:page>

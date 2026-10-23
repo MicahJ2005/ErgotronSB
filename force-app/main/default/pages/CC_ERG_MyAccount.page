@@ -1,0 +1,200 @@
+<apex:page docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false">
+    <script id="CC_ERG_MyAccount-MyOrders-Desktop" type="text/template">
+        <div class="panel panel-default cc_panel cc_myaccount_myorders">
+            <div class="panel-heading cc_heading">
+                <h3 class="panel-title cc_title">{{pageLabelMap 'MyAccount_MyOrders'}}</h3>
+            </div>
+            <div class="panel-body cc_body cc_myaccount_content">
+                <div class="messagingSection-orderhistory-Error" role="alert" style="display: none"></div>
+                <div class="messagingSection-orderhistory-Info" role="alert" style="display: none">
+                    <button type="button" class="close cc_close" data-dismiss="alert" 
+                        aria-label="{{pageLabelMap 'Modal_Aria_Close'}}"><span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {{#ifDisplay 'srch.ord'}}
+                    <form id="searchOrderForm" class="form-inline searchOrderForm cc_search_order_form cc_form-inline">
+                        <div class="form-group form-group-sm ">
+                            <label for="searchOrderInput" class="sr-only">Search order</label>
+                            <input id="searchOrderInput" type="text" 
+                                class="form-control searchOrderInput input-text cc_search_order_input" 
+                                name="searchOrderInput" value="{{searchOrder}}" 
+                                placeholder="{{pageLabelMap 'MyOrdersInc_SearchOrders'}}"/>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <select name="searchOrderStatus" value="{{searchOrderStatus}}" 
+                                class="form-control cc_search_order_status">
+                                <option value="">{{pageLabelMap 'MyOrdersInc_AllOrderStatus'}}</option>
+                                {{#each this.orderStatusOpts}}
+                                    <option value="{{this.value}}" {{#ifEquals ../searchOrderStatus this.value}} selected {{/ifEquals}}>{{this.label}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="form-group form-group-sm date">
+                            <label for="fromDateStr" class="cc_from_date_str">{{pageLabelMap 'MyOrdersInc_SearchFrom'}}</label>
+                            <div class="input-group date">
+                                <input type="text" id="fromDateStr" name="fromDateStr" 
+                                    value="{{this.fromDateStr}}" 
+                                    class="form-control requestedDate fromDate cc_from_date" 
+                                    readonly="true" />
+                                <div class="input-group-addon">
+                                    <span class="glyphicon glyphicon-th"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="cc_order_search_action">
+                        <input type="button" class="btn btn-default btn-sm searchOrder cc_search_order" 
+                            value="{{pageLabelMap 'MyOrdersButton_SearchOrders'}}"/>
+                        <input type="button" class="btn btn-default btn-sm resetOrder cc_reset_order" 
+                            value="{{pageLabelMap 'MyOrdersButton_ResetOrders'}}"/>
+                    </div>
+                {{/ifDisplay}}
+            </div>
+        </div>
+        <div class="orderPaginationSec" />
+        <div class="panel panel-default cc_panel cc_paginator">
+            <div class="table-responsive">
+                <table id="orderTable" class="table table-hover shopping_cart cc_table cc_order_search_table">
+                    <tr class="cc_table_header_row">
+                        <th class="cc_table_header">
+                            <span class="cc_table_header_order_number">{{pageLabelMap 'MyOrdersInc_OrderNumber'}}</span>
+                        </th>
+                        {{#ifDisplay 'MO.DsplExtOrderNumber'}}
+                            <th class="cc_table_header">
+                                <span class="cc_table_header_external_order_id">{{pageLabelMap 'ExternalOrderID'}}</span>
+                            </th>
+                        {{/ifDisplay}}
+                        {{#ifDisplay 'MO.DsplPONumber'}}
+                            <th class="cc_table_header">
+                                <span class="cc_table_header_po_number">{{pageLabelMap 'PO Number'}}</span>
+                            </th>
+                        {{/ifDisplay}}
+                        <th class="cc_table_header">
+                            <span class="cc_table_header_order_date">{{pageLabelMap 'MyOrdersInc_OrderDate'}}</span>
+                        </th>
+                        <th class="cc_table_header">
+                            <span class="cc_table_header_order_amount">{{pageLabelMap 'MyOrdersInc_OrderAmount'}}</span>
+                        </th>
+                        <th class="cc_table_header">
+                            <span class="cc_table_header_order_status">{{pageLabelMap 'MyOrdersInc_Status'}}</span>
+                        </th>
+                        {{#ifStoreSetting 'Filter_Orders_Based_on_Owner__c'}}
+                            &nbsp;
+                        {{else}}
+                            <th class="cc_table_header">
+                                <span class="cc_table_header_order_owner ord_owner_hdr">
+                                    {{pageLabelMap 'MyOrdersInc_Owner'}}
+                                </span>
+                            </th>
+                        {{/ifStoreSetting}}
+                        {{#ifDisplay 'MO.ShActOnOrd'}}
+                            <th class="cc_table_header">
+                                <span class="cc_table_header_order_actions">{{pageLabelMap 'MyCartsInc_Actions'}}</span>
+                            </th>
+                        {{/ifDisplay}}
+                    </tr>
+                    {{{json this.orderList}}}
+                    {{#each this.orderList}}
+                        <tr class="myAccOrderRows cc_table_row">
+                            <td class="cc_table_col">
+                                <span class="cc_col_order_number">
+                                    <a href="#" data-id="{{encryptedId}}" 
+                                    class="gotoOrderDetails cc_goto_order_detailss">{{name}}</a>
+                                </span>
+                            </td>
+                            {{#ifDisplay 'MO.DsplExtOrderNumber'}}
+                                <td class="cc_table_col">
+                                    <span class="cc_col_external_order_id">{{externalOrderId}}</span>
+                                </td>
+                            {{/ifDisplay}}
+                            {{#ifDisplay 'MO.DsplPONumber'}}
+                                <td class="cc_table_col">
+                                    <span class="cc_col_po_number">{{poNumber}}</span>
+                                </td>
+                            {{/ifDisplay}}
+                            <td class="cc_table_col">
+                                <span class="cc_col_order_date">{{orderDateStr}}</span>
+                            </td>
+                            <td class="cc_table_col">
+                                <span class="cc_col_order_amount">{{price totalAmount currencyIsoCode}}</span>
+                            </td>
+                            <td class="cc_table_col">
+                                <span class="cc_col_order_statust">{{pageLabelMap status}}</span>
+                            </td>
+                            {{#ifStoreSetting 'Filter_Orders_Based_on_Owner__c'}}
+                                &nbsp;
+                            {{else}}
+                                <td class="cc_table_col">
+                                    <span class="cc_col_order_owner ord_owner">{{ownerName}}</span>
+                                </td>
+                            {{/ifStoreSetting}}
+                            {{#ifDisplay 'MO.ShActOnOrd'}}
+                                <td class="cc_table_col">
+                                    {{#ifDisplay 'MO.ShReOrdBt'}}
+                                        {{#if this.canReOrder}}
+                                            <input type="button" class="btn btn-default btn-sm reorder cc_col_reorder" 
+                                                data-id="{{sfid}}" value="{{pageLabelMap 'MyOrdersInc_Reorder'}}"/>
+                                            &nbsp;
+                                        {{/if}}
+                                    {{/ifDisplay}}
+                                </td>
+                                <td class="cc_table_col">
+                                    {{#if this.canCancel}}
+                                        {{#ifDisplay 'MO.ShAmdBt'}}
+                                            {{#if this.canAmend}}
+                                                <input type="button" class="btn btn-default btn-sm promptCancel promptAmend cc_col_prompt_amend" 
+                                                data-id="{{sfid}}" data-mode="Edit" 
+                                                value="{{pageLabelMap 'Amend'}}"/>
+                                            {{/if}}
+                                        {{/ifDisplay}}
+                                    {{/if}}
+                                </td>
+                                <td class="cc_table_col">
+                                    {#if this.canCancel}}
+                                        {{#ifDisplay 'MO.ShCanBt'}}
+                                            <input type="button" class="btn btn-default btn-sm promptCancel cc_col_prompt_cancel" 
+                                                data-id="{{sfid}}" data-mode="Cancel" value="{{pageLabelMap 'Cancel'}}"/>
+                                        {{/ifDisplay}}
+                                    {{/if}}
+                                </td>
+                            {{/ifDisplay}}
+                        </tr>
+                    {{/each}}
+                </table>
+            </div>
+            <div id="modalSec"></div>
+        </div>
+    </script>
+    <script id="CC_ERG_MyAccount-MyOrders-CancelDialog" type="text/template">
+        <div class="modal fade cc_modal cc_myaccount_orders_modal" id="cancelMod_{{sfid}}" 
+            tabindex="-1" role="dialog" aria-labelledby="CancelMod">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content cc_modal_content">
+                    <div class="modal-body cc_modal_body">
+                        {{#ifEquals this.mode 'Edit'}}
+                            <p class="cc_edit_prompt">{{pageLabelMap 'Edit_Prompt'}}</p>
+                        {{else}}
+                            <p class="cc_cancel_prompt">{{pageLabelMap 'Cancel_Prompt'}}</p>
+                        {{/ifEquals}}
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="closeModal" data-id="{{sfid}}" value="{{pageLabelMap 'Dialog_No'}}"/>
+                        <input type="button" class="ordercancel" data-id="{{sfid}}" data-mode="{{mode}}" 
+                            value="{{pageLabelMap 'Yes'}}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            Handlebars.registerHelper('json', function (context) {
+                return JSON.stringify(context);
+            });
+
+            CCRZ.uiProperties.myOrdersView.desktop.tmpl = 'CC_ERG_MyAccount-MyOrders-Desktop';
+            CCRZ.uiProperties.myOrdersView.desktop.tmpl = 'CC_ERG_MyAccount-MyOrders-CancelDialog';
+        });
+    </script>
+</apex:page>

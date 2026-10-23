@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Evaluate_Target_Rebate</name>
+        <label>Evaluate Target Rebate</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Exceeds_Max_Rebate_FALSE</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Exceeds</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Target_Rebate__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <elementReference>$Record.PricebookEntry.Max_Rebate_Percent__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Exceeds_Max_Rebate_Flag_TRUE</targetReference>
+            </connector>
+            <label>Exceeds</label>
+        </rules>
+    </decisions>
+    <description>After save on Opportunity Line Items for Ergotron Forecast Opportunity records, evaluates whether Target_Rebate__c exceeds the related PricebookEntry.Max_Rebate_Percent__c. Sets Exceeds_Max_Rebate__c to true when the target rebate is higher, otherwise sets it to false.</description>
+    <environments>Default</environments>
+    <interviewLabel>Evaluate Max Rebate {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Evaluate Max Rebate</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Exceeds_Max_Rebate_FALSE</name>
+        <label>Exceeds Max Rebate FALSE</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Exceeds_Max_Rebate__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Exceeds_Max_Rebate_Flag_TRUE</name>
+        <label>Exceeds Max Rebate Flag TRUE</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Exceeds_Max_Rebate__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Evaluate_Target_Rebate</targetReference>
+        </connector>
+        <filterFormula>AND ( 
+ {!$Record.Opportunity.RecordType.Name} = &apos;Ergotron Forecast Opportunity&apos;
+)</filterFormula>
+        <object>OpportunityLineItem</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

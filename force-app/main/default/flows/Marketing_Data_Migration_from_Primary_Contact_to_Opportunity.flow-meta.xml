@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Flow to move the Primary Contact&apos;s Lead Source Marketing and Lead Category to the Opportunity.</description>
+    <interviewLabel>Marketing Data Migration from Primary Contact to Opportunity {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Marketing Data Migration from Primary Contact to Opportunity</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>InvalidDraft</status>
+    <variables>
+        <description>The ID of the Opportunity</description>
+        <name>IdOppty</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

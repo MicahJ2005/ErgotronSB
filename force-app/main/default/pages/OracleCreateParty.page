@@ -1,0 +1,57 @@
+<apex:page standardController="Account" extensions="Oracle_Create_Party_Controller" docType="html-5.0">
+	<apex:includeScript value="{!$Resource.jQuery1111}" />
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+
+	    function disableButtons()
+	    {    
+            j$("#divLoading").show();
+            j$("input[type='button']").prop({disabled: true});
+            j$("input[type='submit']").prop({disabled: true});
+	    }
+
+	    function enableButtons()
+	    {
+            j$("#divLoading").hide();
+            j$("input[type='button']").prop({disabled: false});
+            j$("input[type='submit']").prop({disabled: false});           
+	    }
+    </script>
+
+	<apex:form id="formExistingParty" rendered="{!Account.Oracle_Party_Number__c!=NULL && Account.Oracle_Party_Number__c!=''}">
+		<apex:pageMessage severity="error" strength="3" summary="{!$Label.Oracle_Party_Exists}" /><br/>
+		<apex:pageMessages id="pageMessagesPartyExists"/>
+		<apex:pageBlock title="Existing Oracle Party Details">
+			<apex:pageBlockSection columns="1" collapsible="false" >
+				<apex:outputField value="{!Account.Oracle_Party_Name__c}" />
+				<apex:outputField value="{!Account.Oracle_Party_Number__c}" />
+				<apex:outputLink target="_parent" value="{!'/'+Account.Id}">Return To Account</apex:outputLink>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+
+	<apex:form id="formNewParty" rendered="{!Account.Oracle_Party_Number__c==NULL && Account.Oracle_Party_Number__c==''}">
+		<apex:pageMessage severity="confirm" strength="3" summary="{!$Label.Oracle_Create_Party_Confirmation}" /><br/>
+		<apex:pageMessages id="pageMessagesConfirmation"/>
+		<apex:actionStatus id="statusCreateParty" onstart="disableButtons()" onstop="enableButtons()" />
+		<!-- Submit/Cancel Buttons -->
+		<apex:commandButton action="{!createParty}" value="Create Oracle Party" id="btnSubmit" status="statusCreateParty" rerender="btnSubmit,btnCancel,divLoading,pageMessagesConfirmation"/>&nbsp;&nbsp;
+		<apex:commandButton action="{!cancel}" value="Cancel" id="btnCancel"/><br/><br/>
+
+	   	<div id="divLoading" align="center" style="display: none;">
+	       	<div style="color:red; font-style:italic"><img  src="{!$Resource.loadingimg}" />&nbsp;&nbsp;Submitting Oracle Party Creation Request...</div>
+	   	</div>
+
+		<apex:pageBlock title="New Oracle Party Details">
+			<apex:pageBlockSection columns="1" collapsible="false">
+				<apex:outputField value="{!Account.Name}" />
+				<apex:outputField value="{!Account.BillingStreet}" />
+				<apex:outputField value="{!Account.BillingCity}" />
+				<apex:outputField value="{!Account.BillingStateCode}" label="{!$ObjectType.Account.fields.BillingState.Label}"/>
+				<apex:outputField value="{!Account.BillingPostalCode}" />
+				<apex:outputField value="{!Account.BillingCountryCode}" label="{!$ObjectType.Account.fields.BillingCountry.Label}"/>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>    	
+</apex:page>

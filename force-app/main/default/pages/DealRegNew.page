@@ -1,0 +1,292 @@
+<!-- 08/05/2019 - Sophia Murphy (Demand Chain)  
+                    Added opp Partner field 
+                    Updated tabOrderHints - per this: https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_input_field_tabindex.htm
+
+-->
+<apex:page id="DealRegNew" docType="html-5.0" standardStylesheets="true" showHeader="true" sidebar="true" standardController="Lead" extensions="Deal_Reg_Cntrl" >
+    <apex:includeScript value="{!$Resource.jQuery211}" />
+
+    <style> 
+        .outputText {
+            padding-left: 40px;
+            font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;
+        }
+        .outputTextList {
+            font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;
+        }
+        .link {
+            font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif; 
+        }
+
+        .outputTextEMEAProgram1 {
+            font:11px/16px Verdana,Arial,Helvetica,sans-serif;
+            font-weight: bold;
+            color: #0066CC;
+        }
+
+        .outputTextEMEAProgram2 {
+            font:11px/16px Verdana,Arial,Helvetica,sans-serif;
+            font-weight: bold;
+            color: #006600;
+        }
+    </style>
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+
+        function disableButtons()
+        {    
+            j$("#divLoading").show();
+            j$("input[type='button']").prop({disabled: true});
+            j$("input[type='submit']").prop({disabled: true});
+        }
+
+        function enableButtons()
+        {
+            j$("#divLoading").hide();
+            j$("input[type='button']").prop({disabled: false});
+            j$("input[type='submit']").prop({disabled: false});           
+        }
+
+        function showLoader(){
+            var txt = document.getElementById("loading");
+            txt.style.display = "inline";
+        }   
+    
+        function ppiAjaxComplete(){
+            var txt = document.getElementById("loading");
+            txt.style.display = "none";
+        }
+
+        function noenter(ev){
+            if(window.event && window.event.keycode==13 || ev.which==13) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }     
+    </script>
+
+    <apex:form id="mainForm" onkeydown="return noenter(event)" >
+        <apex:pageBlock mode="edit" id="mainBlock">
+            <apex:pageMessages id="pageMessages" />
+            <!-- North America page message-->
+            <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+                <apex:outputText value="{!$Label.Deal_Registration_Page_Message}" styleClass="outputTextList" />&nbsp;
+                <apex:outputText styleClass="outputTextList" value="{!$Label.Deal_Registration_Help}" />&nbsp;
+                <apex:outputLink styleClass="link" value="mailto:deals@ergotron.com">deals@ergotron.com</apex:outputLink><apex:outputText value="."/>
+            </apex:outputText>
+            
+            <!-- EMEA page message-->
+            <apex:outputText rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA' && TEXT($User.CountryCode)!='AU',true,false)}">
+                <apex:outputText value="{!$Label.Deal_Registration_Page_Message_EMEA5}" styleClass="outputTextList" />&nbsp;
+                <apex:outputText styleClass="outputTextList" value="{!$Label.Deal_Registration_Help_EMEA}" />&nbsp;
+                <apex:outputLink styleClass="link" value="mailto:deals@ergotron.com">deals@ergotron.com</apex:outputLink>&nbsp;
+                <apex:outputText style="font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;" value="{!$Label.Deal_Registration_Help_EMEA2}" />
+            </apex:outputText>
+            
+            <!-- Australia page message-->
+            <apex:outputText rendered="{!IF(TEXT($User.CountryCode)='AU',true,false)}">
+                <apex:outputText value="{!$Label.Deal_Registration_Page_Message_AU}" styleClass="outputTextList" />&nbsp;
+                <apex:outputText styleClass="outputTextList" value="{!$Label.Deal_Registration_Help_EMEA}" />&nbsp;
+                <apex:outputLink styleClass="link" value="mailto:deals@ergotron.com">deals@ergotron.com</apex:outputLink>&nbsp;
+                <apex:outputText style="font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;" value="{!$Label.Deal_Registration_Help_EMEA2}" />
+            </apex:outputText>
+            
+            <apex:actionStatus id="savingDealReg" onstart="disableButtons()" onstop="enableButtons()" />
+            <apex:pageBlockButtons id="pageButtons" location="top">     
+                <apex:commandButton value="{!$Label.Save_for_Later}" action="{!saveForLater}" status="savingDealReg" reRender="pageMessages,pageButtons,divLoading"/>
+                <apex:commandButton value="{!$Label.Submit_for_Approval}" action="{!submitDealReg}" status="savingDealReg" reRender="pageMessages,pageButtons,divLoading"/>
+                <apex:commandButton value="{!$Label.Cancel}" action="{!cancelReturn}" immediate="true" html-formnovalidate="formnovalidate"/>
+            </apex:pageBlockButtons>
+            
+            <div id="divLoading" align="center" style="display: none;">
+                <div style="color:red; font-style:italic"><img  src="{!$Resource.loadingimg}" />&nbsp;&nbsp;{!$Label.Saving}</div>
+            </div>
+
+            <apex:pageBlockSection title="{!$Label.End_User_Details + ' - ' + $Label.Deal_Registration_Required_Fields}" columns="2" id="EndUserSection">
+                <apex:inputField label="*{!$Label.End_User_Company}"
+                                 value="{!Lead.Company}"
+                                 tabOrderHint="10"
+                                 style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_Company}"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.FirstName.Label}"
+                                 value="{!Lead.FirstName}"
+                                 tabOrderHint="110"
+                                 style="width: 290px;"
+                                 html-placeholder="{!$Label.Enter_End_User_First_Name}"  />
+                <apex:inputField value="{!Lead.Department_Division__c}" tabOrderHint="20" style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_Department_Division}"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.LastName.Label}" value="{!Lead.LastName}" tabOrderHint="120" style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_Last_Name}"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.Street.Label}" value="{!Lead.Street}" taborderhint="30" style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_Street}"/>
+                <apex:inputField value="{!Lead.Title}" tabOrderHint="130" style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_Job_Title}"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.City.Label}" value="{!Lead.City}" tabOrderHint="40" style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_City}"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.Email.Label}" value="{!Lead.Email}" tabOrderHint="140" style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_Email}"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.State.Label}" value="{!Lead.StateCode}" tabOrderHint="50" style="width: 290px;"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.Phone.Label}" value="{!Lead.Phone}" tabOrderHint="150" style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_Phone}"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.PostalCode.Label}" value="{!Lead.PostalCode}" tabOrderHint="60" style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_Zip_Postal_Code}"/>
+                <apex:inputField value="{!Lead.Fax}" tabOrderHint="160" style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_Fax}"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.Country.Label}" value="{!Lead.CountryCode}" tabOrderHint="70" style="width: 290px;">
+                    <apex:actionsupport event="onchange" rerender="mainForm" immediate="true" />
+                </apex:inputField>
+                <apex:inputField value="{!Lead.Website}" tabOrderHint="170" style="width: 290px;"
+                                 html-placeholder="{!$Label.End_User_Website}"/>
+                <apex:inputField label="*{!$Label.End_User_Vertical_Market}" value="{!Lead.Ergotron_Vertical_Market__c}" taborderhint="80" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.Status}" rendered="false"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.Expected_Ship_Date__c.Label}" value="{!Lead.Expected_Ship_Date__c}" tabOrderHint="180" style="width: 290px;"/>
+                <apex:inputField label="*{!$Label.Currency}" value="{!Lead.CurrencyIsoCode}" tabOrderHint="90" style="width: 290px;" rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA' && TEXT($User.CountryCode)!='AU',true,false)}"/>
+                <apex:inputField label="*{!$ObjectType.Lead.fields.Program_Type__c.Label}" 
+                    value="{!Lead.Program_Type__c}" 
+                    tabOrderHint="190" 
+                    style="width: 290px;" 
+                    rendered="{!IF(
+                        TEXT($User.CountryCode)!='US' && 
+                        TEXT($User.CountryCode)!='CA' && 
+                        TEXT($User.CountryCode)!='AU' && 
+                        TEXT($User.CountryCode)!='US' && 
+                        TEXT($User.CountryCode)!='CA' && 
+                        TEXT($User.CountryCode)!='AU' &&
+                        TEXT($User.CountryCode)!='BH' && 
+                        TEXT($User.CountryCode)!='CY' && 
+                        TEXT($User.CountryCode)!='EG' &&
+                        TEXT($User.CountryCode)!='IQ' && 
+                        TEXT($User.CountryCode)!='JO' &&
+                        TEXT($User.CountryCode)!='KW' && 
+                        TEXT($User.CountryCode)!='LB' &&
+                        TEXT($User.CountryCode)!='OM' && 
+                        TEXT($User.CountryCode)!='QA' &&
+                        TEXT($User.CountryCode)!='SA' && 
+                        TEXT($User.CountryCode)!='ZA' &&
+                        TEXT($User.CountryCode)!='SY' &&
+                        TEXT($User.CountryCode)!='TR' && 
+                        TEXT($User.CountryCode)!='AE' &&
+                        TEXT($User.CountryCode)!='YE',true,false)}" 
+                    required="true"
+                />
+                
+        <!-- Preferred Distributor Selection -->
+                <apex:outputText rendered="{!IF(TEXT($User.CountryCode) == 'AE' || 
+                                                TEXT($User.CountryCode) == 'AT' ||
+                                                TEXT($User.CountryCode) == 'AU' ||
+                                                TEXT($User.CountryCode) == 'BE' ||
+                                                TEXT($User.CountryCode) == 'BH' ||
+                                                TEXT($User.CountryCode) == 'CA' ||
+                                                TEXT($User.CountryCode) == 'CH' ||
+                                                TEXT($User.CountryCode) == 'CZ' ||
+                                                TEXT($User.CountryCode) == 'DE' ||
+                                                TEXT($User.CountryCode) == 'DK' ||
+                                                TEXT($User.CountryCode) == 'ES' ||
+                                                TEXT($User.CountryCode) == 'FI' ||
+                                                TEXT($User.CountryCode) == 'FR' ||
+                                                TEXT($User.CountryCode) == 'GB' ||
+                                                TEXT($User.CountryCode) == 'HU' ||
+                                                TEXT($User.CountryCode) == 'IE' ||
+                                                TEXT($User.CountryCode) == 'IL' ||
+                                                TEXT($User.CountryCode) == 'IS' ||
+                                                TEXT($User.CountryCode) == 'IT' ||
+                                                TEXT($User.CountryCode) == 'LU' ||
+                                                TEXT($User.CountryCode) == 'MC' ||
+                                                TEXT($User.CountryCode) == 'NL' ||
+                                                TEXT($User.CountryCode) == 'NO' ||
+                                                TEXT($User.CountryCode) == 'OM' ||
+                                                TEXT($User.CountryCode) == 'PL' ||
+                                                TEXT($User.CountryCode) == 'PT' ||
+                                                TEXT($User.CountryCode) == 'QA' ||
+                                                TEXT($User.CountryCode) == 'RU' ||
+                                                TEXT($User.CountryCode) == 'SA' ||
+                                                TEXT($User.CountryCode) == 'SE' ||
+                                                TEXT($User.CountryCode) == 'TK' ||
+                                                TEXT($User.CountryCode) == 'UK' ||
+                                                TEXT($User.CountryCode) == 'US' ||
+                                                TEXT($User.CountryCode) == 'ZA'
+                                                ,true,false)}">
+                    <apex:outputText value="{!$Label.Deal_Reg_Select_Preferred_Disti_Partner}"/>
+                </apex:outputText>&nbsp;
+                
+                <apex:selectList tabIndex="1000" id="oppPartnerSelect" label="*{!$Label.Distribution_Partner}" value="{!oppPartner}" multiselect="false" size="1" rendered="{!IF(
+                    TEXT($User.CountryCode) == 'AE' || 
+                    TEXT($User.CountryCode) == 'AT' ||
+                    TEXT($User.CountryCode) == 'AU' ||
+                    TEXT($User.CountryCode) == 'BE' ||
+                    TEXT($User.CountryCode) == 'BH' ||
+                    TEXT($User.CountryCode) == 'CA' ||
+                    TEXT($User.CountryCode) == 'CH' ||
+                    TEXT($User.CountryCode) == 'CZ' ||
+                    TEXT($User.CountryCode) == 'DE' ||
+                    TEXT($User.CountryCode) == 'DK' ||
+                    TEXT($User.CountryCode) == 'ES' ||
+                    TEXT($User.CountryCode) == 'FI' ||
+                    TEXT($User.CountryCode) == 'FR' ||
+                    TEXT($User.CountryCode) == 'GB' ||
+                    TEXT($User.CountryCode) == 'HU' ||
+                    TEXT($User.CountryCode) == 'IE' ||
+                    TEXT($User.CountryCode) == 'IL' ||
+                    TEXT($User.CountryCode) == 'IS' ||
+                    TEXT($User.CountryCode) == 'IT' ||
+                    TEXT($User.CountryCode) == 'LU' ||
+                    TEXT($User.CountryCode) == 'MC' ||
+                    TEXT($User.CountryCode) == 'NL' ||
+                    TEXT($User.CountryCode) == 'NO' ||
+                    TEXT($User.CountryCode) == 'OM' ||
+                    TEXT($User.CountryCode) == 'PL' ||
+                    TEXT($User.CountryCode) == 'PT' ||
+                    TEXT($User.CountryCode) == 'QA' ||
+                    TEXT($User.CountryCode) == 'RU' ||
+                    TEXT($User.CountryCode) == 'SA' ||
+                    TEXT($User.CountryCode) == 'SE' ||
+                    TEXT($User.CountryCode) == 'TK' ||
+                    TEXT($User.CountryCode) == 'UK' ||
+                    TEXT($User.CountryCode) == 'US' ||
+                    TEXT($User.CountryCode) == 'ZA'
+                        ,true,false)}" style="width: 290px;">
+                        <apex:selectOptions value="{!oppPartners}"/>
+                    </apex:selectList>
+                <apex:inputHidden value="{!Lead.Opp_Partner_ID__c}" />
+        <!-- END Preferred Distributor Selection -->
+
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="*{!$Label.Deal_Registration_Comments}" columns="2">
+                <apex:inputTextarea value="{!Lead.Description}" label="" cols="140" rows="5" id="dealcomments"/>
+                <apex:inputField value="{!Lead.RFP_RFQ_Number__c}" html-placeholder="If applicable" />
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="{!$Label.Product_Details}" columns="1" id="productSection">
+                <apex:outputText value="{!$Label.Deal_Registration_Product_Message}" styleClass="outputTextList" style="background-color:yellow" />
+                <apex:variable var="rowNum" value="{!ZERO}" />
+                <apex:pageBlockTable value="{!listLeadProducts}" var="product" id="productList">
+                    <apex:column headerValue=" " style="width: 5%">
+                        <apex:variable var="rowNum" value="{!rowNum + 1}" />
+                        <apex:commandButton onclick="if(!confirm('{!$Label.Remove_Product_Confirm}'))return false;showLoader()" 
+                                            oncomplete="ppiAjaxComplete();" action="{!removeProduct}" value="{!$Label.Remove}" rerender="productSection" >
+                            <apex:param id="selectedProduct" name="selectedProduct" assignTo="{!sSelectedProduct}" value="{!rowNum}" />
+                        </apex:commandButton>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Lead_Product__c.fields.Product__c.Label}" style="width: 40%">
+                        <apex:inputField value="{!product.Product__c}" style="width: 90%;"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Lead_Product__c.fields.Quantity__c.Label}" style="width: 10%">
+                        <apex:inputField value="{!product.Quantity__c}" style="width: 90%;"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Lead_Product__c.fields.Notes__c.Label}" style="width: 25%">
+                        <apex:inputField value="{!product.Notes__c}" style="width: 90%;"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Lead_Product__c.fields.Competitive_Make_Model__c.Label}" style="width: 25%">
+                        <apex:inputField value="{!product.Competitive_Make_Model__c}" style="width: 90%;"/>
+                    </apex:column>      
+                </apex:pageBlockTable>
+                <apex:commandLink style="font-weight:bold;" onclick="showLoader()" action="{!addNewProduct}" value="{!$Label.Add_Product}" rerender="productSection" oncomplete="ppiAjaxComplete();" immediate="true"/>
+                <img id="loading" src="{!URLFOR($Resource.DealRegResources, 'images/loadingimg.gif')}" style="display: none" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

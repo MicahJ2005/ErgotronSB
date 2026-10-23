@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Use the oldest matching Contact when found; otherwise check unconverted Leads. Contact always takes precedence regardless of Lead age.</description>
+        <name>Evaluate_Contact_Matches</name>
+        <label>Contact Found</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Get_Matching_Lead</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Contact - Check Lead</defaultConnectorLabel>
+        <rules>
+            <name>Contact_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>matchedContactId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Marketing_Submission</targetReference>
+            </connector>
+            <label>Contact Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Capture only when an existing unconverted Lead was found. No Contact and no eligible Lead ends normally with no Marketing Submission.</description>
+        <name>Lead_Found</name>
+        <label>Lead Found</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Create_Marketing_Submission</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Match - End</defaultConnectorLabel>
+        <rules>
+            <name>Existing_Lead_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>matchedLeadId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Marketing_Submission</targetReference>
+            </connector>
+            <label>Lead Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Proceed when original CRM ID or submitted email is populated. CRM ID has priority. Blank identity ends quietly; no Lead or Contact is created.</description>
+        <name>Submitted_Email_Present</name>
+        <label>Submission Identity Present</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Blank Identity - End</defaultConnectorLabel>
+        <rules>
+            <name>Email_Present</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>normalizedEmail</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>originalCrmId</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Matching_Contacts</targetReference>
+            </connector>
+            <label>CRM ID or Email Present</label>
+        </rules>
+    </decisions>
+    <description>MCAE capture: original crmRecordId has priority; email fallback only when blank. Preserve original CRM ID separately from resolved Contact/Lead lookups. Blank identity or no match ends quietly. No person or Task creation. Retain asset inputs and event-key replay protection.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Only query well-formed 15/18 character Contact or Lead IDs. Malformed or unsupported IDs do not fall back to email.</description>
+        <name>crmIdForLookup</name>
+        <dataType>String</dataType>
+        <expression>IF(REGEX({!originalCrmId}, &quot;(003|00Q)[a-zA-Z0-9]{12}([a-zA-Z0-9]{3})?&quot;), {!originalCrmId}, &quot;&quot;)</expression>
+    </formulas>
+    <formulas>
+        <description>Use assetKey for new callers; preserve V1 formKey as fallback when assetKey is blank. New input takes precedence. Stored in existing Form_Key__c.</description>
+        <name>effectiveAssetKey</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK(TRIM({!assetKey})), {!formKey}, {!assetKey})</expression>
+    </formulas>
+    <formulas>
+        <description>Use assetName for new callers; preserve V1 formName as fallback when assetName is blank. New input takes precedence.</description>
+        <name>effectiveAssetName</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK(TRIM({!assetName})), {!formName}, {!assetName})</expression>
+    </formulas>
+    <formulas>
+        <description>Uses the source event key when supplied. Interview GUID fallback keeps separate submissions distinct but cannot identify external retries.</description>
+        <name>effectiveSubmissionKey</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK(TRIM({!submissionKey})), {!$Flow.InterviewGuid}, TRIM({!submissionKey}))</expression>
+    </formulas>
+    <formulas>
+        <description>Email matching is allowed only when the original incoming CRM ID is blank. A supplied ID never redirects by email.</description>
+        <name>fallbackEmail</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!originalCrmId}), {!normalizedEmail}, &quot;&quot;)</expression>
+    </formulas>
+    <formulas>
+        <description>Trim whitespace from submittedEmail for Contact-first, then Lead matching. Preserve the original submittedEmail on the Marketing Submission. Blank email ends normally.</description>
+        <name>normalizedEmail</name>
+        <dataType>String</dataType>
+        <expression>TRIM({!submittedEmail})</expression>
+    </formulas>
+    <formulas>
+        <description>Trim the original incoming CRM ID. Preserve this value in CRM_Record_ID__c; do not replace it with email lookup results. Blank means New / Note only.</description>
+        <name>originalCrmId</name>
+        <dataType>String</dataType>
+        <expression>TRIM({!crmRecordId})</expression>
+    </formulas>
+    <formulas>
+        <description>Use the matched Contact ID first, otherwise the matched Lead ID. This verified email match replaces caller crmRecordId for downstream processing.</description>
+        <name>resolvedCrmRecordId</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!matchedContactId}), {!matchedLeadId}, {!matchedContactId})</expression>
+    </formulas>
+    <formulas>
+        <description>Parses supplied UTC source time. Remains blank when source time is unavailable.</description>
+        <name>sourceSubmittedAt</name>
+        <dataType>DateTime</dataType>
+        <expression>IF(ISBLANK(TRIM({!submittedAtUtc})), NULL, DATETIMEVALUE(TRIM({!submittedAtUtc})))</expression>
+    </formulas>
+    <interviewLabel>Marketing Submission - Capture {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Marketing Submission - Capture</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>Capture original CRM ID in CRM_Record_ID__c and resolved person in Contact__c/Lead__c. Preserve event snapshots, Received status, and Submission Key replay protection. No person or Task creation.</description>
+        <name>Create_Marketing_Submission</name>
+        <label>Create Marketing Submission</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Submission_Key__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>effectiveSubmissionKey</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Asset_Name__c</field>
+            <value>
+                <elementReference>effectiveAssetName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CRM_Record_ID__c</field>
+            <value>
+                <elementReference>originalCrmId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Contact__c</field>
+            <value>
+                <elementReference>matchedContactId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Form_Key__c</field>
+            <value>
+                <elementReference>effectiveAssetKey</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Lead__c</field>
+            <value>
+                <elementReference>matchedLeadId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Processing_Status__c</field>
+            <value>
+                <stringValue>Received</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Prospect_ID__c</field>
+            <value>
+                <elementReference>prospectId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Submission_Details__c</field>
+            <value>
+                <elementReference>submissionDetails</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Submission_Key__c</field>
+            <value>
+                <elementReference>effectiveSubmissionKey</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Submitted_At__c</field>
+            <value>
+                <elementReference>sourceSubmittedAt</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Submitted_Email__c</field>
+            <value>
+                <elementReference>submittedEmail</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Marketing_Submission__c</object>
+        <operationMultMatchingRecords>None</operationMultMatchingRecords>
+        <operationOneMatchingRecord>None</operationOneMatchingRecord>
+        <operationZeroMatchingRecords>AddRecord</operationZeroMatchingRecords>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <description>CRM ID match takes priority. Only when original CRM ID is blank, match populated Email to fallbackEmail. Preserve V5 LastModifiedDate descending email tie-break. Store matchedContactId only; never update people.</description>
+        <name>Get_Matching_Contacts</name>
+        <label>Find Contact by CRM ID or Fallback Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Evaluate_Contact_Matches</targetReference>
+        </connector>
+        <filterLogic>2 OR (1 AND 3)</filterLogic>
+        <filters>
+            <field>Email</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>fallbackEmail</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>crmIdForLookup</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Email</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Contact</object>
+        <outputAssignments>
+            <assignToReference>matchedContactId</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+        <sortField>LastModifiedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+    </recordLookups>
+    <recordLookups>
+        <description>Exact CRM ID first, including converted Lead IDs for downstream resolution. Otherwise match nonblank email to an unconverted Lead only when no incoming CRM ID. Preserve V5 LastModifiedDate descending fallback order.</description>
+        <name>Get_Matching_Lead</name>
+        <label>Find Lead by CRM ID or Fallback Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Lead_Found</targetReference>
+        </connector>
+        <filterLogic>3 OR (1 AND 2 AND 4)</filterLogic>
+        <filters>
+            <field>Email</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>fallbackEmail</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsConverted</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>crmIdForLookup</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Email</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Lead</object>
+        <outputAssignments>
+            <assignToReference>matchedLeadId</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+        <sortField>LastModifiedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+    </recordLookups>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Submitted_Email_Present</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Stable configured asset identifier; max 255 characters. Recommended literal format: business-unit:asset-type:asset-id. Maps to existing Form_Key__c for generic asset context. Reused across submissions; never use as the unique submissionKey.</description>
+        <name>assetKey</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Human-readable marketing asset name; max 255 characters. Configure a literal on each MCAE External Action (form, form handler, file, redirect, email, or page action). Maps to Asset_Name__c. No standard asset-name HML is assumed.</description>
+        <name>assetName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Original incoming Salesforce Contact (003) or Lead (00Q) ID, 15 or 18 characters. When supplied, match only this ID; never fall back to email. When blank, use Contact-first email matching. Preserve original input in CRM_Record_ID__c: supplied = Existing/Task+Note; blank = New/Note only.</description>
+        <name>crmRecordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Legacy input retained for existing V1 callers. Use assetKey for new MCAE actions. Used only when assetKey is blank. Do not expose this alias in a new External Action view. Max 255 characters.</description>
+        <name>formKey</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Legacy input retained for existing V1 callers. Use assetName for new MCAE actions. Used only when assetName is blank. Do not expose this alias in a new External Action view. Max 255 characters.</description>
+        <name>formName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>matchedContactId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>matchedLeadId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Optional MCAE numeric prospect ID; max 80 characters. Leave blank unless available from a verified custom prospect field or caller. Do NOT map {{Recipient.ID}} here: that is the Salesforce Lead/Contact ID. No standard numeric prospect-ID HML is assumed.</description>
+        <name>prospectId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Optional plain-text snapshot assembled from configured context and supported prospect HML at action execution; object max 32768 characters. Preserved verbatim. Not an automatic raw form POST or guaranteed event-time answers. Include only approved data; verify action field limits.</description>
+        <name>submissionDetails</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Optional unique SOURCE EVENT key; max 255 characters, case-insensitive. Reuse only for retries of the same event. Leave blank for standard MCAE actions without an event ID; Flow uses InterviewGuid per invocation. Never use email, CRM/prospect ID or assetKey alone.</description>
+        <name>submissionKey</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Optional verified source event time as UTC text YYYY-MM-DD HH:MM:SS. Leave blank for standard MCAE actions; CreatedDate records intake time. Validate upstream before mapping: invalid date text can convert to null. No standard MCAE event timestamp HML is assumed.</description>
+        <name>submittedAtUtc</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>MCAE HML: {{Recipient.Email}}. V3 trims whitespace for email matching: oldest Contact first, otherwise oldest unconverted Lead. Blank or unmatched email ends normally without a Marketing Submission. Original input is stored in Submitted_Email__c. Max 254 characters.</description>
+        <name>submittedEmail</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

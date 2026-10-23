@@ -1,0 +1,5 @@
+<apex:component controller="CC_ERG_OrderCompleteController" access="global">
+    <p>
+        <p> {!LocalizationLabel}</p>  
+    </p>
+</apex:component>

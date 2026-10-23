@@ -1,0 +1,67 @@
+<apex:page showHeader="true" sidebar="true" standardController="Opportunity" extensions="Compare_Pricing_Controller">
+	<script src="http://code.jquery.com/jquery-2.0.0.min.js" />
+	<script>
+	    window.onload = function(){
+	        jQuery('[id$=listProducts]').focus();
+	    };
+	</script>
+
+	<chatter:feedWithFollowers entityId="{!Opportunity.Id}"/>
+
+	<apex:form id="formMain">
+		<apex:pageBlock id="mainBlock">	
+			<apex:pageMessages id="pageMessages"/>
+
+			<!-- Hidden fields used by the controller extension -->
+			<apex:outputField rendered="false" value="{!Opportunity.Pricebook2Id}" />
+			<apex:outputField rendered="false" value="{!Opportunity.CloseDate}" />
+
+			<apex:pageBlockSection columns="1" title="Opportunity Details" collapsible="false">
+				<apex:outputField value="{!Opportunity.Name}" />
+				<apex:outputField value="{!Opportunity.Account.Name}" />
+				<apex:outputField value="{!Opportunity.SPR_Number__c}" />
+			</apex:pageBlockSection>
+
+			<apex:outputText value="{!$Label.Compare_Pricing_Page_Message}" style="font-size: 12px; font-weight: bold;"/><br/><br/>
+
+			<apex:commandButton value="Return To Opportunity" action="{!returnToOpportunity}" /><br/><br/>
+			<apex:pageBlockTable value="{!listProducts}" var="product" id="listProducts" >
+				<apex:column headerValue="Salesforce Part Number" >
+		    		<apex:outputText value="{!product.sOpptyPartNumber}" />
+		    	</apex:column>
+				<apex:column >
+					<apex:facet name="header">Salesforce Quantity</apex:facet>
+					<div style="background-color:{!IF(product.dApprovedPartQuantity != product.dOpptyPartQuantity,'#FFFF00', '#fff')}">
+						<apex:outputText value="{!product.dOpptyPartQuantity}" />
+					</div>
+				</apex:column>
+				<apex:column >
+					<apex:facet name="header">Salesforce Rebate Amount</apex:facet>
+					<div style="background-color:{!IF(product.dOpptyPartRebate != product.dApprovedPartRebate,'#FFFF00', '#fff')}">
+						<apex:outputText value="{!product.dOpptyPartRebate}" />
+					</div>
+				</apex:column>
+				<apex:column headervalue="Oracle Part Number" >
+					<apex:outputText value="{!product.sApprovedPartNumber}" />
+				</apex:column>
+				<apex:column >
+					<apex:facet name="header">Oracle Quantity</apex:facet>
+					<div style="background-color:{!IF(product.dApprovedPartQuantity != product.dOpptyPartQuantity,'#FFFF00', '#fff')}">
+						<apex:outputText value="{!product.dApprovedPartQuantity}" />
+					</div>
+				</apex:column>
+				<apex:column >
+					<apex:facet name="header">Oracle Rebate Amount</apex:facet>
+					<div style="background-color:{!IF(product.dOpptyPartRebate != product.dApprovedPartRebate,'#FFFF00', '#fff')}">
+						<apex:outputText value="{!product.dApprovedPartRebate}" />
+					</div>
+				</apex:column>
+				<apex:column headervalue="Action" rendered="{!IF(Opportunity.RecordType.DeveloperName='Ergotron_Forecast_Opportunity',true,false)}">                    
+                    <apex:commandLink value="Add To Salesforce" action="{!addToSalesforce}" rendered="{!product.bAddToSalesforce}">
+                        <apex:param name="approvedPartNumberId" value="{!product.sApprovedPartId}" assignTo="{!sApprovedPartId}" />
+                    </apex:commandLink>
+                </apex:column>
+			</apex:pageBlockTable>
+		</apex:pageBlock>
+	</apex:form>	
+</apex:page>

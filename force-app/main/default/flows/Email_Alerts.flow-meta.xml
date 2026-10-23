@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Failed_to_get_Shandi_s_User_Id</name>
+        <label>Failed to get Shandi&apos;s User Id</label>
+        <locationX>314</locationX>
+        <locationY>647</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$User.Email</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Flow &quot;Quote Email Alerts&quot; encounter an issue</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>FlowErrorEmailBody</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <description>Chatter post on the quote with @mention to Shandi Kiddoo</description>
+        <name>T_E_Calculation_Request_Chatter_Post</name>
+        <label>T&amp;E Calculation Request Chatter Post</label>
+        <locationX>50</locationX>
+        <locationY>647</locationY>
+        <actionName>chatterPost</actionName>
+        <actionType>chatterPost</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>text</name>
+            <value>
+                <stringValue>@[{!Shandi_Kiddoo_User_Id.Id}] please calculate T&amp;E for {!$Record.Name}.</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>subjectNameOrId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>chatterPost</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Evaluate_Quote</name>
+        <label>Evaluate Quote</label>
+        <locationX>446</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Includes_lines_that_require_T_E_Calculation</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.T_E_Required_Count__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Installed_Svcs_Required__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Flag_quote_as_Installed_Svcs_Required</targetReference>
+            </connector>
+            <label>Includes lines that require T&amp;E Calculation</label>
+        </rules>
+        <rules>
+            <name>T_E_Required_changed_to_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.T_E_Required_Count__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Installed_Svcs_Required__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>UnFlag_quote_as_Installed_Svcs_Required</targetReference>
+            </connector>
+            <label>T&amp;E Required changed to 0</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>Email Alerts {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Email Alerts</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get the user Id for Shandi Kiddoo to used in the the @mention parameter in the chatter post action.</description>
+        <name>Shandi_Kiddoo_User_Id</name>
+        <label>Shandi Kiddoo User Id</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>T_E_Calculation_Request_Chatter_Post</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Failed_to_get_Shandi_s_User_Id</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Shandi Kiddoo</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>UserType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Standard</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Set Installed_Svcs_Required to true the first time the count of T&amp;E Required is greater than 0</description>
+        <name>Flag_quote_as_Installed_Svcs_Required</name>
+        <label>Flag quote as Installed_Svcs_Required</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>Shandi_Kiddoo_User_Id</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Installed_Svcs_Required__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Set Installed_Svcs_Required to FALSE when the count of T&amp;E Required is = to  0</description>
+        <name>UnFlag_quote_as_Installed_Svcs_Required</name>
+        <label>UnFlag quote as Installed_Svcs_Required</label>
+        <locationX>578</locationX>
+        <locationY>431</locationY>
+        <inputAssignments>
+            <field>Installed_Svcs_Required__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>320</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Evaluate_Quote</targetReference>
+        </connector>
+        <object>Quote</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Email body displaying the fault in a flow</description>
+        <name>FlowErrorEmailBody</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;The flow: &quot;Email Alerts&quot; on Quote {!$Record.Name} encounter an issue.&lt;/p&gt;&lt;p&gt;Please forward this email to helpme@ergotron.com to log in a ticket.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Fault Message:&lt;/p&gt;&lt;p&gt;{!$Flow.FaultMessage}&lt;/p&gt;</text>
+    </textTemplates>
+</Flow>

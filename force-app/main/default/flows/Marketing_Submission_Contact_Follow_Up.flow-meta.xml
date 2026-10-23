@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Use an exact CRM ID match. Unresolved submissions remain available for manual matching or connector follow-up.</description>
+        <name>CRM_Match_Result</name>
+        <label>CRM Match Result</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Mark_Pending_CRM_Match</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Pending CRM Match</defaultConnectorLabel>
+        <rules>
+            <name>Contact_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Find_Linked_Contact.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Link_Contact_Submission</targetReference>
+            </connector>
+            <label>Contact Found</label>
+        </rules>
+        <rules>
+            <name>Lead_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Find_Linked_Lead.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Link_Lead_Submission</targetReference>
+            </connector>
+            <label>Lead Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Link the Note to a Task only when this submission has a follow-up Task. New submissions remain Note-only.</description>
+        <name>Follow_Up_Task_Created</name>
+        <label>Follow Up Task Created</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Mark_Follow_Up_Complete</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Task</defaultConnectorLabel>
+        <rules>
+            <name>Task_Exists</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Follow_Up_Task_ID__c</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Link_Note_to_Follow_Up_Task</targetReference>
+            </connector>
+            <label>Task Exists</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Existing = original CRM_Record_ID__c supplied. New = original CRM ID blank, even when Capture resolved a person by email. New submissions receive a Note only.</description>
+        <name>Original_CRM_ID_Supplied</name>
+        <label>Original CRM ID Supplied</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Create_Submission_Note</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>New - Note Only</defaultConnectorLabel>
+        <rules>
+            <name>Existing_Create_Task</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.CRM_Record_ID__c</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Find_Re_Engagement_Queue</targetReference>
+            </connector>
+            <label>Existing - Create Task</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Prevent fallback assignment to the integration user if the configured Task queue is missing.</description>
+        <name>Queue_Available</name>
+        <label>Queue Available</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Mark_Queue_Configuration_Error</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Queue_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Find_Re_Engagement_Queue.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Re_Engagement_Task</targetReference>
+            </connector>
+            <label>Queue Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Only a verified CRM person can receive a follow-up Task.</description>
+        <name>Ready_for_Follow_Up</name>
+        <label>Ready for Follow Up</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Matched_Person</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>resolvedWhoId</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Original_CRM_ID_Supplied</targetReference>
+            </connector>
+            <label>Matched Person</label>
+        </rules>
+    </decisions>
+    <description>After-commit Marketing Submission processing. Preserve original CRM ID: supplied = Existing with queue-owned Task and Note; blank = New with Note only. Resolve person from original ID or capture lookup. Link one enhanced Note to the person and optional Task; mark Processed after success. Replaces Marketing_Submission_Process; never activate both.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Audit result with original submission classification, Note ID and optional Task ID.</description>
+        <name>completionMessage</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!$Record.CRM_Record_ID__c}), &quot;New; Note only&quot;, &quot;Existing; Task and Note&quot;) &amp; &quot;; Note ID: &quot; &amp; {!Create_Submission_Note.Id} &amp; IF(ISBLANK({!$Record.Follow_Up_Task_ID__c}), &quot;&quot;, &quot;; Task ID: &quot; &amp; {!$Record.Follow_Up_Task_ID__c})</expression>
+    </formulas>
+    <formulas>
+        <description>Encode the plain-text snapshot as HTML text and preserve line breaks for ContentNote. Never interpret submission details as markup.</description>
+        <name>noteContentHtml</name>
+        <dataType>String</dataType>
+        <expression>&quot;&lt;p&gt;&quot; &amp; SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE({!submissionNoteBody}, &quot;&amp;&quot;, &quot;&amp;amp;&quot;), &quot;&lt;&quot;, &quot;&amp;lt;&quot;), &quot;&gt;&quot;, &quot;&amp;gt;&quot;), MID({!lineBreakToken}, 2, 1), &quot;&lt;/p&gt;&lt;p&gt;&quot;) &amp; &quot;&lt;/p&gt;&quot;</expression>
+    </formulas>
+    <formulas>
+        <description>Use original CRM ID when supplied; otherwise use the Contact or Lead lookup already resolved by Capture. Never overwrite original CRM_Record_ID__c.</description>
+        <name>personIdForLookup</name>
+        <dataType>String</dataType>
+        <expression>IF(NOT(ISBLANK({!$Record.CRM_Record_ID__c})), TRIM({!$Record.CRM_Record_ID__c}), IF(NOT(ISBLANK({!$Record.Contact__c})), {!$Record.Contact__c}, {!$Record.Lead__c}))</expression>
+    </formulas>
+    <formulas>
+        <description>Prefer the matched Contact or converted Contact; otherwise use the matched Lead.</description>
+        <name>resolvedWhoId</name>
+        <dataType>String</dataType>
+        <expression>IF(NOT(ISBLANK({!Find_Linked_Contact.Id})), {!Find_Linked_Contact.Id}, IF(NOT(ISBLANK({!Find_Linked_Lead.ConvertedContactId})), {!Find_Linked_Lead.ConvertedContactId}, {!Find_Linked_Lead.Id}))</expression>
+    </formulas>
+    <interviewLabel>Marketing Submission - Contact Follow Up {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Marketing Submission - Task and Note Follow Up</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>Create one queue-owned follow-up Task for the resolved CRM person.</description>
+        <name>Create_Re_Engagement_Task</name>
+        <label>Create Re Engagement Task</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Mark_Routed</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Mark_Task_Creation_Failed</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <elementReference>$Record.Submission_Details__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Find_Re_Engagement_Queue.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>Normal</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>$Record.Asset_Name__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhoId</field>
+            <value>
+                <elementReference>resolvedWhoId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Create one enhanced Note preserving the marketing submission, timestamp, submitted email, and follow-up Task reference. Link this same Note to the matched CRM person and Task.</description>
+        <name>Create_Submission_Note</name>
+        <label>Create Submission Note</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Link_Note_to_CRM_Person</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Content</field>
+            <value>
+                <elementReference>noteContentHtml</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Title</field>
+            <value>
+                <elementReference>$Record.Asset_Name__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ContentNote</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Relate the enhanced submission Note to the same verified Lead or Contact as the submission. Internal visibility and viewer access.</description>
+        <name>Link_Note_to_CRM_Person</name>
+        <label>Link Note to CRM Person</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Follow_Up_Task_Created</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ContentDocumentId</field>
+            <value>
+                <elementReference>Create_Submission_Note.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>LinkedEntityId</field>
+            <value>
+                <elementReference>resolvedWhoId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ShareType</field>
+            <value>
+                <stringValue>V</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Visibility</field>
+            <value>
+                <stringValue>InternalUsers</stringValue>
+            </value>
+        </inputAssignments>
+        <object>ContentDocumentLink</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Link the same submission Note to the follow-up Task. Execute only when a Task was created.</description>
+        <name>Link_Note_to_Follow_Up_Task</name>
+        <label>Link Note to Follow Up Task</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Mark_Follow_Up_Complete</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ContentDocumentId</field>
+            <value>
+                <elementReference>Create_Submission_Note.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>LinkedEntityId</field>
+            <value>
+                <elementReference>Create_Re_Engagement_Task.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ShareType</field>
+            <value>
+                <stringValue>V</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Visibility</field>
+            <value>
+                <stringValue>InternalUsers</stringValue>
+            </value>
+        </inputAssignments>
+        <object>ContentDocumentLink</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <description>Resolve the provided Salesforce Contact ID without changing its owner.</description>
+        <name>Find_Linked_Contact</name>
+        <label>Find Linked Contact</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>CRM_Match_Result</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>personIdForLookup</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Resolve the provided Salesforce Lead ID. Missing or invalid links are held for review instead of creating duplicate Leads.</description>
+        <name>Find_Linked_Lead</name>
+        <label>Find Linked Lead</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Find_Linked_Contact</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>personIdForLookup</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Lead</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Resolve queue by DeveloperName so routing works across environments without hardcoded IDs.</description>
+        <name>Find_Re_Engagement_Queue</name>
+        <label>Find Re Engagement Queue</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Queue_Available</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Re_Engagement_Task_Queue</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Type</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Queue</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Group</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Attach preserved submission history to the matching Contact.</description>
+        <name>Link_Contact_Submission</name>
+        <label>Link Contact Submission</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Ready_for_Follow_Up</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Contact__c</field>
+            <value>
+                <elementReference>Find_Linked_Contact.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Preserve the Lead relationship and converted Contact when present.</description>
+        <name>Link_Lead_Submission</name>
+        <label>Link Lead Submission</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Ready_for_Follow_Up</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Contact__c</field>
+            <value>
+                <elementReference>Find_Linked_Lead.ConvertedContactId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Lead__c</field>
+            <value>
+                <elementReference>Find_Linked_Lead.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Mark Processed only after the Note and required links succeed. Preserve Task ID and record the created Note ID for audit.</description>
+        <name>Mark_Follow_Up_Complete</name>
+        <label>Mark Follow Up Complete</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Processing_Message__c</field>
+            <value>
+                <elementReference>completionMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Processing_Status__c</field>
+            <value>
+                <stringValue>Processed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Hold unresolved submissions without making duplicate Leads or assigning a Task to an unverified person.</description>
+        <name>Mark_Pending_CRM_Match</name>
+        <label>Mark Pending CRM Match</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Ready_for_Follow_Up</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Processing_Message__c</field>
+            <value>
+                <stringValue>No exact Salesforce Lead or Contact match. Confirm connector sync and resolve CRM Record ID before retrying; do not assume this is a net-new prospect.</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Processing_Status__c</field>
+            <value>
+                <stringValue>Pending CRM Match</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Keep intake record visible when the queue configuration is missing.</description>
+        <name>Mark_Queue_Configuration_Error</name>
+        <label>Mark Queue Configuration Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Processing_Message__c</field>
+            <value>
+                <stringValue>Required Task queue Re_Engagement_Task_Queue was not found. Correct queue configuration before retrying.</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Processing_Status__c</field>
+            <value>
+                <stringValue>Failed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Store the created Task ID and mark processing complete in the same transaction as Task creation.</description>
+        <name>Mark_Routed</name>
+        <label>Mark Routed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Create_Submission_Note</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Follow_Up_Task_ID__c</field>
+            <value>
+                <elementReference>Create_Re_Engagement_Task.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Processing_Message__c</field>
+            <value>
+                <stringValue>Follow-up Task assigned to Re-Engagement Task Queue. Existing Lead and Contact ownership unchanged.</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Processing_Status__c</field>
+            <value>
+                <stringValue>Routed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Preserve the submission and flag the failed follow-up for administrator review.</description>
+        <name>Mark_Task_Creation_Failed</name>
+        <label>Mark Task Creation Failed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Processing_Message__c</field>
+            <value>
+                <stringValue>Task creation failed. Review the Flow error details and Task validation/automation, then retry after correcting the cause.</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Processing_Status__c</field>
+            <value>
+                <stringValue>Failed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterFormula>AND({!$Record.Processing_Status__c} = &quot;Received&quot;, ISBLANK({!$Record.Follow_Up_Task_ID__c}))</filterFormula>
+        <object>Marketing_Submission__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Find_Linked_Lead</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Plain-text marker: pipe, one newline, pipe. MID(lineBreakToken,2,1) gives a literal line-feed for HTML paragraph conversion. Keep both markers and the single newline.</description>
+        <name>lineBreakToken</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>|
+|</text>
+    </textTemplates>
+    <textTemplates>
+        <description>Submission snapshot and traceability. Same enhanced Note is linked to the CRM person and, if created, the follow-up Task.</description>
+        <name>submissionNoteBody</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Marketing Submission: {!$Record.Name}
+Asset: {!$Record.Asset_Name__c}
+Submitted at: {!$Record.Submitted_At__c}
+Captured at: {!$Record.CreatedDate}
+Submitted email: {!$Record.Submitted_Email__c}
+Original CRM ID (blank = new submission): {!$Record.CRM_Record_ID__c}
+Resolved CRM record: {!resolvedWhoId}
+Follow-up Task ID (blank = Note only): {!$Record.Follow_Up_Task_ID__c}
+
+Submission details:
+{!$Record.Submission_Details__c}</text>
+    </textTemplates>
+</Flow>

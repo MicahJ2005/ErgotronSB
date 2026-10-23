@@ -1,0 +1,2407 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" title="Marketing Submission Guide">
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1" />
+            <title>Marketing Submission Solution Guide</title>
+            <style>
+                * {
+                    box-sizing:border-box
+                }
+                html {
+                    scroll-behavior:smooth
+                }
+                body {
+                    margin:0;
+                    background:#f4f6f9;
+                    color:#183247;
+                    font:16px/1.65 Arial,sans-serif
+                }
+                header {
+                    background:#12354d;
+                    color:white;
+                    padding:42px max(28px,calc((100vw - 1250px)/2))
+                }
+                header p {
+                    margin:0;
+                    color:#b9d9e9;
+                    letter-spacing:.08em;
+                    font-size:12px;
+                    text-transform:uppercase
+                }
+                h1 {
+                    font-size:36px;
+                    line-height:1.2;
+                    margin:12px 0
+                }
+                header span {
+                    font-size:15px;
+                    color:#dcebf3
+                }
+                .layout {
+                    display:grid;
+                    grid-template-columns:245px minmax(0,1fr);
+                    gap:34px;
+                    max-width:1306px;
+                    margin:auto;
+                    padding:32px 28px
+                }
+                nav {
+                    align-self:start;
+                    position:sticky;
+                    top:24px;
+                    max-height:calc(100vh - 48px);
+                    overflow-y:auto
+                }
+                nav strong {
+                    font-size:12px;
+                    text-transform:uppercase;
+                    letter-spacing:.08em
+                }
+                nav a {
+                    display:block;
+                    padding:7px 0;
+                    font-size:13px;
+                    line-height:1.4;
+                    text-decoration:none;
+                    color:#34566d
+                }
+                nav a:hover,nav a:focus {
+                    text-decoration:underline;
+                    color:#005fb2
+                }
+                main {
+                    min-width:0;
+                    background:white;
+                    padding:28px 36px;
+                    border:1px solid #dce5eb;
+                    border-radius:10px
+                }
+                h2 {
+                    font-size:23px;
+                    line-height:1.35;
+                    margin:42px 0 18px;
+                    padding-top:18px;
+                    border-top:1px solid #dce5eb;
+                    scroll-margin-top:20px
+                }
+                p {
+                    margin:0 0 18px
+                }
+                a {
+                    color:#005fb2
+                }
+                code {
+                    font:12px/1.5 Consolas,monospace;
+                    background:#eef3f6;
+                    padding:2px 4px;
+                    border-radius:3px;
+                    overflow-wrap:anywhere
+                }
+                li {
+                    padding-bottom:9px
+                }
+                .table-wrap {
+                    overflow:auto;
+                    margin:20px 0
+                }
+                table {
+                    border-collapse:collapse;
+                    width:100%;
+                    font-size:13px;
+                    line-height:1.55
+                }
+                th {
+                    background:#eaf1f6;
+                    color:#12354d;
+                    text-align:left
+                }
+                th,td {
+                    padding:12px;
+                    border:1px solid #dce5eb;
+                    vertical-align:top
+                }
+                td:first-child {
+                    min-width:175px
+                }
+                tr:nth-child(even) {
+                    background:#fafcfd
+                }
+                .pipeline {
+                    display:grid;
+                    grid-template-columns:repeat(3,1fr);
+                    gap:10px;
+                    counter-reset:step
+                }
+                .pipeline div {
+                    background:#eef6fa;
+                    border-left:3px solid #1682a7;
+                    padding:13px;
+                    font-size:13px
+                }
+                .pipeline div:before {
+                    counter-increment:step;
+                    content:counter(step) '. ';
+                    font-weight:bold
+                }
+                .caption {
+                    font-size:13px;
+                    color:#536b7c;
+                    margin-top:10px
+                }
+                footer {
+                    font-size:12px;
+                    color:#657c8b;
+                    padding:20px 0
+                }
+                a:focus-visible {
+                    outline:3px solid #1598cd;
+                    outline-offset:3px
+                }
+                @media(max-width:850px) {
+                    .layout {
+                        display:block;
+                        padding:18px
+                    }
+                    nav {
+                        position:static;
+                        margin-bottom:20px;
+                        max-height:none;
+                        overflow:visible
+                    }
+                    main {
+                        padding:20px
+                    }
+                    h1 {
+                        font-size:28px
+                    }
+                    .pipeline {
+                        grid-template-columns:1fr 1fr
+                    }
+                }
+                @media print {
+                    header {
+                        background:white;
+                        color:black;
+                        padding:0
+                    }
+                    header p,header span {
+                        color:#333
+                    }
+                    nav {
+                        display:none
+                    }
+                    .layout {
+                        display:block;
+                        padding:0
+                    }
+                    main {
+                        border:0;
+                        padding:0
+                    }
+                    h2 {
+                        break-after:avoid
+                    }
+                    tr {
+                        break-inside:avoid
+                    }
+                    body {
+                        background:white
+                    }
+                    .table-wrap {
+                        overflow:visible
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <header id="top">
+                <p>
+                    Ergotron · Salesforce Account Engagement
+                </p>
+                <h1>
+                    Marketing Submission Solution Guide
+                </h1>
+                <span>Sandbox CRM-first capture, New/Existing routing, queue Tasks and shared Notes</span>
+            </header>
+            <div class="layout">
+                <nav aria-label="Guide sections">
+                    <strong>In this guide</strong><a href="#sandbox-components">Sandbox components</a>
+                    <a href="#architecture-and-record-ownership">Architecture and record ownership</a>
+                    <a href="#crm-first-matching-and-unmatched-submission-capture">CRM-first matching and unmatched submission capture</a>
+                    <a href="#capture-and-mcae-input-contract">Capture and MCAE input contract</a>
+                    <a href="#field-dictionary-submission-identity-and-source-facts">Field dictionary — submission identity and source facts</a>
+                    <a href="#field-dictionary-relationships-and-processing">Field dictionary — relationships and processing</a>
+                    <a href="#field-dictionary-standard-fields">Field dictionary — standard fields</a>
+                    <a href="#production-marketing-app-extension-setup">Production Marketing App Extension setup</a>
+                    <a href="#visible-fields-and-marketing-app-extension-crmrecordid-mapping">Visible fields and Marketing App Extension crmRecordId mapping</a>
+                    <a href="#permission-sets-and-integration-access">Permission sets and integration access</a>
+                    <a href="#b2bma-and-downstream-access-requirements">B2BMA and downstream access requirements</a>
+                    <a href="#debugging-live-flow-executions">Debugging live Flow executions</a>
+                    <a href="#fault-handling-and-known-follow-up-work">Fault handling and known follow-up work</a>
+                    <a href="#historical-production-v3-deployment-and-extension-test">Historical production V3 deployment and extension test</a>
+                    <a href="#historical-production-v2-capture-october-13-2026">Historical production V2 capture — October 13, 2026</a>
+                    <a href="#new-versus-existing-and-processing-lifecycle">New versus Existing and processing lifecycle</a>
+                    <a href="#task-queue-assignment-and-field-mappings">Task queue assignment and field mappings</a>
+                    <a href="#enhanced-note-content-and-relationships">Enhanced Note content and relationships</a>
+                    <a href="#extending-the-design-without-one-apex-class-per-use-case">Extending the design without one Apex class per use case</a>
+                    <a href="#scaling-and-operational-controls">Scaling and operational controls</a>
+                    <a href="#sandbox-verification-and-production-acceptance">Sandbox verification and production acceptance</a>
+                    <a href="#deployment-and-rollback">Deployment and rollback</a>
+                    <a href="#maintaining-and-deploying-this-guide">Maintaining and deploying this guide</a>
+                    <a href="#top">Back to top</a>
+                </nav>
+                <main>
+                    <p>
+                        Version 1.6 · Documentation updated October 21, 2026 · Ergotron FULL sandbox
+                    </p>
+                    <p>
+                        Marketing_Submission__c preserves a submission snapshot separately from the Lead or Contact and the work generated for Sales. Capture uses the original incoming CRM ID first and email only when that ID is blank. Downstream processing classifies the submission from that original ID, assigns eligible Tasks to a queue, and creates one enhanced Note related to the person and, when present, the Task.
+                    </p>
+                    <p>
+                        <strong>Latest requested capture change:</strong> when neither Contact nor Lead is found, still execute Create Marketing Submission with blank person lookups. Capture V7 is now active and its saved canvas includes that change. V6 previously discarded unmatched submissions. This documentation update did not modify or activate Flows.
+                    </p>
+                    <p>
+                        <strong>Release scope:</strong> sandbox documentation only. Capture V6 and Task and Note Follow Up V2 were activated and tested October 21; the user&#x27;s subsequent Capture V7 no-match change is now active and its saved connector was inspected. A V7 runtime test was not performed during this documentation update. The legacy processor is inactive. No production deployment, action mapping change, permission change, or live Marketing App Extension test is part of this release. The October 14 production V3/B2BMA results below are historical evidence, not validation of the new design. This sandbox has no Marketing App Extensions.
+                    </p>
+                    <p>
+                        <apex:outputLink value="https://ergotron--full.sandbox.lightning.force.com/lightning/n/Marketing_Submission_Guide" target="_blank" rel="noopener noreferrer">Sandbox guide</apex:outputLink> · <apex:outputLink value="https://ergotron--full.sandbox.lightning.force.com/lightning/r/FlowRecord/2aFcb000008dtgWEAQ/view" target="_blank" rel="noopener noreferrer">Sandbox Capture version history</apex:outputLink> · <apex:outputLink value="https://ergotron--c.vf.force.com/apex/MarketingSubmissionGuide" target="_blank" rel="noopener noreferrer">Production guide — previous release</apex:outputLink>.
+                    </p>
+                    <p>
+                        <apex:outputLink value="https://ergotron--full.sandbox.my.salesforce-setup.com/lightning/setup/ObjectManager/01Icb000008DlxN/FieldsAndRelationships/view" target="_blank" rel="noopener noreferrer">Open the live object field inventory</apex:outputLink>.
+                    </p>
+                    <h2 id="sandbox-components">
+                        Sandbox components
+                    </h2>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Component
+                                    </th>
+                                    <th scope="col">
+                                        Responsibility
+                                    </th>
+                                    <th scope="col">
+                                        Version / evidence
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <code>Marketing_Submission__c</code>
+                                    </td>
+                                    <td>
+                                        Source snapshot, original CRM ID, resolved relationships, processing outcome
+                                    </td>
+                                    <td>
+                                        Existing 13 custom fields; no new fields required
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>Marketing_Submission_Capture</code>
+                                    </td>
+                                    <td>
+                                        CRM ID first; blank-ID email fallback; insert snapshot and suppress an existing event key
+                                    </td>
+                                    <td>
+                                        Active V7: <code>301cb00001R9lmLAAR</code>, captures no-match submissions; prior tested V6: <code>301cb00001R830sAAB</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>Marketing_Submission_Contact_Follow_Up</code>
+                                    </td>
+                                    <td>
+                                        Label: Marketing Submission - Task and Note Follow Up; asynchronous classification, queue Task and enhanced Note
+                                    </td>
+                                    <td>
+                                        Active V2: <code>301cb00001R8GCTAA3</code>; API name retained from its Contact-only origin
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>Marketing_Submission_Process</code>
+                                    </td>
+                                    <td>
+                                        Superseded legacy processor
+                                    </td>
+                                    <td>
+                                        Inactive; do not activate alongside the new processor
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>Marketing_Submission_Link_Converted_Lead</code>
+                                    </td>
+                                    <td>
+                                        Fill Contact on related submissions after Lead conversion
+                                    </td>
+                                    <td>
+                                        Retained; prior October 1 baseline, not independently retested in this release
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>Re_Engagement_Task_Queue</code>
+                                    </td>
+                                    <td>
+                                        Own eligible follow-up Tasks
+                                    </td>
+                                    <td>
+                                        Existing Re-Engagement Task Queue; no duplicate queue or membership changes
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>MarketingSubmissionGuide</code> / <code>Marketing_Submission_Guide</code>
+                                    </td>
+                                    <td>
+                                        Existing Visualforce page and Lightning tab
+                                    </td>
+                                    <td>
+                                        Guide 1.6 published in sandbox only
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Marketing App Extension / External Action
+                                    </td>
+                                    <td>
+                                        Invoke capture from MCAE
+                                    </td>
+                                    <td>
+                                        No sandbox extension; mapping instructions below are for future configuration and verification
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <apex:outputLink value="https://ergotron--full.sandbox.lightning.force.com/builder_platform_interaction/flowBuilder.app?flowId=301cb00001R9lmLAAR" target="_blank" rel="noopener noreferrer">Open active Capture V7</apex:outputLink> · <apex:outputLink value="https://ergotron--full.sandbox.lightning.force.com/builder_platform_interaction/flowBuilder.app?flowId=301cb00001R8GCTAA3" target="_blank" rel="noopener noreferrer">Open active Follow Up V2</apex:outputLink> · <apex:outputLink value="https://ergotron--full.sandbox.lightning.force.com/lightning/r/FlowRecord/2aFcb000008dzILEAY/view" target="_blank" rel="noopener noreferrer">Old processor history</apex:outputLink>.
+                    </p>
+                    <p>
+                        This self-contained Visualforce guide uses inline HTML and CSS. It has no Apex controller, Static Resource, JavaScript library, or CRM operations. Flows execute the solution; this page documents it. Solution attribution: DemandChain · Brandon Walton.
+                    </p>
+                    <h2 id="architecture-and-record-ownership">
+                        Architecture and record ownership
+                    </h2>
+                    <p>
+                        One Marketing Submission represents one captured invocation or identified source event. Separate submissions from the same person remain separate snapshots. A genuine source event key can suppress a retry of that event.
+                    </p>
+                    <div class="pipeline" aria-label="Submission processing architecture">
+                        <div>
+                            MCAE External Action
+                        </div>
+                        <div>
+                            Original CRM ID; blank-ID email fallback
+                        </div>
+                        <div>
+                            V7: capture even when no person matches
+                        </div>
+                        <div>
+                            Async person resolution; pending if unresolved
+                        </div>
+                        <div>
+                            Existing: queue Task + Note linked to person and Task
+                        </div>
+                        <div>
+                            New: person Note only
+                        </div>
+                    </div>
+                    <p class="caption">
+                        Active V7 retains unmatched submissions; its saved path is verified, with runtime testing still pending. Both identity inputs blank still ends normally. Follow Up V2 creates outputs only after resolving a CRM person. Sandbox evidence and historical production tests are distinguished below.
+                    </p>
+                    <p>
+                        The diagram includes the active V7 change: identity present but no person match still reaches capture. Both identity inputs blank still ends normally. V7 activation was verified in Flow Builder; its no-match execution still needs a focused runtime test.
+                    </p>
+                    <p>
+                        Capture owns the original values and initial lookup result. The processor owns processing status, Task outcomes and Note links. The Task represents Sales work. The Note records readable submission context. Neither Flow creates a Lead or Contact. The conversion-linking Flow can maintain later relationships; it does not supply an automatic pending-submission retry service.
+                    </p>
+                    <h2 id="crm-first-matching-and-unmatched-submission-capture">
+                        CRM-first matching and unmatched submission capture
+                    </h2>
+                    <p>
+                        The original trimmed <code>crmRecordId</code> selects the matching strategy. Email is used only when that original input is blank; a supplied ID never redirects to another person through email.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Input / lookup result
+                                    </th>
+                                    <th scope="col">
+                                        Capture behavior in active V7
+                                    </th>
+                                    <th scope="col">
+                                        Follow-up behavior
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        CRM ID matches a Contact
+                                    </td>
+                                    <td>
+                                        Store original ID and Contact lookup
+                                    </td>
+                                    <td>
+                                        Existing: queue Task and person Note; same Note also linked to Task
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        CRM ID matches a Lead
+                                    </td>
+                                    <td>
+                                        Store original ID and Lead lookup, even when email matches a different Contact
+                                    </td>
+                                    <td>
+                                        Existing: queue Task and Note; converted Lead activity resolves to its converted Contact
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        CRM ID blank; email matches Contact
+                                    </td>
+                                    <td>
+                                        Contact-first fallback; original CRM ID stays blank
+                                    </td>
+                                    <td>
+                                        New: person Note only, even though the Contact already exists
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        CRM ID blank; no Contact, email matches unconverted Lead
+                                    </td>
+                                    <td>
+                                        Store Lead lookup; original CRM ID stays blank
+                                    </td>
+                                    <td>
+                                        New: person Note only
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Identity supplied; no Contact or Lead found
+                                    </td>
+                                    <td>
+                                        <strong>Create Marketing Submission still executes</strong>, with blank person lookups and Received status; existing-key skip still applies
+                                    </td>
+                                    <td>
+                                        Unresolved person: Pending CRM Match; no Task or Note can be related yet
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Both CRM ID and email blank / whitespace
+                                    </td>
+                                    <td>
+                                        Blank Identity - End before person queries or creation
+                                    </td>
+                                    <td>
+                                        No submission or downstream work
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <strong>V7 change and saved labels:</strong> both Lead Found outcomes now merge into Create Marketing Submission. The old default label <code>No Match - End</code> and some resource descriptions still describe earlier behavior; the saved connector determines execution. V7 now shows Active in Flow Builder. Its connection supersedes V6&#x27;s quiet no-match exit. No V7 runtime test is claimed here.
+                    </p>
+                    <p>
+                        <strong>Duplicate email selection:</strong> Contact takes precedence over Lead. Current fallback queries use LastModifiedDate descending and keep the first matching record, inherited from Capture V5. This supersedes the older guide&#x27;s CreatedDate-ascending/oldest-record description. There is no secondary tie breaker for equal timestamps. Email is not unique and this selection does not prove the chosen record is canonical.
+                    </p>
+                    <p>
+                        A Contact match sets <code>Contact__c</code>; otherwise a Lead match sets <code>Lead__c</code>. Internal match variables clear when no record is returned. Email fallback excludes converted Leads; an explicit Lead ID may resolve a converted Lead for downstream Contact linkage. <code>CRM_Record_ID__c</code> stores <code>TRIM({&#33;crmRecordId})</code>, never an email-resolved ID.
+                    </p>
+                    <p>
+                        The capture ID-shape guard accepts 15/18-character Contact (<code>003</code>) or Lead (<code>00Q</code>) identifiers for lookup; it is not checksum validation. A malformed supplied ID still blocks email fallback. With V7, its no-match branch can reach insertion; field limits, query and DML faults still apply. In particular, original IDs longer than the field&#x27;s 18-character limit cannot be captured unchanged. Invalid IDs can also require correction before downstream ID queries can succeed. Do not describe invalid input as guaranteed successful processing.
+                    </p>
+                    <p>
+                        An unmatched V7 submission preserves the supplied details for reconciliation. A later connector sync does not automatically rematch it: the processor uses captured CRM ID/lookups, and no scheduled email-rematching service was added. Link a verified person under a controlled reconciliation procedure, preserve the original ID classification, and retry only after inspecting prior outcomes.
+                    </p>
+                    <h2 id="capture-and-mcae-input-contract">
+                        Capture and MCAE input contract
+                    </h2>
+                    <p>
+                        All ten existing inputs remain Text and retain their API names. After identity lookup, capture resolves generic versus legacy asset names, chooses the supplied event key or interview GUID, converts optional source time, and writes Received. V7 also reaches this step without a matched person. An existing Submission Key skips creation without overwriting the original. Tasks and Notes remain downstream.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Flow input
+                                    </th>
+                                    <th scope="col">
+                                        MCAE value or configuration
+                                    </th>
+                                    <th scope="col">
+                                        Destination / rule
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <code>assetName</code>
+                                    </td>
+                                    <td>
+                                        Descriptive literal configured for the asset
+                                    </td>
+                                    <td>
+                                        <code>Asset_Name__c</code>, max 255; used for Task subject and Note title
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>assetKey</code>
+                                    </td>
+                                    <td>
+                                        Stable literal such as business-unit:asset-type:asset-id
+                                    </td>
+                                    <td>
+                                        Existing <code>Form_Key__c</code>, max 255
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>submittedEmail</code>
+                                    </td>
+                                    <td>
+                                        <code>{{Recipient.Email}}</code>
+                                    </td>
+                                    <td>
+                                        Trim for fallback matching; retain supplied value in <code>Submitted_Email__c</code>, max 254. ID-only capture is supported.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>crmRecordId</code>
+                                    </td>
+                                    <td>
+                                        <code>{{Recipient.ID}}</code> or a verified source-preserved CRM ID
+                                    </td>
+                                    <td>
+                                        Original Salesforce Lead/Contact ID, 15/18 characters. Trim into <code>CRM_Record_ID__c</code>; supplied = Existing, blank = New. Never populate it from a later email match.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>submissionDetails</code>
+                                    </td>
+                                    <td>
+                                        Readable context and supported prospect merge fields
+                                    </td>
+                                    <td>
+                                        <code>Submission_Details__c</code>, object limit 32768; Task Description limit is 32000
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>prospectId</code>
+                                    </td>
+                                    <td>
+                                        Verified numeric MCAE prospect ID, otherwise blank
+                                    </td>
+                                    <td>
+                                        <code>Prospect_ID__c</code>, max 80; do not map Recipient.ID here
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>submissionKey</code>
+                                    </td>
+                                    <td>
+                                        Genuine unique source event key, otherwise blank
+                                    </td>
+                                    <td>
+                                        <code>Submission_Key__c</code>, max 255; reuse only for a retry of the same event
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>submittedAtUtc</code>
+                                    </td>
+                                    <td>
+                                        Validated original UTC timestamp, otherwise blank
+                                    </td>
+                                    <td>
+                                        <code>Submitted_At__c</code>; format YYYY-MM-DD HH:MM:SS
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>formName</code>
+                                    </td>
+                                    <td>
+                                        Legacy callers
+                                    </td>
+                                    <td>
+                                        Fallback only when assetName is blank
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>formKey</code>
+                                    </td>
+                                    <td>
+                                        Legacy callers
+                                    </td>
+                                    <td>
+                                        Fallback only when assetKey is blank
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        Salesforce documents <code>{{Recipient.ID}}</code> as the prospect&#x27;s Lead or Contact CRM ID. It is not the numeric MCAE prospect ID. HML resolves when the action executes; a prospect that acquires a CRM ID before that moment may therefore be classified Existing. If the requirement is an immutable form-submit-time distinction, provide a source-preserved original-ID value rather than assuming HML proves historical existence. <apex:outputLink value="https://help.salesforce.com/s/articleView?id=sf.pardot_handlebars_merge_fields.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener noreferrer">Salesforce HML reference</apex:outputLink>.
+                    </p>
+                    <p>
+                        Asset identity is not event identity. Never use assetKey, email, or person ID alone as Submission Key, because legitimate repeat submissions would be suppressed. A blank key produces an interview GUID, which distinguishes invocations but does not identify external retries. Blank source time stays null; CreatedDate is Salesforce capture time. Validate optional timestamps upstream: invalid date text previously converted to null in testing.
+                    </p>
+                    <p>
+                        Submission Details is the text the action supplied. It is not an automatic raw form POST or a guaranteed event-time answer snapshot. Keep it within 32000 characters when the Existing branch must also populate a Task. Current mappings do not silently truncate oversized content; object/Task errors require correction. Verify MCAE action-control limits separately.
+                    </p>
+                    <h2 id="field-dictionary-submission-identity-and-source-facts">
+                        Field dictionary — submission identity and source facts
+                    </h2>
+                    <p>
+                        These eight fields store source facts, including the original incoming CRM identifier. Resolved identities belong in Contact and Lead. The two legacy asset aliases preserve caller compatibility without adding object fields. Field types below are Salesforce storage types, which can differ from the Flow input type.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Field and API name
+                                    </th>
+                                    <th scope="col">
+                                        Type / input
+                                    </th>
+                                    <th scope="col">
+                                        Purpose and design guidance
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>Submission Key</strong> — <code>Submission_Key__c</code>
+                                    </td>
+                                    <td>
+                                        Text(255), unique case-insensitive, External ID; <code>submissionKey</code>
+                                    </td>
+                                    <td>
+                                        Identity of one source event. Reuse the same value for retries; use a different value for each genuine submission. Proposed convention: source + business unit + source event ID. Do not use email, prospect ID, or form key alone. Case-only differences are duplicates. Indexed.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Form Key</strong> — <code>Form_Key__c</code>
+                                    </td>
+                                    <td>
+                                        Text(255); <code>assetKey</code>, legacy <code>formKey</code>
+                                    </td>
+                                    <td>
+                                        Stable asset identifier for routing and reporting. The existing field retains its original label/API name. Qualify by business unit and asset type; keep it stable when the display name changes. Currently not indexed.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Asset Name</strong> — <code>Asset_Name__c</code>
+                                    </td>
+                                    <td>
+                                        Text(255); <code>assetName</code>, legacy <code>formName</code>
+                                    </td>
+                                    <td>
+                                        Human-readable configured asset name captured with the event. Supports assets beyond forms and form handlers. Keep as a snapshot; use Asset Key for stable routing.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Prospect ID</strong> — <code>Prospect_ID__c</code>
+                                    </td>
+                                    <td>
+                                        Text(80); <code>prospectId</code>
+                                    </td>
+                                    <td>
+                                        Source Account Engagement prospect identifier for support and reconciliation. It is not a Salesforce record ID or relationship. Proposed: pair with business unit identity before cross-unit matching.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>CRM Record ID</strong> — <code>CRM_Record_ID__c</code>
+                                    </td>
+                                    <td>
+                                        Text(18); <code>originalCrmId = TRIM({&#33;crmRecordId})</code>
+                                    </td>
+                                    <td>
+                                        V6/V7 preserve the original input. Supplied = Existing; blank = New. Do not backfill from a later email match or use it as the resolved-person field. Historical V3 records stored an email-resolved ID and cannot safely be reclassified using this rule without migration review.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Submitted Email</strong> — <code>Submitted_Email__c</code>
+                                    </td>
+                                    <td>
+                                        Text(254); <code>submittedEmail</code>
+                                    </td>
+                                    <td>
+                                        Original email supplied at action execution, retained if the person&#x27;s current email later changes. Capture trims a separate value for fallback matching. This is Text, not Salesforce Email type; email alone is not unique.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Submitted At</strong> — <code>Submitted_At__c</code>
+                                    </td>
+                                    <td>
+                                        Date/Time; <code>submittedAtUtc</code>
+                                    </td>
+                                    <td>
+                                        Verified source event time, when available. Input convention is UTC <code>YYYY-MM-DD HH:MM:SS</code>. Blank remains null; malformed date text can also become null. Do not substitute Salesforce intake time and call it source time.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Submission Details</strong> — <code>Submission_Details__c</code>
+                                    </td>
+                                    <td>
+                                        Long Text Area(32768); <code>submissionDetails</code>
+                                    </td>
+                                    <td>
+                                        Preserved supplied context and merge values for Sales or later processing. Does not automatically receive the original HTTP payload, parse JSON, or make arbitrary keys reportable. Promote fields needed for filtering or routing into typed fields.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <strong>Current replay behavior:</strong> capture trims a supplied key and skips an existing record with that key without overwriting answers. If no key is supplied, it uses the Flow interview GUID. That fallback identifies an invocation, not a source event, and cannot recognize retries. Concurrent inserts can still cause a duplicate-key fault even though the unique constraint prevents duplicate records.
+                    </p>
+                    <p>
+                        <strong>Source fidelity matters:</strong> a merge field populated from the latest prospect profile is not necessarily a snapshot of a particular submission. Validate available source values during production integration testing, including two rapid consecutive submissions. Do not require event metadata that the source cannot supply.
+                    </p>
+                    <h2 id="field-dictionary-relationships-and-processing">
+                        Field dictionary — relationships and processing
+                    </h2>
+                    <p>
+                        These five custom fields support relationships and downstream processing. Capture initializes available matched lookups and Processing Status Received; the processor owns later status, message, and Task outcomes. Do not expose these fields as marketer-controlled External Action inputs.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Field and API name
+                                    </th>
+                                    <th scope="col">
+                                        Type
+                                    </th>
+                                    <th scope="col">
+                                        Purpose and design guidance
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>Lead</strong> — <code>Lead__c</code>
+                                    </td>
+                                    <td>
+                                        Lookup(Lead), indexed
+                                    </td>
+                                    <td>
+                                        Capture populates the ID-matched Lead, or an unconverted email match when original ID is blank and no Contact matches. Retain after conversion to preserve provenance; it may later coexist with Contact.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Contact</strong> — <code>Contact__c</code>
+                                    </td>
+                                    <td>
+                                        Lookup(Contact), indexed
+                                    </td>
+                                    <td>
+                                        Capture populates the ID-matched Contact or Contact-first email fallback; a supplied Lead ID is never overridden by email. The conversion Flow can later fill an empty Contact link while retaining Lead. A relationship does not itself grant access to the person record.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Processing Status</strong> — <code>Processing_Status__c</code>
+                                    </td>
+                                    <td>
+                                        Text(80)
+                                    </td>
+                                    <td>
+                                        Current lifecycle: Received, Pending CRM Match, Routed, Processed, or Error. Routed is intermediate; Processed confirms required Note links completed. Historical Failed values belong to the old processor. V7 no-match creates Received for downstream reconciliation; fully blank identity still creates nothing.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Processing_Message</strong> — <code>Processing_Message__c</code>
+                                    </td>
+                                    <td>
+                                        Text(255)
+                                    </td>
+                                    <td>
+                                        Short operator explanation; completion includes New/Existing classification, Note ID and optional Task ID. No dedicated Note ID field was added. Actual label contains an underscore. Keep longer diagnostics in logs.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Follow Up Task ID</strong> — <code>Follow_Up_Task_ID__c</code>
+                                    </td>
+                                    <td>
+                                        Text(18)
+                                    </td>
+                                    <td>
+                                        ID of the created Task and a guard against normal reprocessing. It is not a lookup, does not enforce that the Task still exists, and is not a concurrency lock. Do not clear it to force another run. For multiple actions per submission, use proposed child execution records instead of adding an ID field for each action.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        Interpret CRM Record ID by capture version: original input in V1/V2 and V6/V7; email-resolved in V3; the inspected V5 Create Records did not map it. Do not blindly requeue historical records under the new classification. For a New pending submission, link the verified person through Contact/Lead and leave the original CRM ID blank. Corrections to a supplied original ID require an explicit audit and classification review.
+                    </p>
+                    <h2 id="field-dictionary-standard-fields">
+                        Field dictionary — standard fields
+                    </h2>
+                    <p>
+                        These five standard fields complete the 18 fields shown in Fields &amp; Relationships.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Field and API name
+                                    </th>
+                                    <th scope="col">
+                                        Type
+                                    </th>
+                                    <th scope="col">
+                                        Purpose and design guidance
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>Submission Number</strong> — <code>Name</code>
+                                    </td>
+                                    <td>
+                                        Auto Number, indexed
+                                    </td>
+                                    <td>
+                                        Human-friendly reference for support, related lists, and Task context. Recorded format is <code>MS-{00000000}</code>. It is assigned after creation and is not a source replay key.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Owner</strong> — <code>OwnerId</code>
+                                    </td>
+                                    <td>
+                                        Lookup(User,Group), indexed
+                                    </td>
+                                    <td>
+                                        Ownership of the submission record for access and operational responsibility. This is separate from Task ownership. Queue support for Tasks does not establish queue support for this object.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Created By</strong> — <code>CreatedById</code>
+                                    </td>
+                                    <td>
+                                        Lookup(User)
+                                    </td>
+                                    <td>
+                                        Salesforce actor that created the record. Helpful for integration auditing; it does not identify the human who submitted the form.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Last Modified By</strong> — <code>LastModifiedById</code>
+                                    </td>
+                                    <td>
+                                        Lookup(User)
+                                    </td>
+                                    <td>
+                                        Actor responsible for the most recent update, including automation. It does not supply a complete change history.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Currency</strong> — <code>CurrencyIsoCode</code>
+                                    </td>
+                                    <td>
+                                        Picklist
+                                    </td>
+                                    <td>
+                                        Record currency in this multicurrency org. No custom monetary field is present, so it currently provides no submission-value or revenue-attribution calculation.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        Useful system fields beyond this visible field list include <code>Id</code> for record links and relationships, <code>CreatedDate</code> for Salesforce intake time, and <code>LastModifiedDate</code> for the latest update. LastModifiedDate is not a substitute for an explicit processing-completion timestamp.
+                    </p>
+                    <p>
+                        The October 1 handoff recorded reports, search, and history enabled; individual tracked fields and broader access were unfinished. Object-level history enablement alone does not mean every field is tracked. Activities were disabled, so current Tasks relate to the person through WhoId rather than using this object as WhatId.
+                    </p>
+                    <h2 id="production-marketing-app-extension-setup">
+                        Production Marketing App Extension setup
+                    </h2>
+                    <p>
+                        <strong>Historical verified production registration, October 13, 2026:</strong> extension Salesforce Integration (<code>SalesforceIntegration</code>), action Marketing Submission (<code>Marketing_Submission</code>), invocable action <code>Marketing_Submission_Capture</code>, business unit IUS Ergotron (149221). Both the extension and action were Active in Automations at that verification. The successful execution used B2BMA Integration. The sandbox has no extension registration.
+                    </p>
+                    <p>
+                        <apex:outputLink value="https://ergotron.lightning.force.com/lightning/r/MarketingAppExtAction/2YoiM000000JDhVSAW/view" target="_blank" rel="noopener noreferrer">Production action and schema</apex:outputLink> · <apex:outputLink value="https://ergotron.lightning.force.com/lightning/r/0mFiM0000000001UAA/view" target="_blank" rel="noopener noreferrer">Production extension</apex:outputLink> · <apex:outputLink value="https://ergotron.lightning.force.com/lightning/r/FlowRecord/2aFiM0000011lE1UAI/view" target="_blank" rel="noopener noreferrer">Production capture Flow</apex:outputLink>.
+                    </p>
+                    <p>
+                        Salesforce supports Flow Builder invocable actions for External Actions. Select the active autolaunched capture Flow, retain generated Parameters and default Required entries, and keep the <code>properties</code>, <code>view</code>, and <code>required</code> schema sections. All capture inputs use strings. The observed Parameters are <code>{&quot;isStandard&quot;:false,&quot;type&quot;:&quot;flow&quot;}</code>; do not change generated Parameters to configure field visibility. <apex:outputLink value="https://developer.salesforce.com/docs/marketing/pardot/guide/external-actions-guide.html" target="_blank" rel="noopener noreferrer">Salesforce External Actions guide</apex:outputLink>.
+                    </p>
+                    <p>
+                        Configure the form or form handler&#x27;s <strong>Execute External Action</strong> completion action to call this intake action. External Action completion actions support both forms and form handlers. <apex:outputLink value="https://help.salesforce.com/s/articleView?id=sf.mcae_execute_external_actions_using_completion_actions.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener noreferrer">Salesforce completion-action guidance</apex:outputLink>.
+                    </p>
+                    <p>
+                        In a new org, deploy the object and active Flow, create the extension/action, associate the correct business unit, and configure B2BMA permissions before testing an Execute External Action completion action. A direct administrator Flow debug run does not prove the integration user&#x27;s access.
+                    </p>
+                    <h2 id="visible-fields-and-marketing-app-extension-crmrecordid-mapping">
+                        Visible fields and Marketing App Extension crmRecordId mapping
+                    </h2>
+                    <p>
+                        The Flow&#x27;s Available for Input checkbox does not make a parameter visible or populate it. Configure the External Action schema and the saved form/form-handler action. The new CRM-first contract uses the same Flow API/input names, but changes the meaning of <code>crmRecordId</code> compared with V3.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Input
+                                    </th>
+                                    <th scope="col">
+                                        Recommended configuration
+                                    </th>
+                                    <th scope="col">
+                                        Visible to marketers?
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <code>assetName</code>
+                                    </td>
+                                    <td>
+                                        Actual descriptive asset name; required for Task/Note title
+                                    </td>
+                                    <td>
+                                        Yes
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>assetKey</code>
+                                    </td>
+                                    <td>
+                                        Stable business-unit/asset identifier
+                                    </td>
+                                    <td>
+                                        Yes
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>submissionDetails</code>
+                                    </td>
+                                    <td>
+                                        Approved readable submission context and supported HML
+                                    </td>
+                                    <td>
+                                        Yes, optional
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>submittedEmail</code>
+                                    </td>
+                                    <td>
+                                        Default <code>{{Recipient.Email}}</code>
+                                    </td>
+                                    <td>
+                                        Normally hidden
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>crmRecordId</code>
+                                    </td>
+                                    <td>
+                                        Default <code>{{Recipient.ID}}</code>, or verified original source CRM ID
+                                    </td>
+                                    <td>
+                                        Normally hidden; optional value so an unsynced prospect can be New
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>prospectId</code>, <code>submissionKey</code>, <code>submittedAtUtc</code>
+                                    </td>
+                                    <td>
+                                        Blank unless verified source metadata exists
+                                    </td>
+                                    <td>
+                                        Normally hidden and optional
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <code>formName</code>, <code>formKey</code>
+                                    </td>
+                                    <td>
+                                        Keep existing caller compatibility during migration
+                                    </td>
+                                    <td>
+                                        Avoid for new configurations
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <strong>CRM mapping fragment:</strong> merge this property into the action&#x27;s existing <code>properties</code> object. This is not a replacement schema. Retain <code>properties</code>, <code>view</code>, and <code>required</code>, generated required fields, other mappings and generated Parameters. Leave crmRecordId out of <code>view.components</code> when it should be an automatic hidden value.
+                    </p>
+                    <pre><code>&quot;crmRecordId&quot;: {
+                    &quot;type&quot;: &quot;string&quot;,
+                    &quot;title&quot;: &quot;Original Salesforce CRM Record ID&quot;,
+                    &quot;value&quot;: &quot;{{Recipient.ID}}&quot;
+                    }</code></pre>
+                    <p>
+                        To expose it for an administrator-reviewed configuration, add the following component to the existing view. A visible default is editable, so arbitrary marketer IDs can change both the person and Task eligibility. Hidden mapping is the recommended operational setup.
+                    </p>
+                    <pre><code>{
+                    &quot;definition&quot;: &quot;lightning/control&quot;,
+                    &quot;scope&quot;: &quot;#/properties/crmRecordId&quot;
+                    }</code></pre>
+                    <p>
+                        The property&#x27;s title sets its label; value supplies its default; view.components controls visibility. Schema configuration does not grant object/field permissions. Reopen and review saved completion actions after a schema change; a new default alone does not prove an existing action supplies it. <apex:outputLink value="https://developer.salesforce.com/docs/marketing/pardot/guide/external-actions-guide.html" target="_blank" rel="noopener noreferrer">Salesforce External Actions schema guidance</apex:outputLink>.
+                    </p>
+                    <p>
+                        <strong>Mapping acceptance:</strong> trace the actual invocation and verify raw crmRecordId, trimmed CRM Record ID, resolved Contact/Lead, and final processing result. A mapped existing Contact/Lead must receive a Task plus Note. A genuinely blank original ID with a matched person must receive only a Note. A supplied ID conflicting with email must retain ID priority. Confirm the active V7 no-match capture path and no automatic person creation. Do not place <code>{{Recipient.OwnerId}}</code> or the numeric prospect ID in crmRecordId.
+                    </p>
+                    <p>
+                        <strong>Historical production schema, October 14:</strong> visible controls were only assetName and formName. submittedEmail defaulted to <code>{{Recipient.Email}}</code>; crmRecordId defaulted to empty and was hidden. Four properties existed and required was empty. Six other Flow inputs were absent. That schema successfully called V3, which ignored the CRM hint. It does not prove CRM-ID mapping for V6/V7. If reused unchanged with the new processor, blank IDs classify matched submissions as New and suppress Tasks. No production action schema was changed in this sandbox documentation release.
+                    </p>
+                    <p>
+                        Completion actions are unordered. HML reflects the value available at execution, so do not assume another completion action has already assigned/synced the prospect or frozen an earlier CRM ID. Keep original identity, source timing and classification expectations explicit. <apex:outputLink value="https://help.salesforce.com/s/articleView?id=sf.pardot_completion_actions_considerations.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener noreferrer">Completion-action considerations</apex:outputLink>.
+                    </p>
+                    <h2 id="permission-sets-and-integration-access">
+                        Permission sets and integration access
+                    </h2>
+                    <p>
+                        The production failure was resolved after enabling field Edit Access in the permission set assigned to B2BMA Integration. Object-level Create alone was insufficient. The first log already proved that MCAE could start the Flow; the failure occurred at Create Records.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Permission set
+                                    </th>
+                                    <th scope="col">
+                                        Role and license
+                                    </th>
+                                    <th scope="col">
+                                        Verified production outcome
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Marketing Submission Admin
+                                    </td>
+                                    <td>
+                                        Human administration; User License Salesforce
+                                    </td>
+                                    <td>
+                                        Not compatible with the special B2BMA Integration User license. Do not use this licensed set as the integration assignment.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Marketing Submission Integration User (<code>Marketing_Submission_Integration_User</code>)
+                                    </td>
+                                    <td>
+                                        Dedicated capture access; User License None/blank; Session Activation Required unchecked
+                                    </td>
+                                    <td>
+                                        Assigned to B2BMA Integration through the user detail page. Field Edit Access was enabled and the next confirmed execution created a submission.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Account Engagement Integration User; B2B Marketing Analytics
+                                    </td>
+                                    <td>
+                                        Existing integration-related assignments observed on B2BMA
+                                    </td>
+                                    <td>
+                                        Retained. The new set supplements existing platform access; it does not replace the integration profile or these assignments.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <apex:outputLink value="https://ergotron.my.salesforce-setup.com/lightning/setup/PermSets/page?address=%2F0PSiM0000003b6H%3Fs%3DEntityPermissions%26o%3D01IiM000000VnNp" target="_blank" rel="noopener noreferrer">Production integration permission set — object and fields</apex:outputLink> · <apex:outputLink value="https://ergotron.my.salesforce-setup.com/lightning/setup/ManageUsers/0051M000007okQq/summary" target="_blank" rel="noopener noreferrer">Production B2BMA user</apex:outputLink> · <apex:outputLink value="https://ergotron--full.sandbox.my.salesforce-setup.com/lightning/setup/PermSets/home" target="_blank" rel="noopener noreferrer">Sandbox permission sets</apex:outputLink>.
+                    </p>
+                    <p>
+                        For another org, create a new permission set with User License None rather than cloning the Salesforce-licensed administrator set. License None permits compatible assignments; it does not bypass the user&#x27;s license entitlements. Keep the managed integration profile. <apex:outputLink value="https://help.salesforce.com/s/articleView?id=sf.perm_sets_create.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener noreferrer">Salesforce permission-set creation guidance</apex:outputLink>.
+                    </p>
+                    <p>
+                        In Setup, open Permission Sets → Marketing Submission Integration User → Object Settings → Marketing Submissions → Edit. Verify both object permissions and field permissions. For current capture, the recommended starting point is object Read and Create, plus field Read and Edit on all eleven fields mapped by Create_Marketing_Submission:
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Captured field
+                                    </th>
+                                    <th scope="col">
+                                        API name
+                                    </th>
+                                    <th scope="col">
+                                        Required field access for capture
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Asset Name
+                                    </td>
+                                    <td>
+                                        <code>Asset_Name__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        CRM Record ID
+                                    </td>
+                                    <td>
+                                        <code>CRM_Record_ID__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Form Key
+                                    </td>
+                                    <td>
+                                        <code>Form_Key__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Processing Status
+                                    </td>
+                                    <td>
+                                        <code>Processing_Status__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit; capture writes Received
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Prospect ID
+                                    </td>
+                                    <td>
+                                        <code>Prospect_ID__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submission Details
+                                    </td>
+                                    <td>
+                                        <code>Submission_Details__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submission Key
+                                    </td>
+                                    <td>
+                                        <code>Submission_Key__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submitted At
+                                    </td>
+                                    <td>
+                                        <code>Submitted_At__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submitted Email
+                                    </td>
+                                    <td>
+                                        <code>Submitted_Email__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Contact
+                                    </td>
+                                    <td>
+                                        <code>Contact__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit; populated when matched
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Lead
+                                    </td>
+                                    <td>
+                                        <code>Lead__c</code>
+                                    </td>
+                                    <td>
+                                        Read and Edit; populated when matched
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        Grant access to all eleven mapped fields even when a test leaves some values blank. The current capture still maps the same eleven fields. Standard auto-number and audit fields are assigned by Salesforce; do not try to make them editable. Processing Message and Follow Up Task ID are not written by capture. Evaluate downstream automation&#x27;s execution context separately.
+                    </p>
+                    <p>
+                        <strong>Verified production access, October 14:</strong> B2BMA&#x27;s User Access Summary showed API Enabled and Run Flows; Contact and Lead Read and View All Records; Email field Read/Edit on both objects; Marketing Submission Read/Create and Read/Edit on all 13 custom fields, including both lookups. The assigned Marketing Submission Integration User permission set was present with no expiration. The actual extension invocation then proved Contact-query, Lead-query and capture execution under B2BMA. No additional grants were needed or made.
+                    </p>
+                    <p>
+                        The effective grants include broader pre-existing rights, including View All Data and person-record write access. They are observed access, not minimum requirements for this Flow. Standard Id, CreatedDate and IsConverted were not listed as configurable FLS checkboxes in the inspected grid. The live Lead query successfully used conversion status. Review any future permission reduction against the intended record-sharing policy and retest the actual integration identity.
+                    </p>
+                    <p>
+                        Assign the compatible set through Setup → Users → Users → B2BMA Integration → Permission Set Assignments → Edit, add Marketing Submission Integration User, and save. That route worked when the permission-set assignment screen did not offer the user. Confirm the saved assignment on the user record and inspect effective access if another profile/set may already supply permissions.
+                    </p>
+                    <p>
+                        <strong>Flow Access:</strong> the October 14 production log proves B2BMA invoked Marketing_Submission_Capture V3. Its absence from the permission set&#x27;s Flow Access selector was not the earlier capture blocker. For another org, verify effective Flow invocation access, including Run Flows where applicable and an explicit Flow grant when the Flow&#x27;s restrictions require it. Salesforce&#x27;s External Actions guidance calls for B2BMA access to a Flow-based action. No Apex class permission is needed for this declarative capture Flow. <apex:outputLink value="https://developer.salesforce.com/docs/marketing/pardot/guide/external-actions-guide.html" target="_blank" rel="noopener noreferrer">Salesforce External Actions guide</apex:outputLink>.
+                    </p>
+                    <p>
+                        Capture retains its existing execution context. REST-invoked Flows using default user context evaluate the running user&#x27;s object and field access. Do not switch to system context to conceal a permission problem. <apex:outputLink value="https://help.salesforce.com/s/articleView?id=release-notes.rn_ru.htm&amp;language=en_US&amp;release=248&amp;type=5" target="_blank" rel="noopener noreferrer">Salesforce REST Flow security release note</apex:outputLink>.
+                    </p>
+                    <p>
+                        Access to this Visualforce guide is separate: grant page access and tab visibility to its intended human readers. B2BMA does not need the documentation tab to capture submissions.
+                    </p>
+                    <h2 id="b2bma-and-downstream-access-requirements">
+                        B2BMA and downstream access requirements
+                    </h2>
+                    <p>
+                        The October 14 production B2BMA grants and live test are historical capture evidence. October 21 sandbox tests ran as an administrator and do not verify the integration user&#x27;s new CRM-ID path, Task/Note processing or Sales access. No permission grants were added during this sandbox rollout or guide update.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Area
+                                    </th>
+                                    <th scope="col">
+                                        Required access or validation
+                                    </th>
+                                    <th scope="col">
+                                        Purpose
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Capture invocation
+                                    </td>
+                                    <td>
+                                        Effective access to the active capture Flow; compatible integration permission set
+                                    </td>
+                                    <td>
+                                        MCAE must be able to invoke the action
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Contact and Lead queries
+                                    </td>
+                                    <td>
+                                        Read objects and Email; access to standard Id, LastModifiedDate and Lead conversion status; intended record visibility
+                                    </td>
+                                    <td>
+                                        Exact ID / Contact-first email lookup; email fallback excludes converted Leads
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submission insert / replay
+                                    </td>
+                                    <td>
+                                        Read/Create Marketing Submission; Read/Edit all eleven mapped fields, including CRM Record ID and both lookups
+                                    </td>
+                                    <td>
+                                        Save original ID and source details, preserve optional blank lookups, detect event replay
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Processor execution
+                                    </td>
+                                    <td>
+                                        Validate actual after-save asynchronous execution context and applicable platform/license restrictions
+                                    </td>
+                                    <td>
+                                        Capture and processing are separate transactions; do not assume an admin test proves B2BMA runtime
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Task and queue
+                                    </td>
+                                    <td>
+                                        Task creation/assignment must succeed in processor context; queue supports Task; intended Sales members can view/work it
+                                    </td>
+                                    <td>
+                                        OwnerId is queue, WhoId is resolved person; membership and notification configuration require review
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Enhanced Notes and links
+                                    </td>
+                                    <td>
+                                        ContentNote and ContentDocumentLink creation must succeed in processor context; intended internal users can view the person/Task and Note
+                                    </td>
+                                    <td>
+                                        Same Note has one person link and, where applicable, one Task link
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        Record-triggered processing context must be evaluated separately from the user-context capture call. Do not add broad Task/File/Note rights to B2BMA solely because an administrator test succeeded or failed. Verify actual execution, license and sharing restrictions, then grant only demonstrated missing access. No Apex class permission is required by this Flow-only implementation.
+                    </p>
+                    <p>
+                        For capture, use the license-compatible Marketing Submission Integration User set and retain existing managed integration assignments. Do not grant person Create/Edit solely for lookups. For Notes, Viewer + InternalUsers links do not independently guarantee every Sales user can access the related person, Task or Note. Validate representative queue members.
+                    </p>
+                    <h2 id="debugging-live-flow-executions">
+                        Debugging live Flow executions
+                    </h2>
+                    <p>
+                        Use the environment where the form&#x27;s extension executes. Production invocations appear in production logs; the sandbox guide does not display or collect those logs itself.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Evidence
+                                    </th>
+                                    <th scope="col">
+                                        Where to inspect
+                                    </th>
+                                    <th scope="col">
+                                        What it proves
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Completion action reached MCAE
+                                    </td>
+                                    <td>
+                                        Prospect record → Audits → Completion Actions Triggered
+                                    </td>
+                                    <td>
+                                        The asset triggered its completion actions. This alone does not prove Salesforce record creation.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        External Action failure
+                                    </td>
+                                    <td>
+                                        Account Engagement app → Account Engagement Settings → External Action Errors → show
+                                    </td>
+                                    <td>
+                                        Extension, action, asset, prospect, time, and returned error. This is an error view, not a full successful-execution history. Requires an Account Engagement administrator or a suitable custom role.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Actual Salesforce execution
+                                    </td>
+                                    <td>
+                                        Setup → Debug Logs → trace B2BMA Integration → View the matching log
+                                    </td>
+                                    <td>
+                                        Flow version, inputs, lookup results, Decision outcomes, and a created ID, normal skip, or error. The page is labeled Apex Debug Log even for this no-Apex solution.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Durable outcome
+                                    </td>
+                                    <td>
+                                        Marketing Submissions → All, refresh; open record
+                                    </td>
+                                    <td>
+                                        Committed submission, Created By, CreatedDate, captured values, and status. Received proves intake, not downstream routing completion.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <apex:outputLink value="https://ergotron.my.salesforce-setup.com/lightning/setup/ApexDebugLogs/home" target="_blank" rel="noopener noreferrer">Production Debug Logs</apex:outputLink> · <apex:outputLink value="https://ergotron--full.sandbox.my.salesforce-setup.com/lightning/setup/ApexDebugLogs/home" target="_blank" rel="noopener noreferrer">Sandbox Debug Logs</apex:outputLink> · <apex:outputLink value="https://ergotron.lightning.force.com/lightning/page/pardot/account?pardot__path=%2FexternalAction%2Ferrors" target="_blank" rel="noopener noreferrer">Production External Action Errors</apex:outputLink> · <apex:outputLink value="https://ergotron.lightning.force.com/lightning/o/Marketing_Submission__c/list?filterName=All" target="_blank" rel="noopener noreferrer">Production Marketing Submissions</apex:outputLink>.
+                    </p>
+                    <p>
+                        <strong>Capture a live trace:</strong>
+                    </p>
+                    <ol>
+                        <li>
+                            In the correct org, open Setup → Debug Logs. Create or edit a trace flag with Traced Entity Type User and Traced Entity Name B2BMA Integration. Set a short start/end window around the planned test and verify its expiration.
+                        </li>
+                        <li>
+                            Select a debug level with Workflow FINER or FINEST so Flow events and values are visible; Database INFO and Validation INFO are useful for inserts. The October 14 live trace used SFDC_TEST with Workflow FINER. An administrator&#x27;s trace will not capture a transaction running as B2BMA.
+                        </li>
+                        <li>
+                            Submit a controlled test after the trace starts. Record the test email, asset, and timestamp. Allow MCAE processing to complete, then refresh both Debug Logs and the submission list. A thank-you screen or an immediate empty list is not the final outcome.
+                        </li>
+                        <li>
+                            Open the log whose Operation contains <code>/actions/custom/flow/Marketing_Submission_Capture</code>. The observed endpoint used <code>/services/data/v55.0/actions/custom/flow/Marketing_Submission_Capture</code>. API wrapper entries can contain little detail; find the log with FLOW_START_INTERVIEW and the capture element.
+                        </li>
+                        <li>
+                            Confirm the invoked Flow version. Search FLOW_VALUE_ASSIGNMENT for submittedEmail and resolved IDs, inspect the matching and Decision elements below, and check FLOW_ELEMENT_FAULT / FLOW_ELEMENT_ERROR. FLOW_INTERVIEW_FINISHED can follow either a successful create or an intentional quiet exit. If creation occurred, open the assigned record ID to verify it committed.
+                        </li>
+                        <li>
+                            Correlate times carefully: the tested Salesforce log displayed Central Daylight Time, while the External Action Errors table displayed an hour later for the same event. Record time zone or UTC with your evidence. Download relevant logs while available, store them in an approved internal location, and let the short trace expire when testing finishes.
+                        </li>
+                    </ol>
+                    <p>
+                        Salesforce recommends tracing B2BMA for external-action troubleshooting. <apex:outputLink value="https://help.salesforce.com/s/articleView?id=000393472&amp;language=en_US&amp;type=1" target="_blank" rel="noopener noreferrer">Salesforce external-action diagnostics</apex:outputLink>. The Account Engagement error table is documented separately: <apex:outputLink value="https://help.salesforce.com/s/articleView?id=mktg.mcae_monitor_external_action_errors.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener noreferrer">Monitor External Actions Errors</apex:outputLink>.
+                    </p>
+                    <p>
+                        <strong>Read the current capture trace:</strong> confirm version first, then original <code>crmRecordId</code>, <code>originalCrmId</code>, <code>crmIdForLookup</code>, <code>fallbackEmail</code>, <code>matchedContactId</code>, <code>matchedLeadId</code> and Create Marketing Submission. The retained resource descriptions and default label <code>No Match - End</code> can be stale; inspect the actual branch/connector and values.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Observed path
+                                    </th>
+                                    <th scope="col">
+                                        Interpretation
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Both identity inputs blank
+                                    </td>
+                                    <td>
+                                        Normal quiet exit; no durable row
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        ID or email present; person found
+                                    </td>
+                                    <td>
+                                        Capture with matched lookup and original incoming CRM ID
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        No person found in active V7
+                                    </td>
+                                    <td>
+                                        Create Marketing Submission with blank lookups, subject to insert validation and event-key skip; processor must reconcile identity before outputs
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Historical V6 no-match trace
+                                    </td>
+                                    <td>
+                                        Prior behavior: normal end without creation; superseded by active V7
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Existing Submission Key
+                                    </td>
+                                    <td>
+                                        Expected replay skip; inspect the original record
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Query/create fault
+                                    </td>
+                                    <td>
+                                        Real failure; inspect error and running user&#x27;s access
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        An empty External Action Errors list does not prove invocation or completion. Trace flags expire; create a short current window for the actual test. After capture commits, inspect the separate asynchronous processor transaction. In Setup → Flows → Paused and Failed Flow Interviews (or the available failed-interview list), inspect failed interviews for Marketing Submission - Task and Note Follow Up. Use the executing identity recorded by Salesforce for processor tracing; it can differ from capture. Search <code>Create_Submission_Note</code>, Note-link elements, Task creation and final completion. Received proves capture only; Processed is the new processor&#x27;s completion status. The guide does not collect logs.
+                    </p>
+                    <p>
+                        <strong>Interpret the evidence, not just the log list&#x27;s Status:</strong> the failed 2:44 PM test had Status Success on the debug-log row, but its Flow hit a create fault and an email fault. The successful 2:55 PM trace assigned a Salesforce record ID to Create_Marketing_Submission and finished; the record was then visible in All. A DML-row count alone also does not prove a commit. Flow Builder Debug is a separate test and does not replay or prove a past MCAE call. Use the traced running identity for any downstream transaction too; do not assume an asynchronous processor shares capture&#x27;s log or user.
+                    </p>
+                    <p>
+                        <strong>Repeat-form testing:</strong> duplicate activity rows can be condensed even when completion actions run, so check prospect Audits. The tested form had Always Display Form disabled and could show the existing thank-you content on a return visit. Use a fresh private session or the documented <code>?PI_ALWAYS_DISPLAY=1</code> test parameter and actually submit the form. If an activity is missing, inspect the form&#x27;s Tools → Show Filtered Activities; filtered activity can suppress completion actions. A later refresh during the successful test revealed the new 2:54 PM submission, followed by Flow execution at 2:55:28 PM. <apex:outputLink value="https://help.salesforce.com/s/articleView?id=mktg.pardot_forms_testing.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener noreferrer">Salesforce form testing guidance</apex:outputLink> · <apex:outputLink value="https://help.salesforce.com/s/articleView?id=000383485&amp;language=en_US&amp;type=1" target="_blank" rel="noopener noreferrer">Form troubleshooting</apex:outputLink>.
+                    </p>
+                    <h2 id="fault-handling-and-known-follow-up-work">
+                        Fault handling and known follow-up work
+                    </h2>
+                    <p>
+                        Both-blank identity still ends normally. Active V7 no-match now attempts capture and is not a fault by itself. Real lookup/insert errors remain visible. In Follow Up V2, handled queue/Task failures mark Error; unhandled Note or Note-link failures roll back the asynchronous transaction while the separate capture record remains committed. Inspect failed interviews and logs before retrying; do not treat an intermediate Routed state as completed processing.
+                    </p>
+                    <p>
+                        The earlier production failure reached Create_Marketing_Submission&#x27;s fault connector. Its Send_Email action then failed because B2BMA could not use the organization-wide sender sales@ergotron.com. That secondary error was returned to MCAE and obscured the original create error; the handled create error&#x27;s exact message was not printed in that trace. No delivered fault email did not mean the Flow never ran.
+                    </p>
+                    <p>
+                        Recommended diagnostic improvement: capture <code>{&#33;$Flow.FaultMessage}</code> into a Text variable immediately on the Create Records fault path, then include that saved error, <code>{&#33;$Flow.InterviewGuid}</code>, Flow name, timestamp, and asset key in the diagnostic email. Use a verified organization-wide sender that the running user is permitted to use. Check Setup → Organization-Wide Addresses and test the fault branch under the integration identity. Avoid unnecessary personal data in notifications. Give the notification action its own fault handling so a sender error does not become the only available diagnostic.
+                    </p>
+                    <p>
+                        The existing static email body did not include the create error. Correcting the sender and improving the error body remain follow-up work; the successful capture did not exercise or validate that branch. If creation fails, no Marketing Submission record exists to hold Processing_Message__c, so do not rely on that field as the only capture-error log. This page documents the changes to make; it does not implement them.
+                    </p>
+                    <h2 id="historical-production-v3-deployment-and-extension-test">
+                        Historical production V3 deployment and extension test
+                    </h2>
+                    <p>
+                        <strong>Historical evidence; not reverified by this sandbox update. Deployed October 14, 2026:</strong> production Capture V3 (<code>301iM000009zN5lQAE</code>) was activated at approximately 2:45 PM Pacific. Its Flow definition remains <code>300iM00000BhvT3</code>, with the same API name and ten input variables. The sandbox matching design was applied to a new version of production V2, retaining the existing Create Records fault-email branch and Submission Key skip behavior. The extension and its input schema were unchanged.
+                    </p>
+                    <p>
+                        <apex:outputLink value="https://ergotron.lightning.force.com/builder_platform_interaction/flowBuilder.app?flowId=301iM000009zN5lQAE" target="_blank" rel="noopener noreferrer">Production V3 tested October 14</apex:outputLink> · <apex:outputLink value="https://ergotron.lightning.force.com/lightning/r/FlowRecord/2aFiM0000011lE1UAI/view" target="_blank" rel="noopener noreferrer">Production Flow version history</apex:outputLink>.
+                    </p>
+                    <p>
+                        The existing test form was submitted once with <code>bw@test.co</code>. The real MCAE completion action invoked Marketing Submission as B2BMA. The trace showed the new Contact-first lookup path, Lead fallback, one inserted record and FLOW_INTERVIEW_FINISHED. The saved record was then opened to confirm the commit and values.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Evidence
+                                    </th>
+                                    <th scope="col">
+                                        Verified value
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Request start
+                                    </td>
+                                    <td>
+                                        October 14, 2026, 2:46:15 PM Pacific / 4:46:15 PM CDT / 21:46:15 UTC
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Runtime user / record creator
+                                    </td>
+                                    <td>
+                                        B2BMA Integration; <code>0051M000007okQq</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Operation
+                                    </td>
+                                    <td>
+                                        <code>/services/data/v55.0/actions/custom/flow/Marketing_Submission_Capture</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Contact query
+                                    </td>
+                                    <td>
+                                        Executed first; no Contact found
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Lead query
+                                    </td>
+                                    <td>
+                                        Found existing unconverted Lead <code>00QiM000008cWDbUAM</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submission
+                                    </td>
+                                    <td>
+                                        <strong>MS-00000002</strong>, <code>aBeiM000000E6QXSA0</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Saved relationship
+                                    </td>
+                                    <td>
+                                        Lead lookup and CRM Record ID both <code>00QiM000008cWDbUAM</code>; Contact blank
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Captured values
+                                    </td>
+                                    <td>
+                                        Submitted Email <code>bw@test.co</code>; Asset Name <code>Form</code>; Processing Status <code>Received</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submission Key / interview
+                                    </td>
+                                    <td>
+                                        <code>6111cae8131134149d367dd036ad1a13c4d9f31-2d20</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Outcome
+                                    </td>
+                                    <td>
+                                        One DML statement and row; completed interview; no fault action; zero email invocations
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Debug log
+                                    </td>
+                                    <td>
+                                        <code>07LiM0000049oUjUAI</code>; Success; 2,063 ms
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <apex:outputLink value="https://ergotron.lightning.force.com/lightning/r/Marketing_Submission__c/aBeiM000000E6QXSA0/view" target="_blank" rel="noopener noreferrer">Successful V3 test record</apex:outputLink> · <apex:outputLink value="https://ergotron.my.salesforce-setup.com/lightning/setup/ApexDebugLogDetail/page?address=%2Fp%2Fsetup%2Flayout%2FApexDebugLogDetailEdit%2Fd%3Fapex_log_id%3D07LiM0000049oUjUAI" target="_blank" rel="noopener noreferrer">Successful V3 debug log</apex:outputLink>.
+                    </p>
+                    <p>
+                        The action supplied assetName <code>Form</code> and formName <code>Travis Opt in Test Form</code>; assetName took precedence. Use the actual descriptive name in assetName if that should appear on the submission. No source timestamp, prospect ID or source event key was supplied. The interview GUID therefore provides invocation identity but cannot identify external retries. No action mapping was changed during deployment.
+                    </p>
+                    <p>
+                        <strong>Validation boundaries:</strong> production administrator rollback tests passed for padded <code>bw@test.co</code>, unmatched <code>capture-v3-no-match-20261014@example.invalid</code>, and whitespace-only email. The first found the Lead and populated matching IDs; the latter two ended normally without creating a submission. Both saved queries were inspected for CreatedDate ascending, first-record-only selection and null-on-no-result. A production Contact-match, multiple-match fixture, exact timestamp tie, replay, fault-email delivery, downstream processing and load test were not separately exercised. Sandbox Contact precedence and replay evidence is listed below.
+                    </p>
+                    <p>
+                        Debug logs can expire or be removed; retain approved copies of the execution and record evidence. Received proves capture only. The test did not create or update a Lead or Contact through the capture Flow, and the existing diagnostic email branch was preserved rather than repaired or retested.
+                    </p>
+                    <h2 id="historical-production-v2-capture-october-13-2026">
+                        Historical production V2 capture — October 13, 2026
+                    </h2>
+                    <p>
+                        This historical V2 test traversed the MCAE form, its Execute External Action completion action, the Marketing Submission action, and Marketing_Submission_Capture. After field Edit Access was enabled, the Flow created a record and finished with no fault path. It did not run the new V3 person lookups.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Evidence
+                                    </th>
+                                    <th scope="col">
+                                        Verified value
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Flow start
+                                    </td>
+                                    <td>
+                                        October 13, 2026 at 2:55:28 PM Pacific / 4:55:28 PM Central / 21:55:28 UTC
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Running user / record creator
+                                    </td>
+                                    <td>
+                                        B2BMA Integration
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submission
+                                    </td>
+                                    <td>
+                                        MS-00000000; <code>aBeiM000000Dp37SAC</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submitted Email
+                                    </td>
+                                    <td>
+                                        <code>bw@test.co</code> (controlled test)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Asset Name
+                                    </td>
+                                    <td>
+                                        <code>Form</code>, from assetName; supplied legacy formName did not override it
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Processing Status
+                                    </td>
+                                    <td>
+                                        Received
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submission Key / interview
+                                    </td>
+                                    <td>
+                                        <code>7464489d1140e4da9457cee7b6f1a137429289-7e16</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Optional source values
+                                    </td>
+                                    <td>
+                                        CRM Record ID, Prospect ID, Form Key, Submitted At, and Submission Details blank
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Runtime result
+                                    </td>
+                                    <td>
+                                        Create_Marketing_Submission returned the record ID; FLOW_INTERVIEW_FINISHED; no fault-email invocation
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        <apex:outputLink value="https://ergotron.lightning.force.com/lightning/r/aBeiM000000Dp37SAC/view" target="_blank" rel="noopener noreferrer">Production test record</apex:outputLink> · <apex:outputLink value="https://ergotron.my.salesforce-setup.com/lightning/setup/ApexDebugLogDetail/page?address=%2Fp%2Fsetup%2Flayout%2FApexDebugLogDetailEdit%2Fd%3Fapex_log_id%3D07LiM0000043FMnUAM" target="_blank" rel="noopener noreferrer">Successful production debug log</apex:outputLink>.
+                    </p>
+                    <p>
+                        The debug-log link is diagnostic evidence and can expire or be removed under log retention. The record link also depends on normal access and record retention. The verified result covers capture only. Production replay behavior, populated CRM-ID merging, downstream processing, fault-email delivery, and volume acceptance need their own tests.
+                    </p>
+                    <h2 id="new-versus-existing-and-processing-lifecycle">
+                        New versus Existing and processing lifecycle
+                    </h2>
+                    <p>
+                        The active processor is Marketing Submission - Task and Note Follow Up V2 (<code>Marketing_Submission_Contact_Follow_Up</code>). It is an after-save, created-or-updated Flow with an asynchronous path. It runs when a record newly meets Processing Status Received and Follow Up Task ID blank. Normal edits to Processed records do not reprocess them. The old Marketing_Submission_Process is inactive and must remain inactive while this processor is enabled.
+                    </p>
+                    <p>
+                        <strong>Classification is based on the original submission, not CRM CreatedDate:</strong> a nonblank original CRM Record ID means Existing; blank means New. Email fallback must never backfill this field. A New submission can resolve to an existing Contact or Lead and still gets no Task. New does not mean this solution created a Lead; it never creates people.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Classification / resolution
+                                    </th>
+                                    <th scope="col">
+                                        Task
+                                    </th>
+                                    <th scope="col">
+                                        Note
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Existing; Contact or Lead resolves
+                                    </td>
+                                    <td>
+                                        Create queue-owned Task related to resolved person
+                                    </td>
+                                    <td>
+                                        One Note linked to person and that Task
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        New; Contact or Lead resolves
+                                    </td>
+                                    <td>
+                                        None
+                                    </td>
+                                    <td>
+                                        One Note linked only to person
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Person unresolved
+                                    </td>
+                                    <td>
+                                        None
+                                    </td>
+                                    <td>
+                                        None until a person can be resolved; retain submission for reconciliation
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        The processor uses original CRM ID when supplied; otherwise it uses captured Contact, then Lead. It prefers a resolved Contact, including a converted Lead&#x27;s ConvertedContactId, for WhoId/Note links. It does not rerun an email search for a later-created person.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Status
+                                    </th>
+                                    <th scope="col">
+                                        Meaning
+                                    </th>
+                                    <th scope="col">
+                                        Operational response
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Received
+                                    </td>
+                                    <td>
+                                        Capture committed; eligible for asynchronous processing
+                                    </td>
+                                    <td>
+                                        Monitor age and check failed interviews if it remains here
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Pending CRM Match
+                                    </td>
+                                    <td>
+                                        No person resolved by processor
+                                    </td>
+                                    <td>
+                                        Verify/link a CRM person and perform a controlled retry; no automatic schedule was added
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Routed
+                                    </td>
+                                    <td>
+                                        Task ID written; intermediate processing stage
+                                    </td>
+                                    <td>
+                                        Check Note/link completion before declaring success
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Processed
+                                    </td>
+                                    <td>
+                                        Required Note relationships completed; Task included only for Existing
+                                    </td>
+                                    <td>
+                                        Sales can use the linked outputs; Task itself may still be Open
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Error
+                                    </td>
+                                    <td>
+                                        Handled queue lookup or Task creation failure
+                                    </td>
+                                    <td>
+                                        Correct cause, inspect existing outcomes and logs before retry
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        Processing Message records New/Existing, Note ID, and optional Task ID. Follow Up Task ID stores the Task ID; it is Text, not a lookup or concurrency lock. A New Processed record legitimately has a blank Task ID. Never reset completed records blindly: New records have no Task-ID guard against manually re-entering Received and creating another Note.
+                    </p>
+                    <p>
+                        For a pending New record with no outcomes, set the verified Contact/Lead lookup while leaving original CRM ID blank, then move Pending CRM Match back to Received. A record already meeting start conditions may need a controlled transition before it requalifies. Reconcile invalid supplied IDs with an audit trail; do not quietly turn Existing into New. Reusing an event key only skips capture; it does not update the pending record or rematch it.
+                    </p>
+                    <h2 id="task-queue-assignment-and-field-mappings">
+                        Task queue assignment and field mappings
+                    </h2>
+                    <p>
+                        The processor queries Group by DeveloperName <code>Re_Engagement_Task_Queue</code> and Type Queue, then assigns OwnerId to the returned ID. The existing label is <strong>Re-Engagement Task Queue</strong>. Sandbox ID <code>00Gcb00000BVlApEAL</code> is evidence only and is not hardcoded in the Flow. The current queue was reused; membership, email notifications and SLAs were not changed.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Task field
+                                    </th>
+                                    <th scope="col">
+                                        Mapping
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Assigned To / OwnerId
+                                    </td>
+                                    <td>
+                                        Re-Engagement Task Queue
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Name / WhoId
+                                    </td>
+                                    <td>
+                                        Resolved Contact or Lead; converted Lead uses converted Contact
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Subject
+                                    </td>
+                                    <td>
+                                        Marketing Submission Asset Name
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Description / Comments
+                                    </td>
+                                    <td>
+                                        Submission Details, directly mapped
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Status
+                                    </td>
+                                    <td>
+                                        Open
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Priority
+                                    </td>
+                                    <td>
+                                        Normal
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Due Date
+                                    </td>
+                                    <td>
+                                        Not explicitly assigned
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Related To / WhatId
+                                    </td>
+                                    <td>
+                                        Not set; Marketing Submission does not have Activities enabled
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submission Follow Up Task ID
+                                    </td>
+                                    <td>
+                                        Created Task ID stored back on the submission
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        The queue owns the Task, rather than the Contact owner. Confirm the queue supports Tasks and intended members can claim/work them. Queue assignment alone does not send a notification or implement an SLA. Task Description accepts 32000 characters while Submission Details can store 32768; oversized Task inputs are not silently truncated and require correction.
+                    </p>
+                    <h2 id="enhanced-note-content-and-relationships">
+                        Enhanced Note content and relationships
+                    </h2>
+                    <p>
+                        Each successfully processed submission creates <strong>one enhanced Note (<code>ContentNote</code>)</strong> titled with Asset Name. It includes the submission number, asset, Submitted At, Captured At (CreatedDate), submitted email, original CRM ID, resolved CRM record, optional follow-up Task ID and Submission Details. A blank source timestamp is not replaced with a fabricated source date; capture time is separately labeled.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Relationship
+                                    </th>
+                                    <th scope="col">
+                                        Implementation
+                                    </th>
+                                    <th scope="col">
+                                        When created
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Note → Contact or Lead
+                                    </td>
+                                    <td>
+                                        ContentDocumentLink: created Note ID → resolved person ID
+                                    </td>
+                                    <td>
+                                        Both New and Existing, after person resolves
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Same Note → Task
+                                    </td>
+                                    <td>
+                                        Second ContentDocumentLink: same Note ID → created Task ID
+                                    </td>
+                                    <td>
+                                        Existing branch only
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submission → Task
+                                    </td>
+                                    <td>
+                                        Follow_Up_Task_ID__c text
+                                    </td>
+                                    <td>
+                                        Only when Task created
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Submission → Note
+                                    </td>
+                                    <td>
+                                        Note ID retained in Processing Message
+                                    </td>
+                                    <td>
+                                        No new Note lookup field or direct Note-to-Submission link was added
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        Both Note links use ShareType Viewer (<code>V</code>) and Visibility InternalUsers. The Note&#x27;s Related to list shows the person and Task where both apply. This is one shared Note with two links, not duplicate Note records. A Task is related to its person through WhoId; the Note links are additional relationships. Verify appropriate Notes related lists/page presentation for the intended Sales users.
+                    </p>
+                    <p>
+                        The processor escapes ampersands and angle brackets, then converts actual line feeds into HTML paragraphs before setting ContentNote.Content. This preserves literal values such as <code>A&amp;B</code> and <code>&lt;test&gt;</code> plus multiline formatting. Submitted text is not treated as executable markup. Note-only and Task-linked rendering were verified in sandbox. <apex:outputLink value="https://help.salesforce.com/s/articleView?id=004693703&amp;language=en_US&amp;type=1" target="_blank" rel="noopener noreferrer">Salesforce ContentNote line-break behavior</apex:outputLink>.
+                    </p>
+                    <p>
+                        Without a resolved person, the processor cannot create these relationships. The active V7 capture change preserves the Marketing Submission for reconciliation; it does not create an orphan Note or a Lead automatically.
+                    </p>
+                    <h2 id="extending-the-design-without-one-apex-class-per-use-case">
+                        Extending the design without one Apex class per use case
+                    </h2>
+                    <p>
+                        Keep capture stable and add behavior behind the saved submission. Proposed examples include Campaign Member updates, Case creation, Sales Tasks, or supported declarative integration actions. These are extension patterns, not current implemented outcomes.
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Change needed
+                                    </th>
+                                    <th scope="col">
+                                        Recommended extension
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Another asset uses an existing process
+                                    </td>
+                                    <td>
+                                        Reuse capture with its own assetName and stable assetKey. Add approved processor configuration keyed by asset/source/business unit when different behavior is needed.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Different queue, priority, campaign, or follow-up SLA
+                                    </td>
+                                    <td>
+                                        Store approved routing settings in Custom Metadata and have the processor resolve them. Use stable developer names or portable configuration rather than embedding sandbox record IDs.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        A genuinely new business process
+                                    </td>
+                                    <td>
+                                        Add an explicitly selected subflow or Flow branch with a defined input/output contract. Test it separately and invoke it from the dispatcher.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        New answers needed for decisions or reporting
+                                    </td>
+                                    <td>
+                                        Add typed fields and explicit mappings; retain the full original snapshot in Submission Details.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Multiple independent actions per submission
+                                    </td>
+                                    <td>
+                                        Add a child execution object, one record per intended action, with its own status and target reference.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        A Custom Metadata row does not automatically make Flow invoke any arbitrary Flow API name. Use supported, explicitly configured branches/subflows. “No Apex per use case” is feasible for work supported by Flow and available actions; it is not a promise that all parsing, concurrency, or integration requirements can be handled without code.
+                    </p>
+                    <p>
+                        <strong>Proposed additions — none of these fields or objects are in the verified inventory:</strong>
+                    </p>
+                    <ul>
+                        <li>
+                            Submission source, business unit, and schema version for multi-source contracts and migrations.
+                        </li>
+                        <li>
+                            Processing completion time, attempt count, next retry time, and a structured reason code for operations.
+                        </li>
+                        <li>
+                            A child Marketing Submission Action object with parent submission, action key, status, attempts, next retry, and target record ID.
+                        </li>
+                        <li>
+                            A unique action execution key derived from submission identity plus a stable action identifier. This separates event replay protection from individual outcome replay protection.
+                        </li>
+                    </ul>
+                    <p>
+                        For example, one submission could create a Task and add a Campaign Member. Each action should record its own success, so retrying a failed campaign update does not recreate the successful Task. Make new behavior opt-in through approved configuration; old submissions should not acquire new side effects merely because configuration changed.
+                    </p>
+                    <h2 id="scaling-and-operational-controls">
+                        Scaling and operational controls
+                    </h2>
+                    <p>
+                        This is a scalable foundation because ingestion is small, source records survive downstream failures, and processing can evolve independently. It is not an unlimited-throughput or exactly-once guarantee. Establish expected peak volume, latency, and retention, then test against this org&#x27;s actual automation and limits.
+                    </p>
+                    <p>
+                        <strong>Capture and consistency.</strong> Validate configured values and use a real source event key when one exists. Otherwise retain invocation-level GUIDs and document the replay limitation. Preserve captured facts, restrict edits to snapshot fields, and handle duplicate-key races explicitly. Avoid overwriting submissions through External ID upserts. A unique submission key alone does not guarantee unique Tasks.
+                    </p>
+                    <p>
+                        <strong>Identity and timing.</strong> CRM ID takes precedence; blank-ID email fallback uses Contact first and LastModifiedDate descending. New/Existing reflects original-ID presence, not CRM age. Active V7 retains unmatched submissions; later sync still needs explicit reconciliation/retry. Historical V6 and V3 skipped unmatched events. Do not depend on completion-action ordering or assume that HML preserves form-submit-time identity.
+                    </p>
+                    <p>
+                        <strong>Processing performance.</strong> Capture uses one Contact query and a Lead query only when needed, each returning one ID; it uses no loops. The existing event-key lookup still applies. Keep database writes out of loops, use selective filters, and test batches as well as individual interviews. Verified object indexes include Submission Key, Lead, Contact, Owner, and Submission Number. Form Key and Processing Status are currently shown as not indexed. Assess query selectivity and latency against actual Contact/Lead volume; avoid scanning payload text.
+                    </p>
+                    <p>
+                        <strong>Failure recovery.</strong> Implement bounded retries with delay, an exhausted-retry review path, and monitoring for stale Received and Pending CRM Match records. Capture actionable error details. Avoid blind status resets and concurrent manual retries. Source ingestion and downstream processing are separate failure boundaries; monitor both.
+                    </p>
+                    <p>
+                        <strong>Sales access and responsibility.</strong> Define who owns submissions versus Tasks, confirm queue membership, and verify Sales access to both submission history and the related person/account. Test the actual integration execution identity and least-privilege permissions. Queue assignment alone is not a notification or SLA process.
+                    </p>
+                    <p>
+                        <strong>Reporting and retention.</strong> Track captured submissions by asset and CreatedDate; use source time only when supplied reliably. V7 retains unmatched invocations when identity is supplied, but still excludes fully blank identity and replay skips. V6/V3 counts also exclude no-match invocations. Use MCAE activity plus version-aware traces to reconcile gaps. Track pending/failed volume, age, routing latency, and outcomes for stored records. Follow Up Task ID is text, so cross-object Task reporting needs an explicit report/data design. Agree retention and archive rules for personal data and captured details; do not log credentials.
+                    </p>
+                    <p>
+                        <strong>Versioning.</strong> Version the input contract and configuration when meanings change. Preserve compatibility for existing forms. Maintain Flow metadata and configuration in source control with a repeatable deployment and rollback plan.
+                    </p>
+                    <h2 id="sandbox-verification-and-production-acceptance">
+                        Sandbox verification and production acceptance
+                    </h2>
+                    <p>
+                        October 21 V6/V2 checks included rollback tests for CRM-ID-only capture, Lead-ID priority over Contact email, blank-ID fallback preserving blank original ID, invalid ID with no email redirect, blank identity, replay skip, Existing Contact/Lead Task plus Note, and New Lead Note only. Explicit converted-Lead capture resolved in rollback; converted-person processor behavior was retained but not independently retested. V6 no-match tests proved the earlier quiet exit and do not validate the user&#x27;s later V7 capture change.
+                    </p>
+                    <p>
+                        Committed final Follow Up V2 results:
+                    </p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Sandbox submission
+                                    </th>
+                                    <th scope="col">
+                                        Final result
+                                    </th>
+                                    <th scope="col">
+                                        Task
+                                    </th>
+                                    <th scope="col">
+                                        Note
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <apex:outputLink value="https://ergotron--full.sandbox.lightning.force.com/lightning/r/Marketing_Submission__c/a7icb0000049MevAAE/view" target="_blank" rel="noopener noreferrer">MS-00000015</apex:outputLink>
+                                    </td>
+                                    <td>
+                                        Processed; New Lead
+                                    </td>
+                                    <td>
+                                        None
+                                    </td>
+                                    <td>
+                                        <code>069cb00000BMUE1AAP</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <apex:outputLink value="https://ergotron--full.sandbox.lightning.force.com/lightning/r/Marketing_Submission__c/a7icb0000049MgXAAU/view" target="_blank" rel="noopener noreferrer">MS-00000016</apex:outputLink>
+                                    </td>
+                                    <td>
+                                        Processed; Existing Lead
+                                    </td>
+                                    <td>
+                                        <code>00Tcb00000FOIkkEAH</code>
+                                    </td>
+                                    <td>
+                                        <code>069cb00000BMUFdAAP</code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <apex:outputLink value="https://ergotron--full.sandbox.lightning.force.com/lightning/r/Marketing_Submission__c/a7icb0000049MlNAAU/view" target="_blank" rel="noopener noreferrer">MS-00000019</apex:outputLink>
+                                    </td>
+                                    <td>
+                                        Processed; Existing Contact
+                                    </td>
+                                    <td>
+                                        <code>00Tcb00000FOJC9EAP</code>
+                                    </td>
+                                    <td>
+                                        <code>069cb00000BMFtNAAX</code>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        The final Contact Task UI verified queue owner, Asset Name subject, Submission Details comments and Contact relationship. Its Note showed both person and Task links. The final New Lead Note preserved paragraphs and literal special characters. Records 15/16 exercised a controlled transition into Received; record 19 completed capture and asynchronous processing. Earlier test records 17/18 predate the Note-formatting correction. Synthetic people use SANDBOX labels and example.invalid addresses.
+                    </p>
+                    <p>
+                        <strong>V7 evidence:</strong> the saved canvas was inspected October 21 and both Lead Found outcomes merge into Create Marketing Submission. V7 subsequently showed Active in Flow Builder before publication. No V7 execution, integration invocation, or new B2BMA permission verification is claimed by this guide publication.
+                    </p>
+                    <p>
+                        Before production promotion, runtime-test the active Capture V7 in sandbox, including no person found → captured submission → Pending CRM Match, blank identity, supplied unmatched/invalid ID, and existing-key behavior. Then verify pending-record reconciliation preserves original-ID classification and does not duplicate Notes or Tasks.
+                    </p>
+                    <p>
+                        For production acceptance, verify the actual action&#x27;s crmRecordId mapping and saved completion actions; run under B2BMA; prove Existing Contact, Existing Lead, New matched person, and unmatched capture. Confirm final Task queue owner and Note relationships, Sales visibility, queue membership, intended notifications, controlled retries, failure recovery and representative load. The historical October 14 production test proves V3 intake only and cannot substitute for these checks. No sandbox Marketing App Extension is installed.
+                    </p>
+                    <h2 id="deployment-and-rollback">
+                        Deployment and rollback
+                    </h2>
+                    <p>
+                        This release updates only the existing sandbox documentation page. The preceding October 21 sandbox rollout activated Capture V6 and Follow Up V2 and deactivated Marketing_Submission_Process. The user subsequently saved and activated Capture V7 to retain no-match submissions; Active status and the saved connector were verified before publication. Production guide and automation were not changed.
+                    </p>
+                    <p>
+                        For promotion, retrieve and review the approved live object/fields, capture and follow-up Flows, retained conversion-linking Flow, Task queue, intended access and page layouts. The local documentation manifest contains only page/tab metadata and cannot deploy the automation. Use developer-name queue lookup rather than a sandbox ID. Disable overlapping processors before enabling follow-up traffic.
+                    </p>
+                    <p>
+                        Coordinate capture and processor versions: CRM_Record_ID__c changed meaning across versions. Historical V3 stores email-resolved identity; V6/V7 store the original incoming ID. Do not run historical submissions through New/Existing logic without reviewing that distinction. Keep original input untouched during blank-ID reconciliation. Review existing saved action mappings even though Flow API names remain stable.
+                    </p>
+                    <p>
+                        For rollback, review existing Tasks/Notes and the capture contract before activating an earlier approved version. V7 → V6 restores no-match discard; earlier versions can change CRM-ID meaning and duplicate selection. Never enable the old processor alongside the current one. A documentation rollback restores the archived pre-v1.6 sandbox source/description only and does not roll back Flows or business records. Production remains outside this guide update.
+                    </p>
+                    <h2 id="maintaining-and-deploying-this-guide">
+                        Maintaining and deploying this guide
+                    </h2>
+                    <p>
+                        Open the sandbox guide through its existing Lightning tab or Visualforce Preview. The production link points to its previous documentation release; production was not republished here. The production Lightning-tab URL failed in the earlier October 14 verification. No tab or access configuration was changed.
+                    </p>
+                    <p>
+                        README.md is the authoritative documentation source. Run <code>python3 scripts/build_guide.py</code> to regenerate the self-contained static Visualforce page. Review the generated page before deploying it. The generator uses only Python standard libraries and handles the Markdown subset used in this README.
+                    </p>
+                    <p>
+                        For a new installation, manifest/documentation.xml packages the documentation page and custom tab; these components do not install or activate the submission Flows. For this existing sandbox update, save only the existing page and description, retaining its tab and security settings. Grant Visualforce page access and tab visibility to the intended internal audience. This guide has no Apex controller and does not query or modify CRM records.
+                    </p>
+                    <p>
+                        For manual installation, create a Visualforce page named <code>MarketingSubmissionGuide</code>, paste the generated page source and enable Lightning availability. Create a Visualforce tab named <code>Marketing_Submission_Guide</code> with label Marketing Submission Guide. Initially expose it to System Administrator; expand access deliberately for the intended audience.
+                    </p>
+                    <p>
+                        For future releases, edit this README, update the version and verification dates, rebuild, deploy, and check the live tab, table formatting, section links, and page access. Keep prior generated files to roll back a documentation release. Removing this documentation tab/page does not remove any submission records or automation.
+                    </p>
+                    <footer>
+                        Documentation release 1.6 · October 21, 2026 · Sandbox
+                    </footer>
+                </main>
+            </div>
+        </body>
+    </html>
+</apex:page>

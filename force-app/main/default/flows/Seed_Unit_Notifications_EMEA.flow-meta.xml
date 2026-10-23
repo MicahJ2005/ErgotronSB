@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Send an email to the opportunity owner when the seed order closes</description>
+        <name>Seed_Notification_to_Oppty_Owner</name>
+        <label>Seed Notification to Oppty Owner</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>emailbody</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>OpptOwnerEmail</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <stringValue>noreply@ergotron.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>subject</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>58.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Added Italian and Spanish versions of the survey link</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Email address of the opportunity owner</description>
+        <name>OpptOwnerEmail</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.Opportunity__r.Owner.Email}</expression>
+    </formulas>
+    <formulas>
+        <description>Link to the opportunity related to the sales order</description>
+        <name>OpptyLink</name>
+        <dataType>String</dataType>
+        <expression>LEFT({!$Api.Partner_Server_URL_560}, FIND(&apos;/services&apos;, {!$Api.Partner_Server_URL_560})) &amp; {!$Record.Opportunity__c}</expression>
+    </formulas>
+    <interviewLabel>Seed Unit Notifications EMEA {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Seed Unit Notifications EMEA</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Seed_Notification_to_Oppty_Owner</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>(1 OR 2) AND 3 AND 4</filterLogic>
+        <filters>
+            <field>Order_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>EU1 PROMOTIONAL SALES</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Order_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>EU1 PROMOTIONAL BU</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Oracle_Order_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Closed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Opportunity__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Sales_Order__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Body of the seed notification</description>
+        <name>emailbody</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>&lt;h2&gt;Seed unit order shipped!&lt;/h2&gt;
+&lt;p&gt;
+  Opportunity: &lt;strong&gt;{!$Record.Opportunity__r.Name}&lt;/strong&gt;&lt;br /&gt;
+  {!OpptyLink}
+&lt;/p&gt;
+&lt;p&gt;
+  Account: {!$Record.Ship_To_Customer__r.Name}&lt;br /&gt;
+  Seed order number: {!$Record.Name}&lt;br /&gt;
+  Oracle order number: {!$Record.OracleSalesOrderRefNumber__c}
+&lt;/p&gt;
+&lt;p&gt;
+  &lt;span style=&quot;font-size: 20px&quot;&gt;👋 &lt;/span&gt;Remember to send a survey to our
+  customer! Copy and paste the link to your email.
+&lt;/p&gt;
+&lt;strong&gt;Survey Links&lt;/strong&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    English:
+    https://survey.alchemer.com/s3/6969697/EMEA-Seed-Unit-Evaluation-Form
+  &lt;/li&gt;
+  &lt;li&gt;
+    French: https://survey.alchemer.com/s3/7106788/EMEA-Seed-Unit-Evaluation-Form-French
+  &lt;/li&gt;
+  &lt;li&gt;
+    German: https://survey.alchemer.com/s3/7159658/Ergotron-Fragebogen-Teststellung
+  &lt;/li&gt;
+  &lt;li&gt;
+    Italian: https://survey.alchemer.com/s3/7570280/Italy-Demo-Product-Evaluation-Form
+  &lt;/li&gt;
+  &lt;li&gt;
+    Spanish: https://survey.alchemer.com/s3/7570343/Iberia-Demo-Product-Evaluation-Form
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;
+  &lt;small
+    &gt;Email autogenerated by Salesforce flow &quot;Seed Unit Notifications EMEA&quot;.&lt;/small
+  &gt;
+&lt;/p&gt;</text>
+    </textTemplates>
+    <textTemplates>
+        <name>subject</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Seed unit for {!$Record.Opportunity__r.Name} has shipped.</text>
+    </textTemplates>
+</Flow>

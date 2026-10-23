@@ -1,0 +1,116 @@
+<apex:page showHeader="true" sidebar="true" tabStyle="Ergotron_Product_Comparison__c" controller="ProductComparisonWizardController" title="Product Comparison Wizard">
+	<apex:includeScript value="{!$Resource.jQuery211}" />
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+
+        function inputDisable() {
+        	j$("input[type='button']").prop({disabled: true});
+            j$("input[type='submit']").prop({disabled: true});
+        }
+
+        function inputEnable() {
+        	j$("input[type='button']").prop({disabled: false});
+            j$("input[type='submit']").prop({disabled: false});
+        }
+
+	    function startSearch()
+	    {    
+            j$("#divLoading").show();
+            inputDisable();
+	    }
+
+	    function stopSearch()
+	    {
+            j$("#divLoading").hide();
+            inputEnable();  
+	    }
+
+	    function startAdd()
+	    {    
+            j$("#divAdd").show();
+            inputDisable();
+	    }
+
+	    function stopAdd()
+	    {
+            j$("#divAdd").hide();
+            inputEnable();  
+	    }
+
+    </script>
+
+	<apex:sectionHeader title="Ergotron Sales and Marketing" subtitle="Product Comparison Wizard" />
+
+	<apex:form id="frmMain">
+	<apex:actionStatus id="statusSearch" onstart="startSearch()" onstop="stopSearch()" />
+	<apex:actionStatus id="statusAddProduct" onstart="startAdd()" onstop="stopAdd()" />
+
+	<apex:pageBlock title="Select up to six (6) products to compare">
+		<apex:pageBlockButtons >
+			<apex:commandButton id="idCancel" value="Return to Product" action="{!cancel}" />
+			<apex:commandButton id="cmdGenerate" value="Generate Comparison" action="{!displayComparison}" />
+		</apex:pageBlockButtons>
+		<apex:pageBlockSection title="Search Available Products" columns="2">
+			<apex:repeat value="{!$ObjectType.Ergotron_Product_Comparison__c.FieldSets.CompareWizardSearch}" var="f"> 
+		        <apex:inputField value="{!objSearch[f]}" />
+		    </apex:repeat>
+		    <apex:pageblocksectionitem >
+		    	<apex:outputText value="" />
+		    	<apex:commandButton id="cmdSearch" value="Search" action="{!searchListResults}" rerender="pbsSearchResults" status="statusSearch" />
+		    	<!--<apex:commandButton id="cmdSearch" value="Search" action="{!NULL}" rerender="pbsSearchResults" status="statusSearch" />-->
+		    </apex:pageblocksectionitem>
+		</apex:pageBlockSection>
+		<br />
+		<apex:pageBlockSection id="pbsSelected" title="Selected Products" columns="1">
+
+			<apex:pageMessage summary="You can only add a maximum of six (6) products to the comparison!" 
+				rendered="{!bolErrorMaxAdd}" 
+				severity="Warning" 
+			/>
+
+			<apex:pageMessage summary="The product *{!objOrigin.Name}* has been automatically added to this comparison" 
+				rendered="{!bolShowAutoAdd}" 
+				severity="info" 
+				strength="3" 
+			/>
+
+			<apex:pageBlockTable value="{!mapProducts}" var="prd">
+				<apex:column headerValue="Delete">
+					<apex:commandButton value="Delete" action="{!removeFromSelected}" rerender="pbsSelected,pbsSearchResults">
+						<apex:param name="idTarget" value="{!mapProducts[prd].Id}" assignTo="{!idTarget}" />
+					</apex:commandButton>
+				</apex:column>
+				<apex:column value="{!mapProducts[prd].Company__c}" />
+				<apex:column value="{!mapProducts[prd].Name}" />
+				<apex:column value="{!mapProducts[prd].Manufacturers_Part_Number__c}" />
+				<apex:column value="{!mapProducts[prd].RecordType.Name}" />
+				<apex:column value="{!mapProducts[prd].Last_Revised__c}" />
+			</apex:pageBlockTable>
+		</apex:pageBlockSection>
+		<br />
+		<apex:pageBlockSection id="pbsSearchResults" columns="1">
+			<div id="divLoading" align="center" style="display: none;">
+		       	<div style="color:red; font-style:italic"><img  src="{!$Resource.loadingimg}" />&nbsp;&nbsp;Searching for products...</div>
+		   	</div>
+		   	<div id="divAdd" align="center" style="display: none;">
+		       	<div style="color:red; font-style:italic"><img  src="{!$Resource.loadingimg}" />&nbsp;&nbsp;Adding product...</div>
+		   	</div>
+			<apex:pageBlockTable value="{!lstResults}" var="prd">
+				<apex:column headerValue="Add">
+					<apex:commandButton value="Add" action="{!addToSelected}" rerender="pbsSelected,pbsSearchResults" status="statusAddProduct">
+						<apex:param name="idTarget" value="{!prd.Id}" assignTo="{!idTarget}" />
+					</apex:commandButton>
+				</apex:column>
+				<apex:column value="{!prd.Company__c}" />
+				<apex:column value="{!prd.Name}" />
+				<apex:column value="{!prd.Manufacturers_Part_Number__c}" />
+				<apex:column value="{!prd.RecordType.Name}" />
+				<apex:column value="{!prd.Last_Revised__c}" />
+			</apex:pageBlockTable>
+		</apex:pageBlockSection>
+	</apex:pageBlock>
+
+	</apex:form>
+
+</apex:page>

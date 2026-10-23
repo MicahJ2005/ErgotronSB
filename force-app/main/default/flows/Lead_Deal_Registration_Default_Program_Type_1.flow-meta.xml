@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Check the country of the reseller partner and the program type.
+If the country is listed as  Middle East country, set the program type to 8%. If not,
+Set the program type to 5%, if the program type was not selected.</description>
+        <name>Check_Deal_Reg</name>
+        <label>Check Deal Reg</label>
+        <locationX>314</locationX>
+        <locationY>335</locationY>
+        <defaultConnectorLabel>End</defaultConnectorLabel>
+        <rules>
+            <name>Middle_East_Country</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>BH</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>CY</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>EG</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>IQ</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>JO</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>KW</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>LB</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>OM</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>QA</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>SA</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>SY</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>TR</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>AE</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>YE</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.CountryCode</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>ZA</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_8_percent_discount</targetReference>
+            </connector>
+            <label>Middle East Country</label>
+        </rules>
+        <rules>
+            <name>Program_type_was_not_selected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Program_Type__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_4_A1</targetReference>
+            </connector>
+            <label>Program type was not selected</label>
+        </rules>
+    </decisions>
+    <description>Migrated (and updated) from the Lead-Deal Registration Default Program Type process using multiple criteria.
+Trigger on Deal Registration record type only.
+Checks the country of the reseller partner that created this Deal Reg to determine the program type. For Middle East countries, selects the 8% program. Otherwise, if  no program type was selected during creation, the 5% program is assigned.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>formula_1_myRule_1_A1_9515358297</name>
+        <dataType>String</dataType>
+        <expression>&quot;8% Discount / 240 Days / 50,000 Minimum&quot;</expression>
+    </formulas>
+    <formulas>
+        <description>Define the program type for MEA countries based on the country of the user that created the deal registration.
+If the country is listed, the program type discount is 8%.
+If the country is not listed, then the program type discount is 5%.</description>
+        <name>formula_ProgramType</name>
+        <dataType>String</dataType>
+        <expression>CASE({!$Record.CreatedBy.Country},
+&quot;Bahrain&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+&quot;Cyprus&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+&quot;Egypt&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;Iraq&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;Jordan&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;Kuwait&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;Lebanon&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;Oman&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;Qatar&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;Saudi Arabia&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;Syrian Arab Republic&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;Turkey&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;United Arab Emirates&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+ &quot;Yemen&quot;,  &quot;8% Discount / 240 Days / 50,000 Minimum&quot;, 
+&quot;5% Discount / 120 Days / 20,000 Minimum&quot;
+)</expression>
+    </formulas>
+    <interviewLabel>Lead-Deal Registration Default Program Type_1 {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Lead-Deal Registration Default Program Type_1</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>myRule_4_A1</name>
+        <label>set discount to 5%</label>
+        <locationX>314</locationX>
+        <locationY>455</locationY>
+        <inputAssignments>
+            <field>Program_Type__c</field>
+            <value>
+                <stringValue>5% Discount / 120 Days / 20,000 Minimum</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Set_8_percent_discount</name>
+        <label>Set 8 percent discount</label>
+        <locationX>50</locationX>
+        <locationY>455</locationY>
+        <inputAssignments>
+            <field>Program_Type__c</field>
+            <value>
+                <stringValue>8% Discount / 240 Days / 50,000 Minimum</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Deal_Reg</targetReference>
+        </connector>
+        <filterFormula>{!$Record.RecordType.Name} = &quot;Ergotron Deal Registration Lead&quot;</filterFormula>
+        <object>Lead</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

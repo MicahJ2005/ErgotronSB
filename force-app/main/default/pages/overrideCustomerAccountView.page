@@ -1,0 +1,9 @@
+<!-- This page is used to override the standard view action on the Customer_Account__c object and redirect the user to the associated Account record -->
+<apex:page standardController="Customer_Account__c" extensions="Customer_Account_Override" action="{!RedirectAccount}">
+	<apex:form >
+		<apex:inputHidden value="{!Customer_Account__c.Party__c}" id="hiddenParty"/>
+	</apex:form>
+
+	<apex:detail subject="{!Customer_Account__c.Id}" inlineEdit="true" showChatter="true" />
+	
+</apex:page>

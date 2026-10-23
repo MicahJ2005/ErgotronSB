@@ -1,0 +1,6 @@
+<!-- This page is used to override the standard view action on the Seed_Unit_Product__c object and redirect the user to the associated Seed_Unit_Order__c record -->
+<apex:page standardController="Seed_Unit_Product__c" extensions="Seed_Product_Override" action="{!RedirectSeedUnitOrder}">
+	<apex:form >
+		<apex:inputHidden value="{!Seed_Unit_Product__c.Seed_Unit_Order__c}" id="hiddenSeedUnitOrder"/>
+	</apex:form>
+</apex:page>

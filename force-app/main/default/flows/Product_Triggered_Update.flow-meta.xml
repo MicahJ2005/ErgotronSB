@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>CC_Prod_Update_Error</name>
+        <label>CC Prod Update Error</label>
+        <locationX>314</locationX>
+        <locationY>695</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>EmailBodyText_UpdateFailure</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>esau.sanchez@ergotron.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>CC Product failed to update name or SKU</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>55.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Found_CC_Product</name>
+        <label>Found CC Product</label>
+        <locationX>314</locationX>
+        <locationY>455</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CC_Product.Id</leftValueReference>
+                <operator>WasSet</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CC_Product_Update</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description>When the Oracle Prod Name or Product Code change in the triggering product, the flow will updates the name and/or sku of the related CC Product</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Oracle Part Name value truncated to 80 characters.</description>
+        <name>TruncatedProdName</name>
+        <dataType>String</dataType>
+        <expression>LEFT({!$Record.Oracle_Part_Name__c},80)</expression>
+    </formulas>
+    <interviewLabel>Product Triggered Update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Product Triggered Update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>CC_Product</name>
+        <label>CC Product</label>
+        <locationX>314</locationX>
+        <locationY>335</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Found_CC_Product</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Product__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ccrz__E_Product__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>CC_Product_Update</name>
+        <label>CC Product Update</label>
+        <locationX>50</locationX>
+        <locationY>575</locationY>
+        <faultConnector>
+            <targetReference>CC_Prod_Update_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Product__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Name</field>
+            <value>
+                <elementReference>TruncatedProdName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ccrz__SKU__c</field>
+            <value>
+                <elementReference>$Record.Oracle_Part_Number__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ccrz__E_Product__c</object>
+    </recordUpdates>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>CC_Product</targetReference>
+        </connector>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>Oracle_Part_Number__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Oracle_Part_Name__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Product2</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>EmailBodyText_UpdateFailure</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Flow Date Time: {!$Flow.CurrentDateTime}
+Current record: {!$Flow.CurrentRecord}
+
+:::: Product :::: 
+ProductCode: {!$Record.ProductCode}
+Oracle Part Name: {!$Record.Oracle_Part_Name__c}
+
+:::: Product Previous Values ::::
+Product Code: {!$Record__Prior.ProductCode}
+Oracle Part Name: {!$Record__Prior.Oracle_Part_Name__c}
+
+:::: CC Product ::::
+ID: {!CC_Product.Id}
+Name: {!CC_Product.Name}
+SKU: {!CC_Product.ccrz__SKU__c}
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+{!$Flow.FaultMessage}</text>
+    </textTemplates>
+</Flow>

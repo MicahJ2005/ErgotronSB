@@ -1,0 +1,23 @@
+<apex:page lightningStylesheets="true">
+    <apex:slds />
+    <apex:form >
+        <p>
+            For errors, bugs, or issues.<br/>
+            <apex:commandLink action="https://helpme.ergotron.com/support/tickets/new"
+                                value="HelpMe - New Incident"
+                                styleClass="slds-button slds-button_brand"/>
+        </p>
+        <br/>
+        <p>
+            For configuration changes, enhancements, questions, or ideas.<br/>
+            <apex:commandLink styleClass="slds-button slds-button_brand"
+                              action="https://helpme.ergotron.com/support/catalog/items/52" value="HelpMe - New Service Request"/>
+        </p>
+        <br/>
+        <p>
+            For Salesforce account request or Salesforce access change requests.<br/>
+            <apex:commandLink styleClass="slds-button slds-button_brand"
+                                action="https://helpme.ergotron.com/support/catalog/items/48" value="HelpMe - Salesforce Access"/>
+        </p>                
+    </apex:form>
+</apex:page>

@@ -1,0 +1,133 @@
+<template>
+  <template if:true={selector_screen}>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="contentWrap">
+            <section class="leftContent">
+              <article class="introContent">
+                <h1 class="h1 h1__pageTitle">{label.labelReturnHeader}</h1>
+                <h2 class="h2 h2__pageSubtitle">{label.labelPage1SubHeader}</h2>
+                <p class="p__pageIntro">{label.labelPage1SubSubHeader}</p>
+              </article>
+              <article class="formContent">
+                <section class="section__formFields">
+                  <p class="input__fieldLabel input__fieldLabel--required"><span>{label.labelOrderNumberLabel}</span></p>
+                  <div class="field-wrapper">
+                    <lightning-input variant="label-hidden" class="input__fields" type="text" label={label.labelOrderNumberLabel} value={orderNumberText} onblur={handleOrderNumber} required></lightning-input>
+                  </div>
+                  <p class="input__fieldLabel input__fieldLabel--required"><span>{label.labelEmailLabel}</span></p>
+                  <div class="field-wrapper">
+                    <lightning-input variant="label-hidden" class="input__fields" type="text" label={label.labelEmailLabel} value={emailText} onblur={handleEmail} required></lightning-input>
+                  </div>
+                </section>
+              </article>
+            </section>
+            <section class="rightContent">
+              <aside class="pagePrimaryImg"></aside>
+            </section>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <section class="section__endElems">
+            <aside class="error-wrap">
+              <template if:true={selector_screen_Error_invalid_Data}>
+                <div class="error__labels">{label.labelErrorCantFind} <a href="https://contact.ergotron.com" target="_blank" title="Contact Ergotron Support">{label.labelThankYouContactUs}</a> {label.labelForSupport}.</div>
+              </template>
+              <template if:true={selector_screen_Error_invalid_Date}>
+                <div class="error__labels">{label.labelErrorPastWindow} <a href="https://contact.ergotron.com" target="_blank" title="Contact Ergotron Support">{label.labelThankYouContactUs}</a>.</div>
+              </template>
+            </aside>
+            <lightning-button variant="brand" label="Next" onclick={handleSubmit}></lightning-button>
+          </section>
+        </div>
+      </div>
+    </div>
+  </template>
+  <template if:true={item_selector_screen}>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="contentWrap">
+            <section class="leftContent">
+              <article class="introContent">
+                <h1 class="h1 h1__pageTitle">{label.labelReturnHeader}</h1>
+                <h2 class="h2 h2__pageSubtitle">{label.labelPage2SubHeader}</h2>
+                <p class="p__pageIntro">{label.labelPage2SubSubHeader}</p>
+              </article>
+            </section>
+            <section class="rightContent">
+              <aside class="pageSecondaryImg"></aside>
+            </section>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <section class="itemContent">
+            <article class="formContent">
+              <section class="section__formFields--pg2">
+                <template for:each={returnObj.lines} for:item="line">
+                  <div key={line.productId}>
+                    <div class="itemWrapper">
+                      <div class="prod-imgWrap"><img src={line.productImage} /></div>
+                      <div class="prod-detailsWrap">
+                        <h3 class="h3 h3__prodName">{line.productName}</h3>
+                        <div class="prod-purchaseDetail">{label.labelPartNumber}: &nbsp; {line.productCode}</div>
+                        <div class="prod-purchaseDetail">{label.labelQty}: &nbsp; {line.quantity}</div>
+                        <div class="prod-formFields">
+                          <div class="prod-returnReason">
+                            <p class="input__fieldLabel input__fieldLabel--required"><span>{label.labelReasionLabel}</span></p>
+                            <lightning-combobox variant="label-hidden" name="reason" value={line.reason} label={label.labelReasionLabel} placeholder="" options={options} data-index={line.productId} onchange={handleReasonChange} required class="validate" message-when-value-missing={label.labelMissingReason}>
+                            </lightning-combobox>
+                          </div>
+                          <div class="prod-returnQty">
+                            <p class="input__fieldLabel input__fieldLabel--required"><span>{label.labelQuantityLabel}</span></p>
+                            <lightning-input variant="label-hidden" type="number" label={label.labelQuantityLabel} value={line.returnquantity} data-productid={line.productId} required onchange={handleReturnQuantityChange} class="validate" max={line.quantity} min=0 message-when-range-overflow={label.labelQuantityMax} message-when-range-underflow={label.Return_Quantity_Min}>
+                            </lightning-input>
+                          </div>
+                          <div class="prod-returnPkg">
+                            <p class="input__fieldLabel input__fieldLabel--required"><span>{label.labelPackagingLabel}</span></p>
+                            <lightning-radio-group variant="label-hidden" name="packaging" label={label.labelPackagingLabel} options={returnOptions} onchange={handlePackagingChange} data-index={line.productId} required class="validate" type="radio" message-when-value-missing={label.Required}>
+                            </lightning-radio-group>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <lightning-button variant="brand" label="Submit" onclick={handlePage2Submit}></lightning-button>
+              </section>
+            </article>
+          </section>
+        </div>
+      </div>
+    </div>
+  </template>
+  <template if:true={thank_you_screen}>
+    <div>{label.labelThankYou}</div>
+    <h1>{label.labelThankYouRequestRecieved}</h1>
+    <div>
+      <template if:true={thank_you_email}>
+        {label.labelThankYouMessage1}
+      </template>
+      <template if:true={thank_you_representative}>
+        {label.labelThankYouMessage2}
+      </template>
+    </div>
+    <br />
+    <div>{label.labelThankYouConcern} <a href="https://contact.ergotron.com" target="_blank" title="Contact Ergotron Support">{label.labelThankYouContactUs}.</a></div>
+  </template>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <article class="disclaimer">
+          <h4 class="h4 h4__pageDisclaimerTitle">{label.labelReturnPolicyLabel}</h4>
+          <p>{label.labelReturnPolicy} <a href="https://www.ergotron.com/en-us/company/legal/shipping-and-returns" target="_blank" title="Ergotron Return Policy">{label.labelReturnPolicyLink}</a>.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</template>

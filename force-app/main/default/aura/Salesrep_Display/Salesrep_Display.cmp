@@ -1,0 +1,17 @@
+<aura:component access="global" implements="lightning:availableForFlowScreens" controller="Salesrep_Display_Ctrl">
+	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:attribute name="StateCode" type="String" access="global"/>
+    <aura:attribute name="PostalCode" type="String" access="global"/>
+    <aura:attribute name="CountryCode" type="String" access="global"/>
+    <aura:attribute name="RepData" type="HelperSalesRepData"/>
+    <aura:attribute name="RepCaseComment" type="String" access="global" />
+    
+    <div> 
+        <div class="slds-text-title_caps"><b>Oracle Sales Rep Information</b></div><br/>
+        <div class="slds-text-title">Name: {!v.RepData.x_sales_rep_name}</div>
+        <div class="slds-text-title">Phone: {!v.RepData.x_sales_rep_phone}</div>
+        <div class="slds-text-title">Email: {!v.RepData.x_sales_rep_email}</div>
+        <div class="slds-text-title">Is Manager? {!v.RepData.x_is_manager}</div>
+    </div>
+    
+</aura:component>

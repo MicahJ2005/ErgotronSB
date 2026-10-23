@@ -1,0 +1,105 @@
+<apex:page docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false">
+     
+
+<script>
+    
+        $( document ).ready(function() {
+
+            
+            document.onreadystatechange = () => {
+              if (document.readyState === 'complete') {
+ 
+                     // these need to be global in the document.readyState === 'complete' scope becasue of recurrsive pollDOMReallyReady method call
+                     var max_times_to_check=30;     // max number of poll interations to attempt before bailing
+                     var numof_times=0;             // max loops at .5 secs per
+                     var millisecond_poll_wait=500; // 1/2 second 
+
+                     // local variable
+                     var millisecond_delay=10000;   // 10 sceconds
+                
+                	function makeInputAndSelectReadonly () {
+
+                			   var fields = document.getElementById("mainform").getElementsByTagName('input');
+                               for(var i = 0; i < fields.length; i++)
+                               {
+                                   fields[i].disabled = true;
+                               }    
+                
+                               fields = document.getElementById("billingAddressForm").getElementsByTagName('input');
+                               for(var i = 0; i < fields.length; i++)
+                               {
+                                   fields[i].disabled = true;
+                               }    
+    
+                               fields = document.getElementById("billingAddressForm").getElementsByTagName('select');
+                               for(var i = 0; i < fields.length; i++)
+                               {
+                                   fields[i].disabled = true;
+                               }    
+    
+          
+          
+                               fields = document.getElementById("shippingAddressForm").getElementsByTagName('input');
+                               for(var i = 0; i < fields.length; i++)
+                               {
+                                   fields[i].disabled = true;
+                               }   
+          
+                                     fields = document.getElementById("shippingAddressForm").getElementsByTagName('select');
+                               for(var i = 0; i < fields.length; i++)
+                               {
+                                   fields[i].disabled = true;
+                               }                   			
+                  
+                      } // end of makeInputAndSelectReadonly
+                
+                
+                        //polls every 1/2 second to see if mainform elemen can be found 
+                        // polls for max_times_check iterations
+                        // or until the element has been found 
+                        function pollDOMReallyReady () {
+                    
+                
+                
+                		var mainformid = document.getElementById("mainform");
+                		if( mainformid != null )
+                        {
+								makeInputAndSelectReadonly();                            
+                        }
+                		else
+                        {
+                           if( ++numof_times < max_times_to_check )
+                           {
+                             setTimeout(pollDOMReallyReady, millisecond_poll_wait); // try again in 300 milliseconds
+                           }
+                       }
+                    
+                     } // end of pollDOMReallyReady
+                     pollDOMReallyReady();  // recursively launches itself for possible  for max_times_to_check               
+
+    
+    	 	      //makes them readonly following a millsecond delay after document ready  
+                    setTimeout(() => { 
+                    	makeInputAndSelectReadonly(); 
+		            }, millisecond_delay);
+                        
+                        
+     	 	      //makes them readonly with a click in the main div 
+	        	   $('.checkoutContent').on('click', function(event) {
+  						makeInputAndSelectReadonly(); 
+				    });                         
+                        
+                        
+                
+              }
+            };            
+         
+       
+        });
+
+ 
+ 
+</script>
+   
+
+</apex:page>

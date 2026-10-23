@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Send email to salestax@ergotron.com with a link to the account and the uploaded file attached.</description>
+        <name>Tax_Certificate_Uploaded_Email_Notification</name>
+        <label>Tax Certificate Uploaded Email Notification</label>
+        <locationX>176</locationX>
+        <locationY>647</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>B2B_Constant.TaxCert_Emails__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <stringValue>noreply@ergotron.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>composeEmailContent</name>
+            <value>
+                <stringValue>True</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>A tax exempt file has been attached to a site in Salesforce</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>notificationBody</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>useLineBreaks</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>attachmentId</name>
+            <value>
+                <elementReference>ContentVersion.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>relatedRecordId</name>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <offset>0</offset>
+        <versionString>1.0.1</versionString>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Send an email notification to salestax@ergotron.com when a site account is marked as TaxExemptAccount. The email notification includes a file uploaded during the creation of a cart on our B2BCommerce web store.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Link to the site triggering this flow</description>
+        <name>SiteLink</name>
+        <dataType>String</dataType>
+        <expression>{!$Label.ErgotronMyURL}&amp; $Record.Id</expression>
+    </formulas>
+    <interviewLabel>Tax Certificate Uploaded Notification {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Tax Certificate Uploaded Notification</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get the B2B Constant custom metadata to get the email addresses for the recipients of this notification.</description>
+        <name>B2B_Constant</name>
+        <label>B2B Constant</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>ContentDocumentLink</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Label</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>B2B Constant</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>B2B_Constants__mdt</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get the most recent ContentDocumentLink from the account that triggered the flow. Use this record to get the ContentVersion (file) to be attached to the email notification.</description>
+        <name>ContentDocumentLink</name>
+        <label>ContentDocumentLink</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>ContentVersion</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>LinkedEntityId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ContentDocumentLink</object>
+        <sortField>SystemModstamp</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get the most recent ContentVersion from the ContentDocumentLink previously obtained. This will be attached to the email notification.</description>
+        <name>ContentVersion</name>
+        <label>ContentVersion</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Tax_Certificate_Uploaded_Email_Notification</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ContentDocumentId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>ContentDocumentLink.ContentDocumentId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ContentVersion</object>
+        <sortField>CreatedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>B2B_Constant</targetReference>
+        </connector>
+        <filterFormula>AND(
+{!$Record.RecordType.Name} = &apos;Site&apos;,
+ISChanged({!$Record.ccrz__TaxExemptAccount__c}),
+{!$Record.ccrz__TaxExemptAccount__c}
+)</filterFormula>
+        <object>Account</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+    <textTemplates>
+        <description>Body of the email notification</description>
+        <name>notificationBody</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>&lt;p&gt;A tax exempt file has been attached to a site in Salesforce.&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;Site Account: &lt;a href={!SiteLink}&gt;{!$Record.Name}&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;File Name: {!ContentVersion.Title}&lt;br&gt;
+Uplodaed by: {!ContentVersion.Owner.FirstName} {!ContentVersion.Owner.LastName}&lt;br&gt;
+Email: {!ContentVersion.Owner.Email}&lt;br&gt;
+Phone: {!ContentVersion.Owner.Phone}&lt;/p&gt;</text>
+    </textTemplates>
+</Flow>

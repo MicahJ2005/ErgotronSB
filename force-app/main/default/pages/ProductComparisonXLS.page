@@ -1,0 +1,24 @@
+<apex:page showHeader="false" sidebar="false" standardStyleSheets="false" controller="ProductComparisonWizardController" title="Product Comparison" contentType="application/vnd.ms-excel#ProductCompare.xls" cache="true">
+	<table>
+		<thead>
+		    <tr>
+			<th>
+				Product Attribute
+			</th>
+			<apex:repeat value="{!mapComparison}" var="key">
+				<th>{!mapComparison[key].Name}</th>
+			</apex:repeat>
+		    </tr>
+		</thead>
+		<tbody>
+		<apex:repeat value="{!lstObjectFieldsDisplay}" var="field">
+			<tr>
+				<td>{!$ObjectType['Ergotron_Product_Comparison__c'].fields[field].Label}</td>
+				<apex:repeat value="{!mapComparison}" var="key">
+					<td>{!mapComparison[key][field]}</td>
+				</apex:repeat>
+			</tr>
+		</apex:repeat>
+		</tbody>
+	</table>
+</apex:page>

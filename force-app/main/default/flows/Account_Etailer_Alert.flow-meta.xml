@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Sends an email to DH Distributors</description>
+        <name>DH_Dist_0</name>
+        <label>DH Dist</label>
+        <locationX>314</locationX>
+        <locationY>815</locationY>
+        <actionName>Account.Email_Distribution_When_Account_is_marked_as_ETailer_DH_Dist</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Account.Email_Distribution_When_Account_is_marked_as_ETailer_DH_Dist</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Sends an email to distributors</description>
+        <name>ETailer_0</name>
+        <label>ETailer</label>
+        <locationX>314</locationX>
+        <locationY>455</locationY>
+        <actionName>Account.Email_Distribution_When_Account_is_marked_as_ETailer</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Synnex_0</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Account.Email_Distribution_When_Account_is_marked_as_ETailer</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Sends email to Ingram Canada distributors</description>
+        <name>Ingram_Canada</name>
+        <label>Ingram Canada</label>
+        <locationX>50</locationX>
+        <locationY>575</locationY>
+        <actionName>Account.E_Tailer_Auth</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Account.E_Tailer_Auth</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Sends an email to Ingram Micro distributors</description>
+        <name>Ingram_Micro_0</name>
+        <label>Ingram Micro</label>
+        <locationX>314</locationX>
+        <locationY>695</locationY>
+        <actionName>Account.Email_Distribution_When_Account_is_marked_as_ETailer_Ingram_Micro</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>DH_Dist_0</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Account.Email_Distribution_When_Account_is_marked_as_ETailer_Ingram_Micro</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Sends an email to non Canadian Synnex</description>
+        <name>Synnex_0</name>
+        <label>Synnex</label>
+        <locationX>314</locationX>
+        <locationY>575</locationY>
+        <actionName>Account.Email_Distribution_When_Account_is_marked_as_ETailer_Synnex</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Ingram_Micro_0</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Account.Email_Distribution_When_Account_is_marked_as_ETailer_Synnex</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <description>Sends email alert to Synnex Canada distributors.</description>
+        <name>Synnex_Canada</name>
+        <label>Synnex Canada</label>
+        <locationX>50</locationX>
+        <locationY>455</locationY>
+        <actionName>Account.E_Tailer_Auth_created_Synnex_Canada</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Ingram_Canada</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Account.E_Tailer_Auth_created_Synnex_Canada</nameSegment>
+    </actionCalls>
+    <apiVersion>55.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Decide where to send email alerts</description>
+        <name>Where_to_Send</name>
+        <label>Where to Send?</label>
+        <locationX>314</locationX>
+        <locationY>335</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Send_to_Canada</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.BillingCountry</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Canada</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Region__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Americas</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Synnex_Canada</targetReference>
+            </connector>
+            <label>Send to Canada</label>
+        </rules>
+        <rules>
+            <name>Send_to_Americas</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Region__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Americas</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.BillingCountry</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Canada</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>ETailer_0</targetReference>
+            </connector>
+            <label>Send to Americas</label>
+        </rules>
+    </decisions>
+    <description>Removed the email alert action for TD US</description>
+    <environments>Default</environments>
+    <interviewLabel>Account Etailer Alert {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account E_Tailer Update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Where_to_Send</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>Partner_Level__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>E-Tailer</stringValue>
+            </value>
+        </filters>
+        <object>Account</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+</Flow>

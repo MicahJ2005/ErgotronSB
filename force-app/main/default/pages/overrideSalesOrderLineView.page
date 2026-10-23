@@ -1,0 +1,6 @@
+<!-- This page is used to override the standard view action on the Sales_Order_Line__c object and redirect the user to the associated Sales_Order__c record -->
+<apex:page standardController="Sales_Order_Line__c" extensions="Sales_Order_Line_Override" action="{!redirect}">
+	<apex:form >
+		<apex:inputHidden value="{!Sales_Order_Line__c.Sales_Order__c}" id="hiddenSalesOrder"/>
+	</apex:form>
+</apex:page>

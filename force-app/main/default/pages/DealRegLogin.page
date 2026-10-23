@@ -1,0 +1,75 @@
+<apex:page id="LoginPage" docType="html-5.0" controller="Deal_Reg_Login_Cntrl" showHeader="false" sidebar="false" standardStylesheets="false">
+    <apex:includeScript value="{!$Resource.jQuery211}" />
+    <apex:stylesheet value="{!URLFOR($Resource.DealRegResources, 'css/main.css')}"/>
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+        
+        function noenter(ev){
+            if(window.event && window.event.keycode==13 || ev.which==13) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        function validateForm() {
+            var email=document.getElementById("{!$Component.LoginPage.mainForm.email}").value;
+            var pword=document.getElementById("{!$Component.LoginPage.mainForm.password}").value;
+
+            //Check for entered values in email and password fields.
+            if(email.length<1 || pword.length<1) {
+                alert("{!$Label.Alert_Enter_Email_Password}");
+                return false;
+            }
+        }
+    </script>
+
+    <head>
+        <title>Ergotron Deal Registration Login</title>
+        <style>
+            #container {
+                width: 340px;
+                position: relative;
+                background: none repeat scroll 0% 0% #FFF;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
+                margin:0 auto;
+                margin-top: 200px;
+                overflow: auto;
+            }
+        </style>
+    </head> 
+
+    <body>
+        <apex:form id="mainForm" forceSSL="true">
+            <div id="container">
+                <div id="pageImages">
+                    <apex:outputLink value="http://www.ergotron.com" id="home">
+                        <apex:image styleClass="img" url="{!URLFOR($Resource.DealRegResources, 'images/ergotron-TEXT-logo.png')}" />
+                    </apex:outputLink>
+                </div>
+                <div id="usernamepassword">    
+                    <apex:outputLabel for="email" value="{!$ObjectType.User.fields.Email.label}" />
+                    <apex:inputtext value="{!sEmail}" id="email" html-placeholder="example@example.com" />
+                    <apex:outputLabel for="password" value="{!$Label.site.password}" />                 
+                    <apex:inputsecret value="{!sPassword}" id="password" html-placeholder="{!$Label.site.password}" />
+                </div>
+                <div id="loginbtndiv" class="column1">
+                    <apex:commandbutton value="{!$Label.site.login_button}" action="{!login}" id="loginbtn" onclick="return validateForm();"/>
+                </div>
+                <div id="divLinkRegister" class="column2">
+                    <apex:outputLink value="/dealregselfreg" id="registerlink">{!$Label.Register_New_User}</apex:outputLink>
+                </div>
+                <div id="divLinkForgotPword" class="column2">
+                    <apex:outputLink value="/dealregforgotpassword" id="forgotpwordlink">{!$Label.Forgot_Password}</apex:outputLink>
+                </div>
+                <div id="Errors" class="message">
+                    <apex:pageMessages id="pageMessages" rendered="true" /> 
+                </div>
+            </div>
+        </apex:form>
+    </body>
+</apex:page>

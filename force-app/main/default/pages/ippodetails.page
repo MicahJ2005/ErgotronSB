@@ -1,0 +1,15 @@
+<!--Inline Visualforce page used on the Integration_Project__c object to display purchase order details from the associated Sales Order-->
+
+<apex:page standardController="Integration_Project__c" extensions="IP_PO_Details_Cntrl">
+	<apex:pageBlock >
+        <!--Hidden fields used by the controller extension-->
+        <apex:outputField value="{!Integration_Project__c.Sales_Order__c}" rendered="false"/>
+
+        <apex:pageBlockTable value="{!listPODetails}" var="podetail">
+            <apex:column value="{!podetail.Name}"/>
+            <apex:column value="{!podetail.Vendor_Name__c}"/> 
+            <apex:column value="{!podetail.Quantity__c}"/>
+            <apex:column value="{!podetail.Status__c}"/>
+        </apex:pageBlockTable> 
+    </apex:pageBlock> 
+</apex:page>

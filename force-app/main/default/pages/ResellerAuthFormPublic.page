@@ -1,0 +1,396 @@
+<apex:page standardController="Lead" 
+    extensions="ResellerAuthFormPublicController" 
+    showHeader="false" 
+    sidebar="false" 
+    title="Reseller Authorization Form" 
+    standardStylesheets="false" 
+    doctype="html-5.0" 
+    applyhtmltag="false" 
+    language="{!$CurrentPage.parameters.lang}"
+>
+
+    <head>
+        <title>Ergotron Partner Authorization Request Form</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+        <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+
+        <apex:includescript value="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js" />
+        <apex:includescript value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" />
+
+        <style>
+            .top-buffer { 
+                margin-top:20px; 
+            }
+            .fullwidth {
+                margin-left:0;
+                margin-right:0;
+                padding-left:0;
+                padding-right:0;
+            }
+            .hidden-toggle {
+                display:none;
+            }
+            .navbar-default {
+                background-color: #fe5000;
+                color: #fff;
+            }
+            .nav.nav-center {
+                margin:auto;
+                float:none;
+                color: #fff;
+            }
+            .nav-logo-small {
+                margin: auto; 
+                display:block; 
+                height:2.5em; 
+                width:2.647em;
+                margin-top: 0.6em;
+            }
+            .nav-logo-large {
+                margin-left: 55%; 
+                display:block; 
+                height:2em; 
+                width:8.823em;
+                margin-top: 0.7em;
+            }
+            .sm-container {
+                margin-top: 0.8em;
+                float:left;
+            }
+            .sm-icon {
+                width:1.75em;
+                height:1.75em;
+                margin-left: 0.5em;
+            }
+
+            .form-group.required .control-label.required:before {
+                content:"* ";
+                color:red;
+            }
+            
+            @media ( min-width: 48em ) {
+                div.navbar-header {
+                    width:70%;
+                }
+            }
+
+            @media ( min-width: 64em ) {
+                div.navbar-header {
+                    width:85%;
+                }
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <apex:form id="frmMain">
+        <apex:actionStatus id="statusSave" onstart="startSave()" onstop="stopSave()" />
+
+            <div class="container-fluid">
+                <apex:image value="{!$Resource.ErgotronLogo}" />
+
+                <div class="page-header">
+                    <h2>Ergotron Partner Authorization Request Form</h2>
+                </div>
+
+                <apex:outputPanel id="opForm" rendered="{!NOT(bolShowResults)}">
+
+                    <div class="form-group required">
+
+                        <div class="well well-sm text-center"><strong>Partner Information</strong></div>
+
+                        <label for="Company" class="control-label required">{!$Label.Seed_Form_End_User_Company}:</label>
+                        <apex:inputField value="{!soLead.Company}" styleClass="form-control" id="Company" html-placeholder="Legal name as it appears on you customer’s W-9 and/or sales tax registrations" required="required" />
+
+                        <label for="FirstName" class="control-label required">{!$Label.Seed_Form_End_User_First_Name}:</label>
+                        <apex:inputField value="{!soLead.FirstName}" styleClass="form-control" id="FirstName" required="required" />
+
+                        <label for="LastName" class="control-label required">{!$Label.Seed_Form_End_User_Last_Name}:</label>
+                        <apex:inputField value="{!soLead.LastName}" styleClass="form-control" id="LastName" required="required" />
+
+                        <label for="Title" class="control-label">{!$Label.Seed_Form_End_User_Title}:</label>
+                        <apex:inputField value="{!soLead.Title}" styleClass="form-control" id="Title" />
+
+                        <label for="Phone" class="control-label required">{!$Label.Seed_Form_End_User_Phone}:</label>
+                        <apex:inputField value="{!soLead.Phone}" styleClass="form-control" id="Phone" html-placeholder="(xxx) xxx-xxxx" required="required" />
+
+                        <label for="MobilePhone" class="control-label required">{!$Label.Seed_Form_End_User_Mobile}:</label>
+                        <apex:inputField value="{!soLead.MobilePhone}" styleClass="form-control" id="MobilePhone" html-placeholder="(xxx) xxx-xxxx" />
+
+                        <label for="Email" class="control-label required">{!$Label.Seed_Form_End_User_Email}:</label>
+                        <apex:inputField value="{!soLead.Email}" styleClass="form-control" id="Email" html-placeholder="name@company.com" required="required" />
+
+                        <label for="Website" class="control-label">Website:</label>
+                        <apex:inputField value="{!soLead.Website}" styleClass="form-control" id="Website" html-placeholder="http://www.yourcompany.com" />
+                    </div>
+
+                    <div class="form-group required">
+
+                        <div class="well well-sm text-center"><strong><apex:outputText value="Partner Address (Corporate Headquarters)" /></strong></div>
+
+                        <label for="BillingStreet" class="control-label required">{!$Label.Seed_Form_Billing_Street}:</label>
+                        <apex:inputField value="{!soLead.Street}" styleClass="form-control" id="BillingStreet" required="required" />
+
+                        <label for="BillingCity" class="control-label required">{!$Label.Seed_Form_Billing_City}:</label>
+                        <apex:inputField value="{!soLead.City}" styleClass="form-control" id="BillingCity" required="required" />
+
+                        <label for="BillingCountry" class="control-label required">{!$Label.Seed_Form_Billing_Country}:</label>
+                        <apex:inputField value="{!soLeadBillingAddress.Ship_To_Country__c}" styleClass="form-control" id="BillingCountry" required="required" />
+
+                        <div id="stateObserverBilling" class="stateObserver">
+                            <label for="BillingState" class="control-label required">{!$Label.Seed_Form_Billing_State}:</label>
+                            <apex:inputField value="{!soLeadBillingAddress.Ship_To_State_Province__c}" styleClass="form-control" id="BillingState" required="required" /><br />
+                        </div>
+
+                        <label for="BillingPostalCode" class="control-label required">{!$Label.Seed_Form_Billing_Postal_Code}:</label>
+                        <apex:inputField value="{!soLead.PostalCode}" styleClass="form-control" id="BillingPostalCode" required="required" />
+
+                    </div>
+
+                    <div class="form-group required">
+
+                        <div class="well well-sm text-center"><strong>Partner Classification</strong></div>
+
+                        <label for="WebResellerType" class="control-label required">Reseller Type (Select One (if you feel you are more than one of these types, please select IT Reseller/VAR)):</label>
+                        <apex:inputField value="{!soLead.ResellerType__c}" styleClass="form-control resellerType" id="WebResellerType" required="required" />
+
+                        <div id="stateObserverFurniture" class="stateObserver">
+                            <label for="WebResellerFurnitureType" class="control-label">Primary Furniture Line (Select One):</label>
+                            <apex:inputField value="{!soLead.PrimaryFurnitureLine__c}" styleClass="form-control furnitureType" id="WebResellerFurnitureType" required="required" />
+                        </div>
+
+                        <label for="WebResellerFurnitureOther" class="control-label">Furniture Line (Other):</label>
+                        <apex:inputField value="{!soLead.FurnitureTypeOther__c}" styleClass="form-control furnitureTypeOther" id="WebResellerFurnitureOther" html-disabled="true" />
+
+                        <label for="WebResellerTypeOther" class="control-label">Reseller Type (Other):</label>
+                        <apex:inputField value="{!soLead.ResellerTypeOther__c}" styleClass="form-control resellerTypeOther" id="WebResellerTypeOther" html-disabled="true" />
+
+                        <label for="WebResellerMarket" class="control-label required">Markets Served (Select all that apply):</label>
+                        <apex:inputField value="{!soLead.MarketsServed__c}" styleClass="form-control" id="WebResellerMarket" required="required" />
+
+                        <label for="WebResellerSalesStaff" class="control-label required">Number of Field Reps:</label>
+                        <apex:inputField value="{!soLead.NumberofFieldReps__c}" styleClass="form-control" id="WebResellerSalesStaff" required="required"/>
+
+                        <label for="WebResellerInsideReps" class="control-label required">Number of Inside Reps:</label>
+                        <apex:inputField value="{!soLead.NumberofInsideReps__c}" styleClass="form-control" id="WebResellerInsideReps" required="required" />
+
+                        <label for="WebResellerClassification" class="control-label required">Business Classification:</label>
+                        <apex:inputField value="{!soLead.BusinessClassification__c}" styleClass="form-control businessClassification" id="WebResellerClassification" required="required" />
+
+                        <label for="WebResellerClassificationOther" class="control-label">Business Classification (Other):</label>
+                        <apex:inputField value="{!soLead.BusinessClassificationOther__c}" styleClass="form-control businessClassificationOther" id="WebResellerClassificationOther" html-disabled="true" />
+
+                        <label for="WebResellerOtherSellingNames" class="control-label required">Please identify all other names under which your company sells:</label>
+                        <apex:inputField value="{!soLead.OtherSellingNames__c}" styleClass="form-control" id="WebResellerOtherSellingNames" required="required" />
+
+                        <label for="WebResellerOtherBuyingNames" class="control-label required">Please identify all other names under which your company purchases:</label>
+                        <apex:inputField value="{!soLead.OtherBuyingNames__c    }" styleClass="form-control" id="WebResellerOtherBuyingNames" required="required" />
+                    </div>
+
+                    <div class="form-group required">
+
+                        <div class="well well-sm text-center"><strong>Primary Vendor Management</strong></div>
+
+                        <div class="alert alert-info" role="alert">
+                            Please identify the primary vendor management point-of-contact for your company, if other than yourself:<br />
+                            This would be the person that would determine Web pricing and/or facilitate channel pricing programs.
+                        </div>
+
+                        <label for="copyAddress" class="control-label" style="font-weight: bold">Copy Main Address&nbsp;&nbsp;</label>
+                        <apex:inputCheckbox styleClass="copyAddress" value="{!bolSameAddress}" id="copyAddress"/><br />
+
+                        <label for="WebResellerName" class="control-label">Name:</label>
+                        <apex:inputField value="{!soLead.WebResellerName__c}" styleClass="form-control" html-placeholder="FirstName LastName" id="WebResellerName" />
+
+                        <label for="WebResellerTitle" class="control-label">Title:</label>
+                        <apex:inputField value="{!soLead.WebResellerTitle__c}" styleClass="form-control" id="WebResellerTitle" />
+
+                        <label for="WebResellerEmail" class="control-label">Email:</label>
+                        <apex:inputField value="{!soLead.WebResellerEmail__c}" styleClass="form-control" id="WebResellerEmail" />
+
+                        <label for="WebResellerPhone" class="control-label">Phone:</label>
+                        <apex:inputField value="{!soLead.WebResellerPhone__c}" styleClass="form-control" id="WebResellerPhone" />
+
+                        <label for="ShippingStreet" class="control-label">Street:</label>
+                        <apex:inputField value="{!soLeadShipping.Street}" styleClass="form-control" id="ShippingStreet" />
+                        
+                        <label for="ShippingCity" class="control-label">{!$Label.Seed_Form_Shipping_City}:</label>
+                        <apex:inputField value="{!soLeadShipping.City}" styleClass="form-control" id="ShippingCity" />
+
+                        <label for="ShippingCountry" class="control-label">{!$Label.Seed_Form_Shipping_Country}:</label>
+                        <apex:inputField value="{!soLeadShippingAddress.Ship_To_Country__c}" styleClass="form-control" id="ShippingCountry" />
+
+                        <div id="stateObserverShipping" class="stateObserver">
+                            <label for="ShippingState" class="control-label">{!$Label.Seed_Form_Shipping_State}:</label>
+                            <apex:inputField value="{!soLeadShippingAddress.Ship_To_State_Province__c}" styleClass="form-control" id="ShippingState" /><br />
+                        </div>
+
+                        <label for="ShippingPostalCode" class="control-label">{!$Label.Seed_Form_Shipping_Postal_Code}:</label>
+                        <apex:inputField value="{!soLeadShipping.PostalCode}" styleClass="form-control" id="ShippingPostalCode" />
+
+                        <br />
+
+                        <div class="alert alert-success" role="alert">
+                            Ergotron enforces a Minimum Advertised Price (MAP) Policy on a number of products.  You can review the policy as well as a list of the affected products and their associated MAP prices on the Ergotron web site here:  http://partner.ergotron.com/en-us/company/legal.  Adherence to Ergotron's MAP Policy is required to remain an authorized Ergotron reseller partner.  By checking the box below, you acknowledge that you have read and understand the MAP Policy and agree to abide by its terms.<br />
+                            <br />
+                            <strong>By submitting this form, you agree to the Ergotron MAP Policy and to abide by its terms and conditions.</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <c:reCaptcha />
+                    </div>
+
+                    <div class="form-group">
+                        <apex:outputPanel id="opMessage">
+                            <apex:pageMessages />
+                        </apex:outputPanel>
+                    </div>
+
+                    <div class="form-group required">
+                        <apex:commandButton id="cmdSave" styleClass="btn btn-primary" action="{!saveLead}" value="Save and Submit" rerender="opMessage" status="statusSave"/>
+                    </div>
+
+                </apex:outputPanel>
+
+            </div>
+
+            <!-- Modal Start here-->
+            <div class="modal fade bs-example-modal-sm" id="myPleaseWait" tabindex="-1"
+                role="dialog" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">
+                                <span class="glyphicon glyphicon-time">
+                                </span>&nbsp;Please Wait
+                             </h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-info
+                                progress-bar-striped active"
+                                style="width: 100%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal ends Here -->
+
+            <apex:outputPanel id="jspanel">
+                <script>
+                    var j$ = jQuery.noConflict();
+                    j$(document).ready(function () { 
+
+                        bindListeners();
+
+                    });
+
+                    function bindListeners() {
+
+                        console.log('binding!');
+
+                        j$('.copyAddress').change(function(e) {
+                            if(j$(this).is(':checked')) {
+                                j$('textarea[id$=ShippingStreet]').val(j$('textarea[id$=BillingStreet]').val());
+                                j$('input[id$=ShippingCity]').val(j$('input[id$=BillingCity]').val());
+                                j$('select[id$=ShippingCountry]').val(j$('select[id$=BillingCountry]').val());
+                                j$('select[id$=ShippingState]').val(j$('select[id$=BillingState]').val());
+                                j$('input[id$=ShippingPostalCode]').val(j$('input[id$=BillingPostalCode]').val());
+                            }
+                        });
+
+                        j$('.resellerType').change(function() {
+                            if(j$(this).val() == 'Other') {
+                                j$('.resellerTypeOther').prop('disabled',false);
+                            } else {
+                                j$('.resellerTypeOther').prop('disabled',true);
+                            }
+                        });
+
+                        j$('.furnitureType').on('change', function() {
+                            if(j$(this).val() == 'Other') {
+                                j$('.furnitureTypeOther').prop('disabled',false);
+                            } else {
+                                j$('.furnitureTypeOther').prop('disabled',true);
+                            }
+                        });
+
+                        j$('.businessClassification').change(function() {
+                            if(j$(this).val() == '7') {
+                                j$('.businessClassificationOther').prop('disabled',false);
+                            }
+                        });
+                    }
+
+                    function startSave() {    
+                        j$('#myPleaseWait').modal('show');
+                    }
+
+                    function stopSave() {
+                        j$('#myPleaseWait').modal('hide');
+                    }
+
+                    // Mutation object
+                    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+
+                    // Defining observer 
+                    var observer = new MutationObserver(function(mutations) { 
+                        // If the myListClass was removed from the list - re-assign it
+                        if(!j$('#stateObserverBilling select').first().hasClass('form-control')){
+                            j$('#stateObserverBilling select').first().addClass('form-control');
+                        }
+
+                        if(!j$('#stateObserverShipping select').first().hasClass('form-control')){
+                            j$('#stateObserverShipping select').first().addClass('form-control');
+                        }
+
+                        bindListeners();
+                    });
+
+                    // A target object fot the observer
+                    var myNodeBilling = document.querySelector('#stateObserverBilling'); 
+                    var myNodeShipping = document.querySelector('#stateObserverShipping');
+                    var myNodeFurniture = document.querySelector('#stateObserverFurniture');
+
+                    // Assigning observer to the dependent picklist
+                    observer.observe(myNodeBilling, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true
+                    });
+
+                    observer.observe(myNodeShipping, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true
+                    });
+
+                    observer.observe(myNodeFurniture, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true
+                    });
+
+
+                </script>
+                
+                <script type="text/javascript">
+                    var RecaptchaOptions = {
+                       lang : '{!$CurrentPage.parameters.lang}',
+                    };
+                </script>
+            </apex:outputPanel>
+
+        </apex:form>
+
+    </body>
+
+</apex:page>

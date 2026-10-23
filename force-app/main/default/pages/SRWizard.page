@@ -1,0 +1,169 @@
+<apex:page showHeader="true" sidebar="true" standardController="Case" extensions="SRWizardController">
+<!--     
+    <script src="https://code.jquery.com/jquery-2.0.0.min.js" />
+
+    <script type="text/javascript">
+        function loading(val) {
+            if (val) {
+                document.getElementById('contentLoading').style.display = 'block';
+            }
+            else {
+                document.getElementById('contentLoading').style.display = 'none';
+            }
+        }
+    </script>
+
+    <style>
+        .searchResults {
+            font-size: x-small;
+        }
+
+    </style>
+
+    <apex:sectionHeader title="Service Request" subtitle="SR Creation Wizard" />
+
+    <apex:form id="frmMain">
+    <apex:actionStatus id="loading" onstart="loading(true);" onstop="loading(false);" />
+
+    <apex:pageBlock id="pbSearch" title="Data Search">
+        <apex:pageBlockButtons location="top">
+            <apex:commandButton id="btnSearch" value="Search!" action="{!executeSearch}" rerender="pbSearch, pbCase" status="loading"/>
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection title="Criteria" columns="1">
+                <div id="contentLoading" style="display:none;">
+                    <div style="text-align: center;">
+                        Loading Search Results...<img src="/img/loading.gif" alt="Loading graphic" />
+                    </div>
+                </div>
+            <apex:inputField value="{!soCase.Oracle_Group_Assignment__c}" />
+            <apex:outputPanel id="opCriteria">
+                <div style="float:left;width:25%;">
+                    <apex:outputPanel id="opAccount">
+                        Account<br />
+                        <apex:inputText value="{!clsQuickFind.strSearchAccount}" />
+                        <br />
+                        <apex:selectRadio value="{!clsQuickFind.idAccount}" layout="pageDirection" styleClass="searchResults">
+                            <apex:selectOptions value="{!lstAccounts}" />
+                            <apex:actionSupport action="{!searchForData}" rerender="pbSearch, pbCase" event="onclick" status="loading">
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchContact}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchInstalledProduct}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchServiceContract}" />
+                            </apex:actionSupport>
+                        </apex:selectRadio>
+                    </apex:outputPanel> 
+                </div>
+                <div style="float:left;width:25%;">
+                    <apex:outputPanel id="opContact">
+                        Contact&nbsp;<apex:outputlink value="{!prNewContact}" rendered="{!NOT(clsQuickFind.idAccount = '')}">[ New ]</apex:outputlink><br />
+                        <apex:inputText value="{!clsQuickFind.strSearchContact}" />
+                        <br />
+                        <apex:selectRadio value="{!clsQuickFind.idContact}" layout="pageDirection" styleClass="searchResults">
+                            <apex:selectOptions value="{!lstContacts}" />
+                            <apex:actionSupport action="{!searchForData}" rerender="pbSearch, pbCase" event="onclick" status="loading">
+                                <apex:param id="idContactResetAccount" value="" assignTo="{!clsQuickFind.idAccount}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchAccount}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchInstalledProduct}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchServiceContract}" />
+                            </apex:actionSupport>
+                        </apex:selectRadio>
+                    </apex:outputPanel> 
+                </div>
+                <div style="float:left;width:25%;">
+                    <apex:outputPanel id="opInstsalledProducts">
+                        Serial Number<br />
+                        <apex:inputText value="{!clsQuickFind.strSearchInstalledProduct}" id="itInstalledProduct" />
+                        <br />
+                        <apex:selectRadio value="{!clsQuickFind.idInstalledProduct}" layout="pageDirection" styleClass="searchResults">
+                            <apex:selectOptions value="{!lstInstalledProducts}" />
+                            <apex:actionSupport action="{!searchForData}" rerender="pbSearch, pbCase" event="onclick" status="loading">
+                                <apex:param id="idIPResetAccount" value="" assignTo="{!clsQuickFind.idAccount}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchAccount}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchContact}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchServiceContract}" />
+                            </apex:actionSupport>
+                        </apex:selectRadio>
+                    </apex:outputPanel> 
+                </div>
+                <div style="float:left;width:25%;">
+                    <apex:outputPanel id="opServiceAccounts">
+                        Service Contract<br />
+                        <apex:inputText value="{!clsQuickFind.strSearchServiceContract}" />
+                        <br />
+                        <apex:selectRadio value="{!clsQuickFind.idServiceContract}" layout="pageDirection" styleClass="searchResults" >
+                            <apex:selectOptions value="{!lstServiceContracts}" />
+                            <apex:actionSupport action="{!searchForData}" rerender="pbSearch, pbCase" event="onclick" status="loading">
+                                <apex:param id="idSAResetAccount" value="" assignTo="{!clsQuickFind.idAccount}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchAccount}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchContact}" />
+                                <apex:param value="" assignTo="{!clsQuickFind.strSearchInstalledProduct}" />
+                            </apex:actionSupport>
+                        </apex:selectRadio>
+                    </apex:outputPanel> 
+                </div>
+            </apex:outputPanel>
+        </apex:pageBlockSection>
+
+        <apex:pageBlockSection title="Open SRs for Serial Number" columns="1">
+            <apex:pageBlockTable id="pbtExistingCases" value="{!lstExistingCases}" var="case">
+                <apex:column >
+                    <apex:outputLink value="/{!case.Id}">Go To Case</apex:outputLink>
+                </apex:column>
+                <apex:column value="{!case.Subject}" />
+                <apex:column value="{!case.CaseNumber}" />
+                <apex:column value="{!case.Oracle_SR_Number__c}" />
+                <apex:column value="{!case.Status}" />
+            </apex:pageBlockTable>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+
+    <apex:outputPanel id="opMessages">
+        <apex:pageMessages />
+    </apex:outputPanel>
+
+    <apex:pageBlock id="pbCase" title="SR Information">
+        <apex:pageBlockButtons location="bottom">
+
+            <apex:actionStatus id="buttonStatus" >
+                <apex:facet name="start" > <img src="/img/loading24.gif" /> </apex:facet> 
+                <apex:facet name="stop"> 
+                    <apex:commandButton id="btnSave" action="{!saveSR}" value="Create SR"  status="buttonStatus" rerender="opMessages"> 
+                    </apex:commandButton> 
+                </apex:facet> 
+            </apex:actionStatus>
+
+        </apex:pageBlockButtons>
+
+        <apex:pageBlockSection title="Contact Information">
+            <apex:inputField value="{!soCase.AccountId}" />
+            <apex:inputField value="{!soCase.ContactId}" />
+            <apex:inputField value="{!soCase.Serial_Number__c}" />
+            <apex:inputField value="{!soCase.Service_Contract__c}" />
+        </apex:pageBlockSection>
+
+        <apex:pageBlockSection title="Definition of Service">
+            <apex:inputField value="{!soCase.Subject}" />
+            <apex:inputField value="{!soCase.Type}" />
+            <apex:inputField value="{!soCase.Problem_Codes__c}" />
+            <apex:inputField value="{!soCase.Disposition__c}" />
+            <apex:inputField value="{!soCase.Out_of_Box__c}" />
+        </apex:pageBlockSection>
+
+        <apex:pageBlockSection title="Priority and Urgency">
+            <apex:inputField value="{!soCase.Priority}" />
+            <apex:inputField value="{!soCase.Status}" />
+            <apex:inputField value="{!soCase.Origin}" />
+        </apex:pageBlockSection>
+
+        <apex:pageBlockSection title="Specific Information">
+            <apex:inputField value="{!soCase.ID_Label__c}" />
+            <apex:inputField value="{!soCase.Product__c}" />
+            <apex:inputField value="{!soCase.Battery_Install_Date__c}" />
+            <apex:inputField value="{!soCase.Battery_Manufacturer__c}" />
+            <apex:inputField value="{!soCase.Battery_Install_Date__c}" />
+        </apex:pageBlockSection>
+
+    </apex:pageBlock>
+
+    </apex:form>
+-->
+</apex:page>

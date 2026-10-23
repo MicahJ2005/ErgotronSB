@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Marks the cart to prevent open cart reminder emails when a cart is been open without an email address longer than the scheduled reminder times.  See CC Cart - open cart reminder flow for additional information.</description>
+    <environments>Default</environments>
+    <interviewLabel>CC Cart - {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>CC Cart - No Reminders</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Check the No reminder 1 field to prevent first reminder email from going out if an email is added to the cart after 1 hour.</description>
+        <name>no_reminder_1</name>
+        <label>no reminder 1</label>
+        <locationX>176</locationX>
+        <locationY>288</locationY>
+        <inputAssignments>
+            <field>No_reminder_1__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Check the No reminder 2 field to prevent second reminder email from going out if an email address is added to the cart after 3 days.</description>
+        <name>no_reminder_2</name>
+        <label>no reminder 2</label>
+        <locationX>440</locationX>
+        <locationY>288</locationY>
+        <inputAssignments>
+            <field>No_reminder_2__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ccrz__CartStatus__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Source__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Ergotron</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>ccrz__BuyerEmail__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>ccrz__E_Cart__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <scheduledPaths>
+            <name>Open_for_1_hour</name>
+            <connector>
+                <targetReference>no_reminder_1</targetReference>
+            </connector>
+            <label>Open for 1 hour</label>
+            <offsetNumber>1</offsetNumber>
+            <offsetUnit>Hours</offsetUnit>
+            <recordField>CreatedDate</recordField>
+            <timeSource>RecordField</timeSource>
+        </scheduledPaths>
+        <scheduledPaths>
+            <name>Open_for_3_days</name>
+            <connector>
+                <targetReference>no_reminder_2</targetReference>
+            </connector>
+            <label>Open for 3 days</label>
+            <offsetNumber>3</offsetNumber>
+            <offsetUnit>Days</offsetUnit>
+            <recordField>CreatedDate</recordField>
+            <timeSource>RecordField</timeSource>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

@@ -1,0 +1,61 @@
+<apex:page standardController="Sales_Order__c" extensions="Sales_Order_Select_Ship_To_Cntrl" docType="html-5.0">
+	<apex:form >
+		<apex:pageMessages id="pageMessages"/>
+
+		<!--PAGE BLOCK RENDERED WHEN THE ORDER HAS NOT BEEN SUBMITTED-->
+		<apex:pageblock id="locList" rendered="{!IF(Sales_Order__c.Order_Submitted__c,false,true)}">	
+			<apex:pageMessage severity="info" strength="3" summary="{!$Label.Sales_Order_Select_Ship_To}" rendered="{!bShipToLocations}"/>
+			<apex:pageMessage severity="info" strength="3" summary="{!$Label.Sales_Order_No_Ship_To_Locations}" rendered="{!!bShipToLocations}"/><br/>
+
+			<!-- Hidden fields used by the controller extension-->
+			<apex:outputField rendered="false" value="{!Sales_Order__c.Order_Submitted__c }" />
+			<apex:outputField rendered="false" value="{!Sales_Order__c.Bill_To_Customer__c}" />
+			<apex:outputField rendered="false" value="{!Sales_Order__c.Ship_To_Customer__c}" />
+			
+			<apex:pageBlockButtons >
+				<apex:commandButton action="{!cancel}" value="Return To Sales Order" />
+			</apex:pageBlockButtons>
+			
+			<apex:pageblocktable value="{!listShipToSiteUseLookupResponses}" var="shipToLocOracle" id="allShipToLocsOracle">
+				<apex:column headervalue="Select Location">                    
+                	<apex:commandLink value="Select" action="{!shipToSelect}">
+                		<apex:param name="shipLocId" value="{!shipToLocOracle.SiteUseId}" assignTo="{!sSelectedLocationId}" />
+                	</apex:commandLink>
+				</apex:column>
+				
+				<apex:column headervalue="Location">
+					<apex:outputtext value="{!shipToLocOracle.LocationName}" />
+				</apex:column>				
+				
+				<apex:column headervalue="Address">
+					<apex:outputtext value="{!shipToLocOracle.Address1}"/><br/>
+					<apex:outputtext rendered="{!shipToLocOracle.Address2!=NULL}">
+						<apex:outputtext value="{!shipToLocOracle.Address2}" /><br/>
+					</apex:outputtext>
+					<apex:outputtext rendered="{!shipToLocOracle.Address3!=NULL}">
+						<apex:outputtext value="{!shipToLocOracle.Address3}" /><br/>
+					</apex:outputtext>
+					<apex:outputtext rendered="{!shipToLocOracle.Address4!=NULL}">
+						<apex:outputtext value="{!shipToLocOracle.Address4}" /><br/>
+					</apex:outputtext>
+					<apex:outputtext value="{!shipToLocOracle.CityStateZipCountry}" />
+				</apex:column>
+			</apex:pageblocktable>
+		</apex:pageblock>
+
+		<!--PAGE BLOCK RENDERED WHEN THE ORDER HAS ALREADY BEEN SUBMITTED-->
+		<apex:pageBlock id="blocksubmitted" rendered="{!IF(Sales_Order__c.Order_Submitted__c,true,false)}">
+			<apex:pageMessage severity="error" strength="3" summary="{!$Label.Sales_Order_Submitted_No_Edit}" />	
+			<apex:pageBlockButtons location="Top">
+				<apex:commandButton value="Return" action="{!Cancel}" immediate="true" html-formnovalidate="formnovalidate"/>
+			</apex:pageBlockButtons>
+
+			<apex:pageBlockSection title="Order Details" columns="1" collapsible="false">
+				<apex:outputField value="{!Sales_Order__c.Date_Time_Submitted__c}"/>
+				<apex:outputField value="{!Sales_Order__c.Oracle_Sales_Order_Number__c}"/>
+				<apex:outputField value="{!Sales_Order__c.Oracle_Order_Status__c}"/>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+
+	</apex:form>	
+</apex:page>

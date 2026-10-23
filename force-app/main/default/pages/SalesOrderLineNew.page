@@ -1,0 +1,41 @@
+<apex:page showHeader="true" sidebar="true" standardController="Sales_Order_Line__c" extensions="Sales_Order_Line_New_Controller" docType="html-5.0">
+    <apex:form >
+        <apex:pageMessages />
+        
+        <!--PAGE BLOCK RENDERED IF THE ORDER HAS NOT BEEN SUBMITTED-->
+        <apex:pageBlock id="blockmain" rendered="{!IF(Sales_Order_Line__c.Sales_Order__r.Order_Submitted__c || bAlreadySubmitted,false,true)}">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveSalesOrderLine}" />
+                <apex:commandButton value="Cancel" action="{!Cancel}" immediate="true" html-formnovalidate="formnovalidate"/>
+            </apex:pageBlockButtons>
+            
+            <!--HIDDEN FIELDS USED BY THE CONTROLLER-->
+            <apex:outputField value="{!Sales_Order_Line__c.Return_Reason_Code__c}" rendered="false"/>
+            <apex:outputField value="{!Sales_Order_Line__c.Sales_Order__r.Order_Type__c}" rendered="false"/>
+
+            <apex:pageBlockSection title="Order Line Information" columns="1" collapsible="false">
+                <apex:inputField value="{!Sales_Order_Line__c.Part_Number__c}" style="width: 282px;" required="true"/>
+                <apex:inputField value="{!Sales_Order_Line__c.Quantity__c}" style="width: 282px;" required="true"/>
+                <apex:inputField value="{!Sales_Order_Line__c.Warehouse__c}" style="width: 282px;" required="true"/>      
+                <apex:inputField value="{!Sales_Order_Line__c.Scheduled_Ship_Date__c}" style="width: 282px;" required="false"/>              
+                <apex:selectList label="Return Reason" value="{!sReturnReason}" multiselect="false" size="1" style="width: 290px;" rendered="{!bReturnFlag}">
+                    <apex:selectOptions value="{!listReturnReasonOptions}"/>
+                </apex:selectList>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+
+        <!--PAGE BLOCK RENDERED WHEN THE ORDER HAS ALREADY BEEN SUBMITTED-->
+        <apex:pageBlock id="blocksubmitted" rendered="{!IF(Sales_Order_Line__c.Sales_Order__r.Order_Submitted__c || bAlreadySubmitted,true,false)}">
+            <apex:pageMessage severity="error" strength="3" summary="{!$Label.Sales_Order_Submitted_No_Edit}" />    
+            <apex:pageBlockButtons location="Top">
+                <apex:commandButton value="Return" action="{!Cancel}" immediate="true" html-formnovalidate="formnovalidate"/>
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockSection title="Order Details" columns="1" collapsible="false">
+                <apex:outputField value="{!oSalesOrder.Date_Time_Submitted__c}"/>
+                <apex:outputField value="{!oSalesOrder.Oracle_Sales_Order_Number__c}"/>
+                <apex:outputField value="{!oSalesOrder.Oracle_Order_Status__c}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>    
+</apex:page>

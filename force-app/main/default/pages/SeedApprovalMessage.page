@@ -1,0 +1,12 @@
+<!-- This page is used on the Seed_Unit_Order__c layout and displays a message to the user when their seed unit order contains ineligible products. -->
+<apex:page standardController="Seed_Unit_Order__c" extensions="Seed_Approval_Message_Controller">
+	<style type="text/css">
+		body {font-family: Arial,Helvetica,sans-serif; font-size: 11px; color: #0066cc; font-weight:bold;}
+	</style>
+	
+	<apex:form id="theForm">
+		<apex:messages />
+
+		<apex:outputText rendered="{!bContainsNotEligibleProducts}" value="{!$Label.Seed_Approval_Required}"/>		
+	</apex:form>
+</apex:page>

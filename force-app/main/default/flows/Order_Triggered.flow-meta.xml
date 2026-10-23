@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Failure_notification</name>
+        <label>Failure notification</label>
+        <locationX>314</locationX>
+        <locationY>575</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>FlowDetailsEmailBodyText</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>esau.sanchez@ergoton.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Flow: Order__c Trigger - Failure Notification</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>54.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Order_Paths</name>
+        <label>Order Paths</label>
+        <locationX>314</locationX>
+        <locationY>335</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>New_Order_with_SF_Reference_ID</name>
+            <conditionLogic>1 AND (2 OR 3)</conditionLogic>
+            <conditions>
+                <leftValueReference>ISNEW</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Order_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Salesforce.com</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Salesforce_Sales_Order__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Sales_Order_Oracle_SO_Number</targetReference>
+            </connector>
+            <label>New Order with SF Reference ID</label>
+        </rules>
+    </decisions>
+    <formulas>
+        <name>ISNEW</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <description>The order source is Salesforce and there is sales order ID referenced in the order</description>
+        <name>OrderSourceIsSalesforce</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+{!$Record.Order_Source__c} = &apos;Salesforce.com&apos;,
+NOT(ISBLANK({!$Record.Order_Source_Reference__c}))
+)</expression>
+    </formulas>
+    <interviewLabel>Order-Triggered {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Order-Triggered</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Populates the Oracle_Sales_Order_Number__c field with the reference from the Order__c record</description>
+        <name>Sales_Order_Oracle_SO_Number</name>
+        <label>Sales Order - Oracle SO Number</label>
+        <locationX>50</locationX>
+        <locationY>455</locationY>
+        <faultConnector>
+            <targetReference>Failure_notification</targetReference>
+        </faultConnector>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Order_Source_Reference__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Salesforce_Sales_Order__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Oracle_Sales_Order_Number__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Sales_Order__c</object>
+    </recordUpdates>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Order_Paths</targetReference>
+        </connector>
+        <object>Order__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>FlowDetailsEmailBodyText</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Flow Date Time: {!$Flow.CurrentDateTime}
+Current record: {!$Flow.CurrentRecord}
+::::Oracle Order:::: 
+Number: {!$Record.Name}
+Salesforce Sales Order Id: {!$Record.Salesforce_Sales_Order__c}  - Number:{!$Record.Salesforce_Sales_Order__r.Name}
+Source: {!$Record.Order_Source__c}
+Sales Order ID (Order_Source_Reference__c): {!$Record.Order_Source_Reference__c}
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+{!$Flow.FaultMessage}</text>
+    </textTemplates>
+</Flow>

@@ -1,0 +1,243 @@
+<!--
+  @File Name          : seedUnitOrderForm.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 1/16/2020, 12:46:01 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    12/17/2019   James Loghry (Demand Chain)     Initial Version
+-->
+<template>
+    <template if:true={loadingForm}>
+        <lightning-spinner variant="brand" size="large"></lightning-spinner>
+    </template>
+
+    <template if:true={submitting}>
+        <lightning-spinner variant="brand" size="large"></lightning-spinner>
+    </template>
+
+    <lightning-card class="slds-p-around_small">
+
+        <template if:true={leadSubmitted}>
+            <div class="alert-info slds-m-around_small slds-p-around_small">
+                This lead has already been submitted. You may not make further changes to the lead at this time.
+            </div>
+        </template>
+
+        <template if:true={leadSaved}>
+            <div class="alert-success slds-m-around_small slds-p-around_small">
+                Success! Lead updated.
+            </div>
+        </template>
+
+        <template if:true={leadSubmitted}>
+            <div class="alert-success slds-m-around_small slds-p-around_small">
+                Success! Lead submitted for approval.
+            </div>
+        </template>
+
+        <c-path default-steps={steps} onstepchange={handleStepChange}></c-path>
+        <lightning-messages></lightning-messages>
+        <lightning-record-edit-form record-id={recordId} object-api-name="Lead" onload={handleOnLoad} onsubmit={handleSubmit} onerror={handleError} onsuccess={handleSuccess}>
+            <lightning-card title={stepLabel}>
+                <c-error-panel friendly-message="An error occurred" errors={errors}></c-error-panel>
+
+                <template if:true={displayOtherInformation}>
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-stretch slds-wrap">
+                        <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            <lightning-input-field field-name="Department_Division__c" variant="label-stacked" onchange={resetSavedNotification}  value={lead.Department_Division__c} data-field="Department_Division__c" required></lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            <lightning-input-field field-name="Ergotron_Vertical_Market__c" variant="label-stacked" onchange={resetSavedNotification} value={lead.Ergotron_Vertical_Market__c} data-field="Ergotron_Vertical_Market__c" required></lightning-input-field>
+                        </div>
+
+                        <!--<template if:true={showType}>
+                            <lightning-layout-item size="12" medium-device-size="6" large-device-size="6" small-device-size="12" padding="around-small">
+                                <lightning-input-field field-name="Program_Type__c" variant="label-stacked" onchange={resetSavedNotification} value={lead.Program_Type__c} data-field="Program_Type__c" required></lightning-input-field>
+                            </lightning-layout-item>
+                        </template>-->
+                        <!-- does not work; can't set native currency from a custom field eiter    
+                        <template if:true={isEMEA}>
+                            <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                                 using a custom currency field, because the native currencyisocode field won't show up here!! 
+                                <lightning-input-field field-name="Currency__c" variant="label-stacked" onchange={resetSavedNotification} value={lead.Currency__c} data-field="Currency__c" required></lightning-input-field>
+                            </div>
+                        </template>
+                        -->
+                        <template if:false={isUS}>
+                            <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                                <lightning-combobox
+                                    name="partner"
+                                    label="Distribution Partner"
+                                    field-level-help="Please select one distributor you choose to do business with. This selection can only be changed due to product availability or credit capacity."
+                                    required
+                                    onchange={handleDistributionPartnerChange}
+                                    value={lead.Opp_Partner_ID__c}
+                                    options={partnerOptions}>
+                                </lightning-combobox>
+                            </div>
+                        </template>
+
+                        <template if:true={isUS}>
+                            <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                                <label class="fieldLabel slds-form-element_stacked slds-form-element">
+                                Please select the distributor(s) you choose to do business with.
+                                </label>
+                                <lightning-input-field field-name="D_H_Distributing__c" value={lead.D_H_Distributing__c} data-field="D_H_Distributing__c" variant="standard" onchange={resetSavedNotification}></lightning-input-field>
+                                <lightning-input-field field-name="Ingram_Micro__c" variant="standard" value={lead.Ingram_Micro__c} data-field="Ingram_Micro__c" onchange={resetSavedNotification}></lightning-input-field>
+                                <lightning-input-field field-name="TD_Synnex__c"  variant="standard" value={lead.TD_Synnex__c} data-field="TD_Synnex__c" onchange={resetSavedNotification}></lightning-input-field>
+                            </div>
+                        </template>
+
+
+                        <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            <label class="fieldLabel slds-form-element_stacked slds-form-element">
+                                Description
+                                <c-help-text content="Please provide as much detail as possible about the deal you are registering in the description field."></c-help-text>
+                            </label>
+                            <lightning-input-field field-name="Description" variant="label-hidden" onchange={resetSavedNotification} value={lead.Description} data-field="Description"></lightning-input-field>
+                        </div>
+                        <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            <lightning-input-field field-name="RFP_RFQ_Number__c" name="RFP_RFQ_Number__c" variant="label-stacked" onchange={resetSavedNotification}  value={lead.RFP_RFQ_Number__c} data-field="RFP_RFQ_Number__c" ></lightning-input-field>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:true={displayProducts}>
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-stretch slds-wrap">
+                        <template if:false={leadSubmitted}>
+                            <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_4-of-12 slds-large-size_4-of-12 slds-p-around_small">
+                                <lightning-record-edit-form
+                                name="newLeadProducts"
+                                object-api-name="Lead_Product__c"
+                                onsubmit={handleAddProduct}>
+
+                                <template if:true={dealRegProducts}>
+                                    <template if:true={dealRegProducts.data}>
+                                        <c-lookup
+                                            label="Product"
+                                            records={dealRegProducts.data}
+                                            icon-name="standard:product"
+                                            placeholder="Select a product"
+                                            onselected={handleProductSelection}></c-lookup>
+                                    </template>
+                                </template>
+
+                                <lightning-input-field field-name="Quantity__c"></lightning-input-field>
+                                <lightning-input-field field-name="Notes__c"></lightning-input-field>
+                                <lightning-input-field field-name="Competitive_Make_Model__c"></lightning-input-field>
+                                <button class="right slds-button slds-button_brand" style="margin-top: 0.5em; margin-right: 0.5em;" type="submit">Add Product</button>
+                            </lightning-record-edit-form>
+
+                            </div>
+                        </template>
+
+                        <div class={productLayoutCSS}>
+                            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-stretch slds-wrap">
+                                <template for:each={products} for:item="leadProduct" for:index="idx">
+                                    <template if:true={leadProduct.Product__r}>
+                                        <div key={leadProduct.Product__c} class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                                            <div class="productBorder slds-p-around_small">
+                                                <article class="slds-tile">
+                                                    <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                                                        <h3 class="slds-tile__title slds-truncate" title={leadProduct.Product__r.Name}>
+                                                            {leadProduct.Product__r.Name}
+                                                        </h3>
+                                                        <div class="slds-shrink-none">
+                                                            <lightning-button-icon data-idx={idx} icon-name="utility:close" size="x-small" varian="border-filled" onclick={handleRemoveProduct}></lightning-button-icon>
+                                                        </div>
+                                                    </div>
+                                                    <div class="slds-tile__detail">
+                                                        <dl class="slds-list_horizontal slds-wrap">
+                                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Quantity">Quantity:</dt>
+                                                            <dd class="slds-item_detail" title="Quantity Description">{leadProduct.Quantity__c}</dd>
+                                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Notes">Notes:</dt>
+                                                            <dd class="slds-item_detail slds-truncate" title="Description for Notes">{leadProduct.Notes__c}</dd>
+                                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Competitive Make / Model">Competitive Make/Model</dt>
+                                                            <dd class="slds-item_detail" title="Description for Competitive Make / Model">{leadProduct.Competitive_Make_Model__c}</dd>
+                                                            <template if:true={leadProduct.Product__r.External_URL__c}>
+                                                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Link">Link:</dt>
+                                                                <dd class="slds-item_detail slds-truncate" title="Link"><a href={leadProduct.Product__r.External_URL__c} class="slds-truncate" target="_blank">{leadProduct.Product__r.External_URL__c}</a></dd>
+                                                            </template>
+                                                        </dl>
+                                                    </div>
+                                                </article>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </div>
+
+                        
+                        <!-- NEW FIELDS - BEGIN -->
+                        <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+                            <div class="alert alert-success" role="alert">
+                                <label class="fieldLabel slds-form-element_stacked slds-form-element">
+                                    By submitting this request, you agree to
+                                </label>
+                                <br><br>
+                                Lead and be exclusive with Ergotron and not promote any competing brand.
+                                <lightning-input type="toggle" onchange={handleChange} label=" " required name="mapToggle" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input>
+                                <br>
+                                Notify Ergotron if the purchaser requires more than one quote.
+                                <lightning-input type="toggle" onchange={handleChange} label=" " required name="uppToggle" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input>
+
+                            </div>
+                        </div>
+                        <!-- NEW FIELDS - END -->
+                    </div>
+                </template>
+
+                <template if:true={displayRecordInputForm}>
+                    <c-record-input-form record={lead} fields={fields} onrecordchange={handleRecordChange}></c-record-input-form>
+                </template>
+
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-stretch slds-wrap">
+                    <!--<template if:true={displayPrimaryVendorMgmt}>
+                        <lightning-layout-item size="12" padding="around-small">
+                            <div class="alert alert-success" role="alert">
+                                Ergotron enforces a Minimum Advertised Price (MAP) Policy on a number of products. You can review the policy as well as a list of the affected products and their associated MAP prices on the Ergotron web site here: http://partner.ergotron.com/en-us/company/legal. Adherence to Ergotron's MAP Policy is required to remain an authorized Ergotron reseller partner. By checking the box below, you acknowledge that you have read and understand the MAP Policy and agree to abide by its terms.
+                                <br><br><strong>By submitting this form, you agree to the Ergotron MAP Policy and to abide by its terms and conditions.</strong>
+                            </div>
+                        </lightning-layout-item>
+                    </template>-->
+                    <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+                        <template if:true={displaySave}>
+                            <template if:false={leadSubmitted}>
+                                <button class="right slds-button slds-button_brand" type="submit" onclick={handleSubmit}>
+                                    Submit
+                                </button>
+                                <button class="right slds-button slds-button_brand" onclick={handleSave}>
+                                    Save
+                                </button>
+                            </template>
+                        </template>
+                        <template if:true={hasNext}>
+                            <button class="right slds-button slds-button_brand" onclick={next}>
+                                Next
+                                <lightning-icon
+                                    icon-name="utility:chevronright"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                            </button>
+                        </template>
+                        <template if:true={hasPrev}>
+                            <button class="right slds-button slds-button_brand" onclick={prev}>
+                                <lightning-icon
+                                    icon-name="utility:chevronleft"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                                Previous
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </lightning-card>
+        </lightning-record-edit-form>
+    </lightning-card>
+</template>

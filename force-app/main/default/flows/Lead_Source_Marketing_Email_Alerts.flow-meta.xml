@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Japan_Healthcare_Lead_Alert</name>
+        <label>Japan Healthcare Lead Alert</label>
+        <locationX>578</locationX>
+        <locationY>431</locationY>
+        <actionName>Lead.Japan_Healthcare_Web_Inquiry</actionName>
+        <actionType>emailAlert</actionType>
+        <faultConnector>
+            <targetReference>Notification_failure</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Japan_Healthcare_Web_Inquiry</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <description>Notifies Timmy Smith</description>
+        <name>Lead_Request_For_Quote</name>
+        <label>Lead.Request For Quote</label>
+        <locationX>1106</locationX>
+        <locationY>647</locationY>
+        <actionName>Lead.Request_For_Quote</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Request_For_Quote</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <description>Send an email to Esau Sanchez when the send email action fails</description>
+        <name>Notification_failure</name>
+        <label>Notification failure</label>
+        <locationX>842</locationX>
+        <locationY>539</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>esau.sanchez@ergotron.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>composeEmailContent</name>
+            <value>
+                <stringValue>True</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Flow Fault: Lead Source Marketing Email Alerts </stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <stringValue>&lt;p&gt;The Lead Source Marketing Email Alerts flow failed.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Triggering record: {!$Record.Id} - {!LeadLink}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Fault Message:&lt;/p&gt;&lt;p&gt;{!$Flow.FaultMessage}&lt;/p&gt;</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <offset>0</offset>
+        <versionString>1.0.1</versionString>
+    </actionCalls>
+    <actionCalls>
+        <name>OEM_Sales_Lead_Notification</name>
+        <label>OEM Sales Lead Notification</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <actionName>Lead.OEM_Sales_Lead_Notification</actionName>
+        <actionType>emailAlert</actionType>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Notification_failure</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.OEM_Sales_Lead_Notification</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Evaluate the Lead Source Marketing field (Lead_Source__c) to determine which email alert to execute.</description>
+        <name>Evaluate_Lead_Source_Marketing</name>
+        <label>Evaluate Lead Source Marketing</label>
+        <locationX>710</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>OEM_Medical_Web_Form</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Lead_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>OEM Medical Web Form</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>OEM_Sales_Lead_Notification</targetReference>
+            </connector>
+            <label>OEM Medical Web Form</label>
+        </rules>
+        <rules>
+            <name>JA_JP_Healthcare_Web_Inquiry_Form</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Lead_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>JA-JP Healthcare Web Inquiry Form</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Japan_Healthcare_Lead_Alert</targetReference>
+            </connector>
+            <label>JA-JP Healthcare Web Inquiry Form</label>
+        </rules>
+        <rules>
+            <name>ISR_Queue_Assignment</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Lead_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Mosaic Consultation Request</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Lead_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Mosaic SKU Finder Request Information</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Lead_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Request for Quote</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Lead_Source__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RC Request a Demo</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>ISRQueue</targetReference>
+            </connector>
+            <label>ISR Queue Assignment</label>
+        </rules>
+    </decisions>
+    <description>Email alerts for leads based on the Lead Source Marketing. Leads via Web-to-lead forms.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Link to the lead</description>
+        <name>LeadLink</name>
+        <dataType>String</dataType>
+        <expression>HYPERLINK(&quot;/lightning/r/Lead/&quot; &amp;  {!$Record.Id} &amp; &quot;/view&quot;, &quot;View Lead&quot;, &quot;_blank&quot;)</expression>
+    </formulas>
+    <interviewLabel>Lead Source Marketing Email Alerts {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Lead Source Marketing Email Alerts</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get the record id for the ISR Queue so we can assign the lead to it.</description>
+        <name>ISRQueue</name>
+        <label>ISR Queue</label>
+        <locationX>1106</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_to_ISR_Queue</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>ISR Queue</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Group</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>The RC Requests a Demo leads will be assigned first to the ISR Queue where they will be manually assigned to the appropriate Sales Rep by Sales Operations.</description>
+        <name>Assign_to_ISR_Queue</name>
+        <label>Assign to ISR Queue</label>
+        <locationX>1106</locationX>
+        <locationY>539</locationY>
+        <connector>
+            <targetReference>Lead_Request_For_Quote</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>ISRQueue.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>584</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Evaluate_Lead_Source_Marketing</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Lead_Source__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Lead</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

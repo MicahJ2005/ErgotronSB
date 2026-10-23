@@ -1,0 +1,16 @@
+<aura:component controller="ERG_ReCreateSalesOrderController" implements="lightning:isUrlAddressable" access="global" >
+    <aura:attribute name="isLoading" type="Boolean" default="true"/>
+    <aura:attribute name="ccOrderId" type="String" default=""/>
+    <aura:attribute name="pageReference" type="Object"/>
+    <lightning:navigation aura:id="navService"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <br/><br/><br/>
+    <lightning:card footer=" " title="">
+        <p class="slds-p-horizontal_small">
+            <br/><br/><br/>
+            <center><b>Please wait... Creating Sales Order...</b></center>
+            <br/><br/><br/>
+        </p>
+    </lightning:card>
+    <lightning:spinner alternativeText="Loading" size="large" />
+</aura:component>

@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <choices>
+        <description>Account requests</description>
+        <name>AccountRequests</name>
+        <choiceIcon>
+            <iconName>standard:account_info</iconName>
+        </choiceIcon>
+        <choiceText>Account Requests</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Account</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Campaign and Lead</description>
+        <name>CampaignLead</name>
+        <choiceIcon>
+            <iconName>standard:lead_insights</iconName>
+        </choiceIcon>
+        <choiceText>Campaign/Lead</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>CampaignLead</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>ContactMerge</description>
+        <name>ContactMerge</name>
+        <choiceIcon>
+            <iconName>standard:merge</iconName>
+        </choiceIcon>
+        <choiceText>Contact Merge</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Merge</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Reports and Dashboard</description>
+        <name>ReportsDashboard</name>
+        <choiceIcon>
+            <iconName>standard:report</iconName>
+        </choiceIcon>
+        <choiceText>Reports/Dashboard</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>ReportsDashboard</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Choice to be used in the main menu screen component.</description>
+        <name>SalesforceIssue</name>
+        <choiceIcon>
+            <iconName>standard:text_template</iconName>
+        </choiceIcon>
+        <choiceText>Salesforce Issue</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Issue</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>SalesIncentive</name>
+        <choiceIcon>
+            <iconName>standard:sales_path</iconName>
+        </choiceIcon>
+        <choiceText>Sales Incentive Inquiry</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Incentive</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Sales Tool (Seismic, etc.)</description>
+        <name>SalesTool</name>
+        <choiceIcon>
+            <iconName>standard:app</iconName>
+        </choiceIcon>
+        <choiceText>Sales Tool (Seismic, etc.)</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Sales Tool (Seismic, etc.)</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Training Request</description>
+        <name>TrainingRequest</name>
+        <choiceIcon>
+            <iconName>standard:learner_program</iconName>
+        </choiceIcon>
+        <choiceText>Training Request</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>TrainingRequest</stringValue>
+        </value>
+    </choices>
+    <customProperties>
+        <name>ScreenProgressIndicator</name>
+        <value>
+            <stringValue>{&quot;location&quot;:&quot;top&quot;,&quot;type&quot;:&quot;simple&quot;}</stringValue>
+        </value>
+    </customProperties>
+    <decisions>
+        <description>Direct to the appropriate flow based on the request type selected</description>
+        <name>Request_Type_Path</name>
+        <label>Request Type Path</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Account</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Request_Type.selectedChoiceValues</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Account</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Account_Requests</targetReference>
+            </connector>
+            <label>Account</label>
+        </rules>
+        <rules>
+            <name>Incentive</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Request_Type.selectedChoiceValues</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Incentive</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Sales_Incentive_Inquiry</targetReference>
+            </connector>
+            <label>Incentive</label>
+        </rules>
+        <rules>
+            <name>Salesforce_Issue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Request_Type.selectedChoiceValues</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Issue</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Salesforce_Issue_subflow</targetReference>
+            </connector>
+            <label>Salesforce Issue</label>
+        </rules>
+        <rules>
+            <name>Contact_Merge</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Request_Type.selectedChoiceValues</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>ContactMerge</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Contact_Merge_Flow</targetReference>
+            </connector>
+            <label>Contact Merge</label>
+        </rules>
+        <rules>
+            <name>Report_Dashboard</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Request_Type.selectedChoiceValues</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>ReportsDashboard</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Report_Dashboard_Subflow</targetReference>
+            </connector>
+            <label>Report/Dashboard</label>
+        </rules>
+        <rules>
+            <name>Campaign_Lead</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Request_Type.selectedChoiceValues</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>CampaignLead</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Campaign_Lead_Flow</targetReference>
+            </connector>
+            <label>Campaign/Lead</label>
+        </rules>
+        <rules>
+            <name>Training_Request</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Request_Type.selectedChoiceValues</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>TrainingRequest</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Training_Request_flow</targetReference>
+            </connector>
+            <label>Training Request</label>
+        </rules>
+        <rules>
+            <name>Sales_Tool_Seismic_etc</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Request_Type.selectedChoiceValues</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Sales Tool (Seismic, etc.)</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Seismic_Zoom_Info_etc_flow</targetReference>
+            </connector>
+            <label>Sales Tool (Seismic, etc)</label>
+        </rules>
+    </decisions>
+    <description>List of sales operations request options. This flow will launch the appropriate sub flow depending on the option selected.</description>
+    <environments>Default</environments>
+    <interviewLabel>Sales Ops Requests Main Menu {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Sales Ops Requests Main Menu</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <screens>
+        <name>Main_Menu</name>
+        <label>Main Menu</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Request_Type_Path</targetReference>
+        </connector>
+        <fields>
+            <name>Request_Type</name>
+            <choiceReferences>AccountRequests</choiceReferences>
+            <choiceReferences>SalesIncentive</choiceReferences>
+            <choiceReferences>SalesforceIssue</choiceReferences>
+            <choiceReferences>ContactMerge</choiceReferences>
+            <choiceReferences>ReportsDashboard</choiceReferences>
+            <choiceReferences>CampaignLead</choiceReferences>
+            <choiceReferences>TrainingRequest</choiceReferences>
+            <choiceReferences>SalesTool</choiceReferences>
+            <extensionName>flowruntime:visualPicker</extensionName>
+            <fieldText>Select your request type</fieldText>
+            <fieldType>ComponentChoice</fieldType>
+            <inputParameters>
+                <name>visualPickerSize</name>
+                <value>
+                    <stringValue>small</stringValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Main_Menu</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <description>Launch the Sales Ops Request flow to make an account related request</description>
+        <name>Account_Requests</name>
+        <label>Account Requests</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>Sales_Ops_Request</flowName>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>AccountId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>varRelatedRecordName</name>
+            <value>
+                <elementReference>AccountName</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Campaign_Lead_Flow</name>
+        <label>Campaign / Lead Flow</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>Create_a_Case_Sales_Ops</flowName>
+        <inputAssignments>
+            <name>CaseSubject</name>
+            <value>
+                <stringValue>Campaign/Lead</stringValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Contact_Merge_Flow</name>
+        <label>Contact Merge Flow</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>Create_a_Case_Sales_Ops</flowName>
+        <inputAssignments>
+            <name>CaseSubject</name>
+            <value>
+                <stringValue>Contact Merge</stringValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Report_Dashboard_Subflow</name>
+        <label>Report / Dashboard Subflow</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>Create_a_Case_Sales_Ops</flowName>
+        <inputAssignments>
+            <name>CaseSubject</name>
+            <value>
+                <stringValue>Reports/Dashboard</stringValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <description>Sub flow that creates a sales incentive inquiry record and returns the Id of the record.</description>
+        <name>Sales_Incentive_Inquiry</name>
+        <label>Sales Incentive Inquiry</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>Sales_Incentive_Inquiry</flowName>
+    </subflows>
+    <subflows>
+        <name>Salesforce_Issue_subflow</name>
+        <label>Salesforce Issue subflow</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>Create_a_Case_Sales_Ops</flowName>
+        <inputAssignments>
+            <name>CaseSubject</name>
+            <value>
+                <stringValue>Salesforce Issue</stringValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Seismic_Zoom_Info_etc_flow</name>
+        <label>Seismic, Zoom Info, etc. flow</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>Create_a_Case_Sales_Ops</flowName>
+        <inputAssignments>
+            <name>CaseSubject</name>
+            <value>
+                <stringValue>Seismic, Zoom Info, etc.</stringValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>Training_Request_flow</name>
+        <label>Training Request flow</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>Create_a_Case_Sales_Ops</flowName>
+        <inputAssignments>
+            <name>CaseSubject</name>
+            <value>
+                <stringValue>Training Request </stringValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <variables>
+        <description>Store the Id of the account that launches the flow. This id will only be passed to the flow when invoked by a button on the account page. This Id will then be passed to the Sales Ops Request flow which follows a different path when the id is present.</description>
+        <name>AccountId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <description>The name of the account from which the flow is launched. This variable is used when the flow is launched by a button on the account page. The value is passed to the Sales Ops Request flow.</description>
+        <name>AccountName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

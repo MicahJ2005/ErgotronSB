@@ -1,0 +1,226 @@
+<!--
+  @description       : 
+  @author            :Unknown
+  @group             : 
+  @last modified on  : 08-10-2020
+  @last modified by  : Manoj Kumar
+  Modifications Log 
+  Ver   Date         Author         Modification
+  1.0   08-08-2020   Unknown   Initial Version
+        04-13-2023   Esau Sanchez   Remove country - Part store orders for Canada show up as US
+-->
+<apex:component controller="CC_ERG_Order_Confirm_Controller" access="global">
+  <apex:attribute name="salesId" type="Id" description="Id of the CC Order" assignTo="{!salesOrderId}" />
+  <tr>
+    <td style="padding-left:40px;padding-right:40px;font-family:sans-serif;font-size:15px;line-height:20px;color:black;">
+      <br />
+
+      <table border="0" cellpadding="0" cellspacing="10px" width="100%" style="background: white;">
+        <thead>
+          <tr>
+            <td style="font-family:sans-serif;font-size:16px;text-align:left;" colspan="2">
+              <h3 style="color: #1f3662;margin-bottom:10px;font-size:16px; display: contents;font-family:verdana, geneva, sans-serif;font-weight:bold;">
+                <strong>Billing/Shipping Addresses</strong>
+              </h3>
+            </td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <th style="width:50%"></th>
+            <th style="width:50%"></th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td style="color:#404040;color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: left;margin-bottom:5px;">
+              <b>Bill To:</b>
+
+            </td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: left;margin-bottom:5px;">
+              <b>Ship To:</b>
+
+            </td>
+          </tr>
+          <tr style="line-height: 19px;margin-bottom: 5px;text-transform: capitalize;">
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: left;font-weight:normal;line-height:19px;text-transform: capitalize;">
+              {!Order.ccrz__OriginatedCart__r.ccrz__BillTo__r.ccrz__FirstName__c} {!Order.ccrz__OriginatedCart__r.ccrz__BillTo__r.ccrz__lastName__c}
+
+            </td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: left;font-weight:normal;line-height:19px;text-transform: capitalize;">
+              {!Order.ccrz__OriginatedCart__r.ccrz__ShipTo__r.ccrz__FirstName__c} {!Order.ccrz__OriginatedCart__r.ccrz__ShipTo__r.ccrz__LastName__c}
+            </td>
+          </tr>
+          <tr style="line-height: 19px;margin-bottom: 5px;text-transform: capitalize;">
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: left;font-weight:normal;line-height:19px;text-transform: capitalize;">
+              {!Order.ccrz__OriginatedCart__r.ccrz__BillTo__r.ccrz__AddressFirstline__c}
+            </td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: left;font-weight:normal;line-height:19px;text-transform: capitalize;">
+              {!Order.ccrz__OriginatedCart__r.ccrz__ShipTo__r.ccrz__AddressFirstline__c}
+            </td>
+          </tr>
+          <tr style="line-height: 19px;margin-bottom: 5px;text-transform: capitalize;">
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: left;font-weight:normal;line-height:19px;text-transform: capitalize;">
+              {!Order.ccrz__BillTo__r.ccrz__AddressSecondline__c}
+            </td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: left;font-weight:normal;line-height:19px;text-transform: capitalize;">
+              {!Order.ccrz__ShipTo__r.ccrz__AddressSecondline__c}
+            </td>
+          </tr>
+          <tr style="line-height: 19px;margin-bottom: 5px;text-transform: capitalize;">
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: left;font-weight:normal;line-height:19px;text-transform: capitalize;">
+              {!Order.ccrz__OriginatedCart__r.ccrz__BillTo__r.ccrz__City__c}, {!Order.ccrz__OriginatedCart__r.ccrz__BillTo__r.ccrz__StateISOCode__c},
+<!--          {!Order.ccrz__OriginatedCart__r.ccrz__BillTo__r.ccrz__Country__c}  -->
+              {!Order.ccrz__OriginatedCart__r.ccrz__BillTo__r.ccrz__PostalCode__c}
+            </td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: left;font-weight:normal;line-height:19px;text-transform: capitalize;">
+              {!Order.ccrz__OriginatedCart__r.ccrz__ShipTo__r.ccrz__City__c}, {!Order.ccrz__OriginatedCart__r.ccrz__ShipTo__r.ccrz__StateISOCode__c},
+<!--          {!Order.ccrz__OriginatedCart__r.ccrz__ShipTo__r.ccrz__Country__c}  -->
+              {!Order.ccrz__OriginatedCart__r.ccrz__ShipTo__r.ccrz__PostalCode__c}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding-left:40px;padding-right:40px;font-family:sans-serif;font-size:15px;line-height:20px;color:#55555;">
+      <br />
+      <table border="0" cellpadding="0" cellspacing="10px" width="100%" style="background: white;">
+
+        <thead>
+          <tr>
+            <td style="white-space: nowrap;text-align:left;" colspan="4">
+              <h3 style="color: #1f3662;margin-bottom:10px;font-size:16px; display: contents;font-family:verdana, geneva, sans-serif;text-align: left;font-weight:bold;">
+                <strong>Items Ordered</strong>
+              </h3>
+            </td>
+          </tr>
+
+          <tr>
+            <th style="text-align:left;width:70%;color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;margin-bottom:5px;">Product</th>
+            <th style="text-align:right;width:13%;color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;margin-bottom:5px;">Price</th>
+            <th style="text-align:center;width:10%;color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;margin-bottom:5px;">Qty</th>
+            <th style="text-align:right;width:10%;color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;margin-bottom:5px;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <apex:repeat var="oi" value="{!OrderItem}">
+
+            <tr style="line-height: 18px;margin-bottom:5px;text-transform: capitalize;">
+              <td style="text-align:left;color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;font-weight: normal;text-transform: capitalize;line-height:19px;">{!if(oi.ccrz__Product__r.ccrz__AlternateName__c != Null, oi.ccrz__Product__r.ccrz__AlternateName__c, oi.ccrz__Product__r.Name)}</td>
+              <td style="text-align:right;color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;font-weight: normal;line-height:19px;">
+                <apex:outputText value="{0, number, currency}">
+                  <apex:param value="{!oi.ccrz__Price__c}" />
+                </apex:outputText>
+              </td>
+              <td style="text-align:center;color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;font-weight: normal;text-transform: capitalize;line-height:19px;">{!oi.ccrz__Quantity__c}</td>
+              <td style="text-align:right;color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;font-weight: normal;line-height:19px;">
+                <apex:outputText value="{0, number, currency}">
+                  <apex:param value="{!oi.ccrz__ItemTotal__c}" />
+                </apex:outputText>
+              </td>
+            </tr>
+          </apex:repeat>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding-left:40px;padding-right:40px;font-family:sans-serif;font-size:15px;line-height:20px;color:#55555;">
+      <br />
+      <table border="0" cellpadding="0" cellspacing="10px" width="100%" style="background: white;">
+
+        <thead>
+          <tr>
+            <td style="font-family:sans-serif;font-size:18px;color:#404040;white-space: nowrap;text-align:left;">
+              <h3 style="color: #1f3662;margin-bottom:10px;font-size:16px; display: contents;font-family:verdana, geneva, sans-serif;">
+                <strong>Order Summary</strong>
+              </h3>
+            </td>
+
+          </tr>
+
+          <tr>
+            <th style="text-align:right;width:70%"></th>
+            <th style="text-align:right;width:13%"></th>
+            <th style="text-align:right;width:10%"></th>
+            <th style="text-align:right;width:10%"></th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <!--<apex:outputText rendered="{!Order.ccrz__OriginatedCart__r.Discount_Amount__c > 0}">-->
+          <apex:outputText rendered="{!IF( AND( NOT(ISBLANK(Order.ccrz__OriginatedCart__r.Discount_Amount__c)) , Order.ccrz__OriginatedCart__r.Discount_Amount__c > 0), 'true','false')}">
+            <tr style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;">
+              <td>
+                Applied Coupon: {!couponCode}
+              </td>
+              <td style="color:#F26859;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;" colspan="2">
+                You saved
+              </td>
+              <td></td>
+              <td style="color:#F26859;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;">
+                <apex:outputText value="{0, number, currency}">
+                  <apex:param value="{!Order.ccrz__OriginatedCart__r.Discount_Amount__c}" />
+                </apex:outputText>
+              </td>
+            </tr>
+          </apex:outputText>
+          
+          <tr style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;">
+            <td></td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;" colspan="2">
+              <b>Subtotal</b>
+            </td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;"></td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;">
+              <apex:outputText value="{0, number, currency}">
+                <apex:param value="{!Order.ccrz__OriginatedCart__r.ccrz__SubtotalAmount__c}" />
+              </apex:outputText>
+            </td>
+          </tr>
+
+          <tr>
+            <td></td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;" colspan="2">
+              <b>Tax</b>
+            </td>
+            <td></td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;font-weight:normal;">
+
+              <apex:outputText value="{0, number, currency}">
+                <apex:param value="{!Order.ccrz__OriginatedCart__r.ccrz__TaxAmount__c}" />
+              </apex:outputText>
+            </td>
+
+          </tr>
+
+
+          <tr>
+            <td></td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;font-weight:normal;" colspan="2">
+              <b>Total</b>
+            </td>
+            <td></td>
+            <td style="color:#404040;font-size:14px;font-family:verdana, geneva, sans-serif;text-align: right;font-weight:normal;">
+              <b>
+                <apex:outputText value="{0, number, currency}">
+                  <apex:param value="{!Order.ccrz__OriginatedCart__r.ccrz__TotalAmount__c}" />
+                </apex:outputText>
+              </b>
+            </td>
+
+          </tr>
+
+        </tbody>
+      </table>
+      <br />
+    </td>
+  </tr>
+
+
+</apex:component>

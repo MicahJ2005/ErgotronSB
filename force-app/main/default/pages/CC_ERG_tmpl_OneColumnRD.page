@@ -1,0 +1,15 @@
+<!--
+/**
+ *
+ * Created by Jitendra Singh (Docmation)
+ * Date: 24/06/2021
+ */
+ -->
+<apex:page id="CC_ERG_tmpl_OneColumnRD" applyHtmlTag="false" docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false">
+    
+        <!-- BEGIN BOOTSTRAP3 BLOCK -->
+                <div class="container cc_main_container cc_tmpl_OneColRD cc_main_content_col ergomods">
+                    <apex:insert name="body"/>
+                </div>
+            <!-- END BOOTSTRAP3 BLOCK -->
+</apex:page>

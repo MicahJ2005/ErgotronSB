@@ -1,0 +1,747 @@
+<!--
+  @File Name          : DRPaymentPayPal.page
+  @Description        : 
+  @Author             : Amarjit Singh
+  @Group              : 
+  @Last Modified By   : Amarjit Singh
+  @Last Modified On   : 4/5/2020, 2:44:59 pm
+  @Modification Log   : 
+  Ver       Date            Author                  Modification
+  1.0    6/12/2019   Amarjit Singh     Initial Version
+-->
+<apex:page applyHtmlTag="false" docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" controller="digitalriverb2b.DRB2B_PayPalPaymentController" extensions="EXT_PayPalPymentController">
+    <html>  
+        <head>
+            <apex:includeScript value="{!HTMLENCODE(staticResourseBaseUrl)}{!$Resource[HTMLENCODE(staticResourceName)]}"/> 
+            <apex:includeScript value="{!HTMLENCODE(staticResourseBaseUrl)}{!$Resource.CustomPaypalButtonsJS}"/>
+            <style>
+                #errordiv #successDiv{
+                    position:absolute;
+                    top: 50%;
+                    left: 30%;
+                    right:30%;
+                    margin-top: -9em; 
+                    margin-left: -15em; 
+                    z-index:9999;
+                }
+                #overlayDivOne {
+                    position: fixed; 
+                    display: none; 
+                    width: 100%; 
+                    height: 100%; 
+                    top: 0; 
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(0,0,0,0.5); 
+                    z-index: 2; 
+                    cursor: pointer; 
+                }
+                .tab-content>.tab-pane {
+                    display: none;
+                }
+                .tab-content>.active {
+                    display: block;
+                }
+                .loaderDiv {
+                    border: 16px solid #f3f3f3;
+                    border-radius: 50%;
+                    border-top: 16px solid blue;
+                    border-right: 16px solid green;
+                    border-bottom: 16px solid red;
+                    width: 120px;
+                    height: 120px;
+                    -webkit-animation: spin 2s linear infinite;
+                    animation: spin 2s linear infinite;
+                }
+                /* Safari */
+                @-webkit-keyframes spin {
+                    0% { -webkit-transform: rotate(0deg); }
+                    100% { -webkit-transform: rotate(360deg); }
+                }
+                
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                #successMsgDiv {
+                    left: 35%;
+                    z-index: 99999999;
+                    position: fixed;
+                    top: 10%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    display :none;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="successMsgDiv" class="alert alert-success fade in alert-dismissible">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>
+                <span id="successMsgText"></span>
+            </div>
+            <div id="overlayDivOne" ></div>
+            <div id="paypal-button-container"></div>
+            <script id="PaymentPP-Both" type="text/template"> 
+                <center>
+                    <div class="{!isPaypalTestMode}">
+                        <div class="loaderDiv" style="display:none;"></div>
+                        <button type="button" id="tryAgainButton" onclick="handlePayPalClickAndReload()" style="display:none;">Failed to load...Click to Try Again</button>
+                        <div id="mainPayPalDiv">
+                            <div id="paypal-button"></div>
+                            <div id="savePaypalDiv"  style="display:none;">
+                                <input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/>
+                                <input type="text" id="nickNamePaypal" onKeyUp="checkNickName()" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/>
+                            </div>
+                        <div>
+                    </div>
+                </center>
+                <p class="link_button cc_link_button">
+                  <input class="button processBack btn btn-default btn-sm btn-base btn-gray cc_process_back" type="button" value="Go Back" alt="Back">
+                </p>
+            </script>
+        </body>
+        <script>
+            var paypalActions;
+            var paypalToken='';
+            var clientId = '';
+            var isDisplayPayPal = true;
+            window.paypalSubtotal=0;
+            var isPayPalTabSelected =false;
+            var isPaypalSubscriptionPresent =false;
+            var allowPayalPopUp=true;
+            var totalProductAmount;
+            $(document).ready(function() {
+                
+                for(i=0;i<CCRZ.cartCheckoutModel.attributes.cartItems.length;i++){
+                    if('installmentFrequency' in CCRZ.cartCheckoutModel.attributes.cartItems[i] || 'orderFrequency' in CCRZ.cartCheckoutModel.attributes.cartItems[i] || 'ignoreInstallmentFrequencyFields' in CCRZ.cartCheckoutModel.attributes.cartItems[i]){
+                        isPaypalSubscriptionPresent = true;
+                    }
+                }
+                try{
+                    totalProductAmount = CCRZ.cartCheckoutModel.attributes.subTotal +(CCRZ.cartCheckoutModel.attributes.tax ==  undefined ? 0 :CCRZ.cartCheckoutModel.attributes.tax) + CCRZ.cartCheckoutModel.attributes.shippingCharge + (CCRZ.cartCheckoutModel.attributes.surchargeAmount ==  undefined ? 0 :CCRZ.cartCheckoutModel.attributes.surchargeAmount);
+                    hidePaypalTab(totalProductAmount);
+                }
+                catch(e){
+                    console.log('error :- paypal tab not get hidden');
+                }
+            });
+            function hidePaypalTab(totalAmount){
+                if(totalAmount == 0){
+                    $('.cc_nav-tabs-payment li').filter(function() {
+                        if($(this).text().trim() === 'PayPal' || $('a', this).attr('href').trim() === '#pp' ){
+                            if($(this).index() === 0){
+                                try{
+                                    $('a', $('.cc_nav-tabs-payment li').get(1)).click();
+                                }catch(e){
+                                }
+                            }
+                            return true;
+                        }
+                        
+                    }).hide();
+                }
+            }
+            function paypalCheckboxChanged() {
+               
+                if($("#rememberMePaypal").is(':checked')){
+                    $("#nickNamePaypal").show();  
+                    $("#nickNamePaypal").val('');
+                }else{
+                    $("#nickNamePaypal").hide();
+                    $("#nickNamePaypal").val('');
+                }
+                if($("#rememberMePaypal").is(':checked') && (typeof $("#nickNamePaypal").val() != 'undefined' &&  $("#nickNamePaypal").val() != '')){
+                    paypalActions.enable();
+                }else{
+                    paypalActions.disable();
+                } 
+                if(!isPaypalSubscriptionPresent && !($("#rememberMePaypal").is(':checked')) && (typeof $("#nickNamePaypal").val() == 'undefined' ||  $("#nickNamePaypal").val() == ''))
+                    paypalActions.enable();      
+            }
+           
+          
+            jQuery(function($) {
+                CCRZ.models.PaymentsPPModel = CCRZ.CloudCrazeModel.extend(); 
+                CCRZ.views.PaymentsPPView = CCRZ.CloudCrazeView.extend ({ 
+                    viewName : "PaymentsPPView",
+                    managedSubView : true,
+                    templateDesktop : CCRZ.util.template("PaymentPP-Both"), 
+                    templatePhone : CCRZ.util.template("PaymentPP-Both"), 
+                    init : function(options)
+                    {
+                        this.selector = options.selector;
+                        this.render();
+                        CCRZ.pubSub.trigger('action:paymentViewInit',this);
+                    },
+                    events:
+                    {
+                        "click .makePPPayment" : "makePPPayment" 
+                    },
+                    validateInfo: function(formName, fieldData)
+                    {
+                        $("#"+formName).validate({
+                            invalidHandler: function(event, validator)
+                            {
+                                // CCRZ.handleValidationErrors(event, validator, 'ppPayment-messagingSection-Error', false);
+                            },
+                            rules:
+                            {
+                                // accountNumber : { required: true, minlength: 4 }
+                            },
+                            messages:
+                            {
+                                //  accountNumber : { required : 'ACH number is required', minlength: 'ACH must be 4 characters in length' }
+                            },
+                            errorPlacement: function(error, element) {
+                            }
+                        });
+                        return $("#"+formName).valid();
+                    },
+                    
+                    parentPreRender : function()
+                    {
+                        //Look for the instantiated iframe
+                        //Detach it from the DOM
+                        //Re-render the view but dont create the iframe
+                        //Re-attach the iframe as appropriate in the rendered view
+                    },
+                    renderDesktop : function() 
+                    {
+                        this.setElement(this.selector);
+                        this.data={};
+                        this.$el.html(this.templateDesktop(this.data));
+                        CCRZ.setCookie("savePayPalPayment", false);
+                        
+                    },
+                    renderPhone : function()
+                    {
+                        this.setElement(this.selector);
+                        this.data={};
+                        this.$el.html(this.templatePhone(this.data));
+                        CCRZ.setCookie("savePayPalPayment", false);
+                    },
+                    makePPPayment : function(event) 
+                    {
+                        var formName = $(event.target).data("id");
+                        var formData = form2js(formName, '.', false, function(node) {}, false);
+                        if (this.validateInfo(formName, formData))
+                        {
+                            var paymentData = formData;
+                            CCRZ.pubSub.trigger('action:processPayment', paymentData);
+                        }
+                    }
+                });
+                CCRZ.pubSub.trigger('action:paymentViewReady','pp',function(options) {
+                    CCRZ.payment = CCRZ.payment||{views:{}};
+                    CCRZ.payment.views.pp = new CCRZ.views.PaymentsPPView({
+                        model : new CCRZ.models.PaymentsPPModel(), 
+                        selector : options.selector
+                    });
+                    $(".loaderDiv").show();
+                    setTimeout(renderPaypalIframe,'{!HTMLENCODE(renderTime)}');
+                    /*try{
+                        $(".cc_nav-tabs-payment li").each(function() { 
+                            debugger;
+                            if(($(this).text().trim() === 'PayPal' || $('a', this).attr('href').trim() === '#pp' )&& $(this).hasClass("active")){
+                                if($("#paypal-button").children().length > 0 ||  $("#tryAgainButton").is(":visible")){
+                                    $(".loaderDiv").hide();
+                                    $('.cc_nav-tabs_anchor').css('pointer-events','');
+                                    return;
+                                }
+                                else {
+                                    handlePayPalClickAndReload();
+                                }
+                            }
+                        });
+                    }catch(e){
+                        if($("#paypal-button").children().length > 0 ||  $("#tryAgainButton").is(":visible")){
+                            $(".loaderDiv").hide();
+                            $('.cc_nav-tabs_anchor').css('pointer-events','');
+                            return;
+                        }
+                        else {
+                            handlePayPalClickAndReload();
+                        }
+                    }*/
+                });
+                CCRZ.pubSub.on('view:PaymentsPPView:refresh',function(){
+                        //call after page loaded
+                        hidePaypalTab(totalProductAmount);
+                        setTimeout(renderPaypalIframe,'{!HTMLENCODE(renderTime)}');
+                        
+                });
+            });
+            function renderPaypalIframe(){
+                try{
+                    $(".cc_nav-tabs-payment li").each(function() {                         
+                        if(($(this).text().trim() === 'PayPal' || $('a', this).attr('href').trim() === '#pp' )&& $(this).hasClass("active")){
+                            if($("#paypal-button").children().length > 0 ||  $("#tryAgainButton").is(":visible")){
+                                $(".loaderDiv").hide();
+                                $('.cc_nav-tabs_anchor').css('pointer-events','');
+                                return;
+                            }
+                            else {
+                                handlePayPalClickAndReload();
+                            }
+                        }
+                    });
+                    }catch(e){
+                        if($("#paypal-button").children().length > 0 ||  $("#tryAgainButton").is(":visible")){
+                            $(".loaderDiv").hide();
+                            $('.cc_nav-tabs_anchor').css('pointer-events','');
+                            return;
+                        }
+                        else {
+                            handlePayPalClickAndReload();
+                        }
+                    }
+            }
+        </script>
+        <script>
+            // function to instansiate digitalriver and create request
+            var paypalActions;
+            function loadPayPalHostedPage(apiKey) {  
+                isPayPalTabSelected =true ;
+                if($("#paypal-button").children().length > 0){
+                        $(".loaderDiv").hide();
+                        $('.cc_nav-tabs_anchor').css('pointer-events','');
+                    return;
+                }else{
+                    if($("#paypal-button").length < 1){
+                        $("#mainPayPalDiv").empty();
+                        $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                    }
+                    $("#cc").addClass("fade");
+                    $("#po").addClass("fade");
+                    $("#pp").addClass("fade in active");
+                    $(".loaderDiv").show();
+                    $('.cc_nav-tabs_anchor').css('pointer-events','none');
+                }
+                console.log('code is above dg object');
+                var paypalFactory = new DigitalRiver(apiKey);
+                $(".loaderDiv").attr("style", "display:block;");//displaying spinning wheel to show loading in progress
+                var items = [];//cart items list
+                var itemsPaypalList = [];
+                console.log('code is above checkoutmodel object');
+                $(CCRZ.cartCheckoutModel.attributes.cartItems).each(function() {
+                    var productName ;
+                    var productSku ;
+                    if(typeof this.mockProduct == 'undefined' || this.mockProduct == null) {
+                      productSku = this.product.SKU;
+                      productName = this.product.sfdcName;
+                    }else{
+                        productName =this.mockProduct.name;
+                        productSku = this.mockProduct.sku;
+                    }
+                    paypalSubtotal = paypalSubtotal+(this.price * this.quantity);
+                    item = {};
+                    var itemPaypal={"name" :productName,"unit_amount":{"currency_code":CCRZ.cartCheckoutModel.attributes.currencyISOCode,"value":this.price},"tax":{"currency_code":CCRZ.cartCheckoutModel.attributes.currencyISOCode,"value":0.0},"quantity":this.quantity,"sku":productSku.toString(), "category": "PHYSICAL_GOODS"};
+                    itemsPaypalList.push(itemPaypal);
+                    item ["name"] = productName;
+                    item ["quantity"] = this.quantity;
+                    item ["unitAmount"] = this.price;
+                    items.push(item);
+                });
+                console.log('code is above paypalGRAmount object');
+                debugger;
+                var payPalGrAmount= CCRZ.cartCheckoutModel.attributes.subTotal + CCRZ.cartCheckoutModel.attributes.tax + (CCRZ.cartCheckoutModel.attributes.shippingCharge ==  undefined ? 0 :CCRZ.cartCheckoutModel.attributes.shippingCharge) + (CCRZ.cartCheckoutModel.attributes.surchargeAmount ==  undefined ? 0 :CCRZ.cartCheckoutModel.attributes.surchargeAmount);//CCRZ.cartCheckoutModel.attributes.paypalGrandAmount == undefined ? 0 :CCRZ.cartCheckoutModel.attributes.paypalGrandAmount;
+                //preparing paypal request
+                console.log('code is above paypal request object');
+                debugger;
+                var paypalRequest = {
+                    "type": "payPal",
+                    "amount":payPalGrAmount,
+                    "currency": CCRZ.cartCheckoutModel.attributes.currencyISOCode,
+                    "payPal": {
+                        "returnUrl": document.location+"&isPayPal=true&action=return",
+                        "cancelUrl": document.location.origin+"/"+document.location.pathname.split("/")[1]+"/ccrz__CCPage?pagekey=DRPayPalResponse&action=cancel&isPayPal=true&page="+document.location.pathname.split("/")[2]+document.location.search,
+                        "items": items,
+                        "taxAmount": CCRZ.cartCheckoutModel.attributes.tax == undefined ? 0 : CCRZ.cartCheckoutModel.attributes.tax ,
+                        "shippingAmount": CCRZ.cartCheckoutModel.attributes.shippingCharge,
+                        "amountsEstimated": true,
+                        "requestShipping": false
+                     }
+                }
+                var paypalBillingRequest = {
+                    "type": "payPalBilling",
+                    "amount":payPalGrAmount,
+                    "currency": CCRZ.cartCheckoutModel.attributes.currencyISOCode,
+                    "payPalBilling": {
+                        "returnUrl": document.location+"&isPayPal=true&action=return",
+                        "cancelUrl": document.location.origin+"/"+document.location.pathname.split("/")[1]+"/ccrz__CCPage?pagekey=DRPayPalResponse&action=cancel&isPayPal=true&page="+document.location.pathname.split("/")[2]+document.location.search,
+                        "items": items,
+                        "taxAmount": CCRZ.cartCheckoutModel.attributes.tax == undefined ? 0 : CCRZ.cartCheckoutModel.attributes.tax ,
+                        "shippingAmount": CCRZ.cartCheckoutModel.attributes.shippingCharge,
+                        "amountsEstimated": true,
+                        "requestShipping": false
+                    }
+                }
+
+                $(".loaderDiv").hide();
+                var sourceId='';
+                let env = 'production';
+                let client = {
+                    production: '{!JSENCODE(paypalProductionKey)}'
+                };
+                if({!isPaypalTestMode}) {
+                    env = 'sandbox';
+                    client = null;
+                }
+                <!--*********************************-->
+                console.log('code is going to render');
+                paypal.Button.render({
+                    // Configure environment
+                    env,
+                    client,
+                    // Customize button (optional)
+                    locale: CCRZ.currentUser.LocaleSidKey,
+                    style: {
+                        label: 'checkout',
+                        size: 'responsive',
+                        color: 'gold',
+                        shape: 'rect',
+                    },
+                    // Enable Pay Now checkout flow (optional)
+                    commit: true,
+                    // Set up a payment
+                    payment: function(data, actions) {
+                        var paypalFinalReqObj;
+                        if($("#rememberMePaypal").is(':checked')){
+                            paypalFinalReqObj =  paypalBillingRequest;       
+                        }
+                        else{
+                            paypalFinalReqObj = paypalRequest;
+                        }
+                        // handling paypal response to display to iframe
+                        return paypalFactory.createSource(paypalFinalReqObj).then(function(result) {
+                            //debugger;
+                            if(result.source == null){
+                                    if(typeof  CCRZ.pagevars.pageLabels.DR_error_message_for_payments != 'undefined'){
+                                        showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_error_message_for_payments);
+                                    }else{
+                                        showMsgToast('fail', 'DR_error_message_for_payments');
+                                    }
+                                    $("#mainPayPalDiv").empty();
+                                    $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                                    $("#tryAgainButton").show();
+                            }else if (result.error) {
+                                
+                                try{
+                                    if(! window.navigator.onLine){
+                                        if(typeof  CCRZ.pagevars.pageLabels.DR_INTERNET_CONNECTION != 'undefined'){
+                                            showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_INTERNET_CONNECTION);
+                                        }else{
+                                            showMsgToast('fail', 'DR_INTERNET_CONNECTION');
+                                        }
+                                        $("#mainPayPalDiv").empty();
+                                        $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                                        $("#tryAgainButton").show();
+                                        return false;  
+                                    }
+                                }catch(e){
+                                    
+                                }
+                                handleCreateSourceErrors(result.error);
+                                $("#mainPayPalDiv").empty();
+                                $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                                $("#tryAgainButton").show();
+                            }else {
+                                
+                                var source = result.source;
+                                sourceId = source.id;
+                                var token ;
+                                if($("#rememberMePaypal").is(':checked')){
+                                    token =  result.source.payPalBilling.token;       
+                                }
+                                else{
+                                    token = result.source.payPal.token;
+                                }
+                                return token;
+                            }
+                        });
+                    },
+                    // Execute the payment
+                    onAuthorize: function(data, actions) {
+                        $("#overlayDivNew").show();
+                        try{
+                            var payPalElements = document.getElementsByClassName('paypal-button');
+                            payPalElements[0].style.opacity = "0.4";
+                        }catch(e){
+
+                        }
+                        callSubmitPayPalPayment(sourceId,false,'');
+                    },
+                    onCancel: function (data) {
+                        $("#mainPayPalDiv").empty();
+                        $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                        handlePayPalClickAndReload();
+                    },
+                    onError: function (err) {
+                        try{
+                            if(! window.navigator.onLine){
+                                if(typeof  CCRZ.pagevars.pageLabels.DR_INTERNET_CONNECTION != 'undefined'){
+                                    showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_INTERNET_CONNECTION);
+                                }else{
+                                    showMsgToast('fail', 'DR_INTERNET_CONNECTION');
+                                }
+                                $("#mainPayPalDiv").empty();
+                                $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                                $("#tryAgainButton").show();
+                                return false;  
+                            }
+                        }catch(e){
+                        }
+                        showMsgToast('fail',err.message);
+                       //showMsgToast('fail',err);
+                        $("#mainPayPalDiv").empty();
+                        $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                        $("#tryAgainButton").show();
+                        return false;
+                    },
+                    onClick: function() {
+                        
+                        if(isPaypalSubscriptionPresent) {
+                            if(!$("#rememberMePaypal").is(':checked')) {
+                                paypalActions.disable();
+                                //alert("You have subscription product in your cart.So It is required to select the Save Payement option for future payments.");
+                                if(typeof  CCRZ.pagevars.pageLabels.DR_CHECKOUT_SUBSCRIPTION_ERROR != 'undefined'){
+                                    showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_CHECKOUT_SUBSCRIPTION_ERROR);
+                                }else{
+                                    showMsgToast('fail', 'DR_CHECKOUT_SUBSCRIPTION_ERROR');
+                                }
+                            }
+                            else if($("#rememberMePaypal").is(':checked') && (typeof $("#nickNamePaypal").val() == 'undefined' ||  $("#nickNamePaypal").val() == '')){
+                                paypalActions.disable();
+                                if(typeof  CCRZ.pagevars.pageLabels.DR_NICK_NAME_MISSING != 'undefined'){
+                                    showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_NICK_NAME_MISSING);
+                                }else{
+                                    showMsgToast('fail', 'DR_NICK_NAME_MISSING');
+                                }
+                            }else {
+                                paypalActions.enable();
+                                $(".paypal-button").click();
+                            }
+                        }
+                        else if($("#rememberMePaypal").is(':checked') && (typeof $("#nickNamePaypal").val() == 'undefined' ||  $("#nickNamePaypal").val() == '')){
+                            paypalActions.disable();
+                            if(typeof  CCRZ.pagevars.pageLabels.DR_NICK_NAME_MISSING != 'undefined'){
+                                showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_NICK_NAME_MISSING);
+                            }else{
+                                showMsgToast('fail', 'DR_NICK_NAME_MISSING');
+                            }
+                        }
+                        else {
+                            paypalActions.enable();
+                            $(".paypal-button").click();
+                        }
+                        
+                    },   // Called when page displays
+                    validate: function(actions) {
+                        
+                        $("#savePaypalDiv").show();
+                        
+                        if(isPaypalSubscriptionPresent) 
+                            actions.disable(); // Allow for validation in onClick()
+                        paypalActions = actions; // Save for later enable()/disable() calls
+                        $('.cc_nav-tabs_anchor').css('pointer-events','');
+                    },
+                    }, '#paypal-button');
+                    $('.cc_nav-tabs_anchor').css('pointer-events','');
+            }
+            function handleCreateSourceErrors(errorObj) {
+                if(typeof  errorObj.errors[0].message != 'undefined' &&  errorObj.errors[0].message != null &&  errorObj.errors[0].message != '' ){
+                    showMsgToast('fail', errorObj.errors[0].message);
+                }else if(typeof errorObj.type  != 'undefined' &&  errorObj.type != null && errorObj.type != '' ){
+                    if(typeof  CCRZ.pagevars.pageLabels.DR_SOURCE_ID_ERROR_TYPE != 'undefined'){
+                        showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_SOURCE_ID_ERROR_TYPE +''+ errorObj.type);
+                    }else{
+                        showMsgToast('fail', 'DR_SOURCE_ID_ERROR_TYPE');
+                    }
+                }else{
+                    if(typeof  CCRZ.pagevars.pageLabels.DR_SOURCE_ID_MISSING != 'undefined'){
+                        showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_SOURCE_ID_MISSING);
+                    }else{
+                        showMsgToast('fail', 'DR_SOURCE_ID_MISSING');
+                    }
+                }
+            }
+            function showMsgToast(errorType,errorMsg){
+                if($("#successMsgDiv").length < 1){
+                    $("#overlayDivOne").before('<div id="successMsgDiv" class="alert alert-success fade in alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><span id="successMsgText"></span></div>'); 
+                }
+                if(errorType == 'success'){
+                    $("#successMsgDiv").removeClass('alert-danger').addClass('alert-success');
+                    $("#successMsgText").removeClass('alert-danger').addClass('alert-success');
+                    $("#successMsgText").text(errorMsg);
+                    $("#successMsgDiv").show();
+                }else{
+                    $("#successMsgDiv").removeClass('alert-success').addClass('alert-danger');
+                    $("#successMsgText").removeClass('alert-success').addClass('alert-danger');
+                    $("#successMsgText").text(errorMsg);
+                    $("#successMsgDiv").show();
+                }
+            }
+            // overriding the tab link (from payment tabs) to call paypal initialization
+            $('.cc_nav-tabs_anchor').click(function() {
+                
+                if(this != undefined && this.getAttribute('aria-controls') == "pp") {
+                    if($("#paypal-button").children().length > 0 ||  $("#tryAgainButton").is(":visible")){
+                        $(".loaderDiv").hide();
+                        $('.cc_nav-tabs_anchor').css('pointer-events','');
+                        return;
+                    }
+                    else {
+                        setTimeout(renderPaypalIframe,'{!HTMLENCODE(renderTime)}');
+                        //handlePayPalClickAndReload();
+                    }
+                }
+            });
+           
+            function handlePayPalClickAndReload() {
+                console.log('handlePayPalClickAndReload called');
+                //debugger;
+                sourceId='';
+                clientId = '';
+                paypalSubtotal=0;
+                allowPayalPopUp=true;
+                $('.cc_nav-tabs_anchor').css('pointer-events','none');
+                $("#tryAgainButton").hide();
+                $(".loaderDiv").show();
+                $('.cc_nav-tabs_anchor').css('pointer-events','none');
+                loadPayPalHostedPage('{!JSENCODE(apiKeygetter)}');
+                /*Visualforce.remoting.Manager.invokeAction(
+                    'digitalriverb2b.DRB2B_PayPalPaymentController.getAPIKey',
+                    function (result, event) {
+                        $('.cc_nav-tabs_anchor').css('pointer-events','');
+                        if(event.status){
+                            console.log('got response for api key');
+                            if(typeof result != 'undefined' && result != null && result.success == true){
+                                loadPayPalHostedPage(result.data.drApiKey);
+                            }
+                            else{
+                                $(".loaderDiv").hide();
+                                $('.cc_nav-tabs_anchor').css('pointer-events','');
+                                showMsgToast('fail','Unable to get api key from server.');
+                                $("#mainPayPalDiv").empty();
+                                $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                                $("#tryAgainButton").show();
+                            }
+                        }
+                        else if(event.type ='exception' && typeof event.message != undefined && event.message !=  null  && event.message != '') {
+                            showMsgToast('fail', event.message);
+                            $(".loaderDiv").hide();
+                            $('.cc_nav-tabs_anchor').css('pointer-events','');
+                            $("#mainPayPalDiv").empty();
+                            $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                            $("#tryAgainButton").show();
+                        }else{
+                            $(".loaderDiv").hide();
+                            $('.cc_nav-tabs_anchor').css('pointer-events','');
+                            showMsgToast('fail','Unable to get api key from server.');
+                            $("#mainPayPalDiv").empty();
+                            $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                            $("#tryAgainButton").show();
+                        }
+                    }
+                );*/
+            }
+               
+            function callSubmitPayPalPayment(sourceId,saveCardToWallet,savedCardOptionName) {
+                saveCardToWallet=$("#rememberMePaypal").is(':checked');
+                savedCardOptionName =$("#nickNamePaypal").val();
+                
+                var cartId = CCRZ.cartCheckoutModel.attributes.sfid;
+                intilizePayPalPaymentRemoting();
+                CCRZ.subsc.processPayPalPayments.submitPayPalPayment(cartId, sourceId,saveCardToWallet,savedCardOptionName,false,'paypal');
+                
+                
+            }
+            
+            function intilizePayPalPaymentRemoting(){
+                CCRZ.subsc = _.extend(CCRZ.subsc||{});
+                    CCRZ.subsc.processPayPalPayments= _.extend(CCRZ.RemoteInvocation,{
+                        className : 'digitalriverb2b.DRB2B_PaymentController',
+                        submitPayPalPayment: function(cartId, sourceId,saveCardToWallet,savedCardOptionName,isDefaultPayment,paymentType) {
+                            var data = {ccCartId : cartId,sourceId : sourceId,saveCardToWallet : saveCardToWallet,savedCardOptionName : savedCardOptionName,isDefaultPayment : isDefaultPayment,paymentType : paymentType };
+                            this.invokeCtx('submitPayments', JSON.stringify(data), 
+                                function(result, event) {
+                                    if(event.status) {
+                                       // debugger;
+                                        if(result.error || !result.data) {
+                                            if(typeof  CCRZ.pagevars.pageLabels.DR_SERVER_PAYMENT_FAILED != 'undefined'){
+                                                showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_SERVER_PAYMENT_FAILED);
+                                            }else{
+                                                showMsgToast('fail', 'DR_SERVER_PAYMENT_FAILED');
+                                            }                                            
+                                            $("#mainPayPalDiv").empty();
+                                            $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                                            $("#overlayDivNew").hide();
+                                            handlePayPalClickAndReload();
+                                        }
+                                        else if(result.success) {
+                                            if(typeof  CCRZ.pagevars.pageLabels.DR_PAYPAL_AUTHORIZED != 'undefined'){
+                                                showMsgToast('success', CCRZ.pagevars.pageLabels.DR_PAYPAL_AUTHORIZED);
+                                            }else{
+                                                showMsgToast('success', 'DR_PAYPAL_AUTHORIZED');
+                                            }
+                                            if($("#rememberMe").is(':checked')) {
+                                                try {
+                                                    result.data.txObject.accountNumber=result.data.txObject.accountNumber+'--%&*$@--'+result.data.savedCardNickName;
+                                                }catch(e){
+                                                }
+                                            }
+                                            result.data['txObject'].accountType = 'pp';
+                                            setTimeout(function(){ CCRZ.pubSub.trigger('action:processPayment', result.data['txObject']); }, 3000);
+                                        }else{
+                                            if(typeof  CCRZ.pagevars.pageLabels.DR_SERVER_PAYMENT_FAILED != 'undefined'){
+                                                showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_SERVER_PAYMENT_FAILED);
+                                            }else{
+                                                showMsgToast('fail', 'DR_SERVER_PAYMENT_FAILED');
+                                            }
+                                            $("#overlayDivNew").hide();
+                                            $("#mainPayPalDiv").empty();
+                                            $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                                            handlePayPalClickAndReload();
+                                        }
+                                    }
+                                    else if(event.type ='exception' && typeof event.message != undefined && event.message !=  null  && event.message != '') {
+                                        $("#mainPayPalDiv").empty();
+                                        $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                                        showMsgToast('fail', event.message);
+                                        $("#tryAgainButton").show();
+                                    }
+                                    else {
+                                        if(typeof  CCRZ.pagevars.pageLabels.DR_SERVER_PAYMENT_FAILED != 'undefined'){
+                                            showMsgToast('fail', CCRZ.pagevars.pageLabels.DR_SERVER_PAYMENT_FAILED);
+                                        }else{
+                                            showMsgToast('fail', 'DR_SERVER_PAYMENT_FAILED');
+                                        }
+                                        $("#mainPayPalDiv").empty();
+                                        $("#mainPayPalDiv").append('<div id="paypal-button"></div><div id="savePaypalDiv"  style="display:none;"><input id="rememberMePaypal"  type="checkbox"  onchange="paypalCheckboxChanged()"/>&nbsp;<b> Save Payment</b><br/><input type="text" onKeyUp="checkNickName()" id="nickNamePaypal" placeholder ="Enter NickName" style="display:none;width:13%;padding: 6px 11px; margin: 8px 0; box-sizing: border-box;"/></div>');
+                                        handlePayPalClickAndReload();
+                                    }
+                                },
+                                {
+                                    buffer:false, //this call will be executed by itself
+                                    nmsp : false, //defines that this is a call to a subscriber class
+                                    timeout: 120000
+                                }
+                            );//end invokeCtx call
+                        }
+                    });
+                }
+            function checkNickName (){
+                
+                if($("#rememberMePaypal").is(':checked') && (typeof $("#nickNamePaypal").val() != 'undefined' &&  $("#nickNamePaypal").val() != '')){
+                    paypalActions.enable();
+                }else{
+                    paypalActions.disable();
+                }
+                if(!isPaypalSubscriptionPresent && !($("#rememberMePaypal").is(':checked')) && (typeof $("#nickNamePaypal").val() == 'undefined' ||  $("#nickNamePaypal").val() == ''))
+                    paypalActions.enable();
+            }
+           
+        </script>
+    </html>
+</apex:page>

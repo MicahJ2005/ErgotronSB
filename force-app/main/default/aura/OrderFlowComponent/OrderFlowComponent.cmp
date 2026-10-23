@@ -1,0 +1,132 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,flexipage:availableForAllPageTypes" access="global" controller="Flow_ATP_Controller">
+	<aura:attribute name="recordId" type="String" default="{!v.recordId}"/>
+	<aura:attribute name="childId" type="String" default="{!v.recordId}"/>
+	<aura:attribute name="orderId" type="String"/>
+	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
+	<aura:handler event="force:refreshView" action="{!c.init}" />
+	<aura:attribute name="olines" type="HelperATPData[]"/>
+	<aura:attribute name="errorMessage" type="String"/>
+	<aura:attribute name="lstretReason" type="Oracle_Return_Reason__c[]"/>
+	<aura:attribute name="lstBusinessLogic" type="OrderBusinessLogicCheck[]"/>
+    <aura:attribute name="objCase" type="Case" />
+	<aura:attribute name="orderTitle" type="Aura.Component[]">
+        <h2><b>Create an Order</b></h2>
+    </aura:attribute>
+
+	<div>
+		<div aura:id="blockAccess" class="slds-hide">
+			<lightning:card iconName="standard:shipment" title="{!v.orderTitle}">
+				<article class="slds-tile">
+					<div class="slds-p-horizontal_medium">
+						<h3 class="slds-tile__title slds-truncate" title="Order Creation Business Rule Violations"><a href="javascript:void(0);"><b>Business Rule Violations</b></a></h3>
+						<div class="slds-tile__detail">
+							<aura:iteration var="item" items="{!v.lstBusinessLogic}">
+							<ul class="slds-list--dotted">
+								<li>({!item.strLogicCode}) {!item.strLogicMessage}</li>
+							</ul>
+							</aura:iteration>
+							<br />
+						</div>
+						<div class="slds-tile__detail">
+							You will be unable to create an Order until you remediate these business rule violations.
+						</div>
+					</div>
+				</article>
+			</lightning:card>
+		</div>
+	</div>
+
+	<div aura:id="topDivErgotron" class="slds-box slds-box--large slds-theme_default" style="background-color: white;">
+	<lightning:card iconName="standard:shipment" title="{!v.orderTitle}">
+		<div aura:id="mySpinner" class="slds-hide">
+			<div class="slds-spinner_container">
+				<div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+					<span class="slds-assistive-text">Loading</span>
+					<div class="slds-spinner__dot-a"></div>
+					<div class="slds-spinner__dot-b"></div>
+				</div>
+			</div>
+		</div>
+		<div class="slds-tabs_default">
+			<ul class="slds-tabs_default__nav" role="tablist">
+				<li aura:id="tab-1" class="slds-tabs_default__item slds-is-active" title="partavail" role="presentation">
+					<a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-default-1" id="tab-default-1__item" onclick="{!c.makeTab1tActive}">
+						Part ATP
+					</a>
+				</li>
+				<li aura:id="tab-2" class="slds-tabs_default__item" title="partOrder" role="presentation">
+					<a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item" onclick="{!c.makeTab2Active}">
+						Parts To be Ordered
+					</a>
+				</li>
+				<li aura:id="tab-3" class="slds-tabs_default__item" title="Order" role="presentation">
+					<a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item" onclick="{!c.makeTab3Active}">
+						Order
+					</a>
+				</li>
+			</ul>
+		</div>
+		<div aura:id="tab-data-1" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
+			<c:ATP_Display olines="{!v.olines}" recordId="{!v.recordId}" lstretReason="{!v.lstretReason}"/>
+		</div>
+		<div aura:id="tab-data-2" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-default-2__item">
+			<table>
+				<thead>
+					<tr>
+						<th class="slds-p-left_medium slds-text-title--caps" scope="col">
+							<div class="slds-truncate" title="Amount2data">Action</div>
+						</th>
+						<th class="slds-p-left_medium slds-text-title--caps" scope="col">
+							<div class="slds-truncate" title="Amount2data">Part Number</div>
+						</th>
+						<th class="slds-p-left_medium slds-text-title--caps" scope="col">
+							<div class="slds-truncate" title="Amount2data">Quantity</div>
+						</th>
+						<th class="slds-p-left_medium slds-text-title--caps" scope="col">
+							<div class="slds-truncate" title="Amount2data">Warehouse</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<aura:iteration items="{!v.olines}" var="ol">
+						<tr>
+							<td scope="col">
+								<span onclick="{!c.removepart}" data-pid="{!ol.strProdId}">
+									<lightning:icon iconName="utility:delete"/>
+								</span>
+							</td>
+							<td scope="col">
+								{!ol.strPartNumber}
+							</td>
+							<td scope="col">
+								{!ol.strPartQty}
+							</td>
+							<td scope="col"> 
+								{!ol.strPartWarehouse}
+							</td>
+						</tr>
+						<tr>
+							<td>
+							</td>
+							<td>
+								{!ol.strProdName}
+							</td>
+							<td>
+							</td>
+							<td>
+								{!ol.strRetName}
+							</td>
+						</tr>
+					</aura:iteration>
+				</tbody>
+			</table>
+		</div>
+		<div aura:id="tab-data-3" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-default-3__item">
+			<div style="background-color: white;" aura:id="flowScreen">
+				<c:CreateOrderHeader caseId="{!v.recordId}" olines="{!v.olines}" errorMessage="{!v.errorMessage}" objCase="{!v.objCase}"/>
+				<ui:outputText value="{!v.errorMessage}"/>
+			</div>
+		</div>
+	</lightning:card>
+	</div>
+</aura:component>

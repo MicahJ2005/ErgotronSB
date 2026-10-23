@@ -1,0 +1,688 @@
+<!--
+@Page Name          : DRPaymentCC.page
+@Description        : 
+@Author             : Girish Kalidindi
+@Group              : 
+@Last Modified By   : Amarjit Singh
+@Last Modified On   : 8/5/2020, 1:50:41 pm
+@Modification Log   : 
+==============================================================================
+Ver         Date                     Author                   Modification
+==============================================================================
+1.0    4/30/2019, 8:27:27 AM   Girish Kalidindi     Initial Version
+-->
+<apex:page applyBodyTag="false" applyHtmlTag="false" docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false"
+           controller="digitalriverb2b.DRB2B_PaymentController" >
+    <style>
+        .field {
+            //background-color: #ccc;
+            padding: 20px 10px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            box-shadow: 0 1px 3px 0 #76b900;
+            -webkit-transition: box-shadow 150ms ease;
+            transition: box-shadow 150ms ease;
+        }
+        .invalid {
+            border: 1px solid red;
+            background-color: #ff9999;
+        }
+        .empty {
+            border: 1px solid blue;
+        }
+        .focus {
+            border: 1px solid orange;
+        }
+        .complete {
+            border: 1px solid green;
+            background-color: #c6efce;
+        }
+        .DRGooglePayElement {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .DRApplePayElement {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .payment-button {
+            margin: 15px 0px;
+            height: 45px;
+            overflow: hidden;
+        }
+        .submitForm{
+            padding: 9px 17px 7px !important;
+            font-size: 11px !important;
+        }
+        .ccrow{
+            width : 100%;
+        }
+        .row-column{
+            width: 31%;
+            margin: 5px;
+        }
+        .ccrow .field{
+            padding: 5px 10px;
+        }
+        .row-column40{width:22%;    margin: 5px;}
+        .row-column50{width:54%;}
+        .placeHolderText{font-size: 13px !important;font-family: Arial, Helvetica, sans-serif;}
+    </style>
+    <html>
+        <head>
+            <apex:slds />
+            <style>
+                #overlayDivNew{
+                    position: fixed; 
+                    display: none; 
+                    width: 100%; 
+                    height: 100%; 
+                    top: 0; 
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(0,0,0,0.5); 
+                    z-index: 2; 
+                    cursor: pointer; 
+                }
+                .messageDivCCCss {                    
+                    z-index: 99999999;
+                    position: fixed;
+                    top: 10%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    display :none;
+                }
+            </style>
+        </head>
+        <body>
+            <apex:includeScript value="{!HTMLENCODE(staticResourseBaseUrl)}{!$Resource.digitalriverb2b__DRB2B_JQuery}"/>
+            <apex:includeScript value="{!HTMLENCODE(staticResourseBaseUrl)}{!$Resource[HTMLENCODE(staticResourceName)]}"/> 
+            <!--<div id="messageDivCC" class="alert alert-success fade in alert-dismissible messageDivCCCss">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>
+                <span id="messageTextCC"></span>
+            </div>-->
+            <!--<apex:outputPanel rendered="{!isDisplayUploadTaxCertificateLink}">
+                    <digitalriverb2b:DRB2B_MyTaxCertificatesCC /> 
+            </apex:outputPanel>-->
+            <div id="overlayDivNew" >
+                <div class="loading-msg-wrapper"><div class="loading-msg">Processing your order.<span> Thanks for your patience.</span></div></div>
+            </div>
+                <script id="PaymentCC-Both" type="text/template"> 
+                    <div class="ccPaymentOuterContainer">
+                        <h2 style="display:none;" class="title">{{pageLabelMap 'MyWallet_AddPymtMtd'}}</h2>
+                        <div class="main_content_large_right_container">
+                            <div class="alert alert-error ccPayment-messagingSection-Error" style="display: none"></div>
+                                <form id="payment-form">
+                                    <div id="messageDivCC" class="alert alert-danger" style="margin-top:11px;display:none;">
+                                        <a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>
+                                         <span id="messageTextCC"></span>
+                                    </div>
+                                    <div style="display:none">
+                                        <div class="form-group" id="form-group">
+                                            <label for="firstName">First Name</label>
+                                            <input type="text" class="form-control" id="firstName"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="lastName">Last Name</label>
+                                            <input type="text" class="form-control" id="lastName"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Email address</label>
+                                            <input type="email" class="form-control" id="email" placeholder="name@example.com"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="address ">Address</label>
+                                            <input type="text" class="form-control" id="address"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="address2">Address2</label>
+                                            <input type="text" class="form-control" id="address2"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="city">city </label>
+                                            <input type="text" class="form-control" id="city"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="state">State </label>
+                                            <input type="text" class="form-control" id="state"/>
+                                        </div> 
+                                        <div class="form-group">
+                                            <label for="zip">Postal Code</label>
+                                            <input type="text" class="form-control" id="zip"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="country">Country</label>
+                                            <input type="text" class="form-control" id="country"/>
+                                        </div>
+                                    </div>
+                                    <div class="ccrow card-img" style="position: relative;">
+                                        <!-- <img src="https://www.ergotron.com/portals/0/html/store/img/credit-cards.png" id="card-image"/> -->
+                                        <img id="card-image" src="https://www.ergotron.com/portals/0/html/store/img/credit-cards.png" />
+                                        <div class="ccrow" style="margin:5px;">
+                                            <label for="card-number" class="lbl-card-number">Credit Card Number</label>
+                                            <div id="card-number" class="field row-column50"></div>
+                                        </div>
+                                        <div class="ccrow" style="display: inline-flex;">
+                                            <div class="row-column">
+                                                <label for="card-expiration" ><!-- Credit Card  -->Expiration</label>
+                                                <div id="card-expiration" class="field" ></div>
+                                            </div>  
+                                            <div class="row-column40" >   
+                                                <div>
+                                                    <label for="cardcvv"><!-- Credit Card Security Code -->CVV</label>
+                                                    <div id="cardcvv" class="field"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <section class="payment-legal">
+                                          <aside>
+                                            <p class="card-protection"><i class="fa fa-lock" aria-hidden="true"></i>Your card details are protected using PCI DSS security standards.</p>
+                                            <p class="order-agreement">By selecting “Place Order” below, you agree to the <a href="https://www.ergotron.com/en-us/company/legal/terms-of-sale-via-ergotron-site" target="_blank">Ergotron Terms of Sale</a> and <a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRTermsAndConditionsPage/eCommerceProvider.Digital%20River%20Inc." target="_blank">Digital River, Inc.’s Terms of Sale</a> and <a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRPrivacyPolicyPage/eCommerceProvider.Digital%20River%20Inc." target="_blank">Privacy&nbsp;Policy</a>. If you are a California resident, see <a href="https://gc.digitalriver.com/store/defaults/en_US/DisplayCCPAPage" target="_blank">Digital River Inc.’s CCPA Privacy Policy</a>.</p>
+                                            <!-- <p class="order-agreement">By selecting “Place Order” below, you agree to the <a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRTermsAndConditionsPage/eCommerceProvider.Digital%20River%20Inc." target="_blank">Terms of Sale</a> and the <a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRPrivacyPolicyPage/eCommerceProvider.Digital%20River%20Inc." target="_blank">Privacy&nbsp;Policy</a> of Digital River, Inc. If you are a resident of California, see the <a href="https://gc.digitalriver.com/store/defaults/en_US/DisplayCCPAPage" target="_blank">Digital River Inc. CCPA Privacy Policy</a>.</p> -->
+                                          </aside>
+                                        </section>  
+                                        <div class="ccrow" id="savecardRow" style="display: inline-flex;margin:5px;">
+                                            <div class="form-check" >
+                                                <input class="form-check-input" id="rememberMe" onClick="saveforfuture()" type="checkbox"/>
+                                                <label class="form-check-label" for="rmb">Save Card</label>
+                                            </div>
+                                        </div>
+                                        <div class="ccrow" id="showhideemail" style="display: none;margin: 5px;margin-top: -5px; margin-right: 5px;margin-bottom: 5px;margin-left: 5px;">
+                                            <div style="display: inline-grid; width:30%;">
+                                                <input class="placeHolderText field DRElement DRElement--empty" id="nickName" placeholder="Card Name" name="email" type="text"/>
+                                            </div>
+                                        </div>
+                                        <div class="ccrow" id="errors">
+                                        </div>
+                                        <div class="ccrow">
+                                          <div class="row">
+                                            <div class="col-xs-6 col-xs-offset-6">
+                                              <p class="place-order-btn">
+                                                <button class="btn btn-default btn-sm btn-base btn-blue sbmt submitForm clientValidation" id="submitCCPayment" type="button">Place Order</button>
+                                              </p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                    </div> 
+                                   <!--<span class="certificate-msg">
+                                    <br/>
+                                    {{displayCertificateLinkHelper this}}
+                                    </span>-->
+                                </form>
+                                <!--<a id="displayCertificateLink" href="#" onclick="openTaxExemptModal(); return false;" style="display:none;">Click here If you are making a tax exempt purchase</a>-->
+                                <div class="row">
+                                  <div class="col-xs-6">
+                                    <p class="link_button cc_link_button">
+                                      <input class="button processBack btn btn-default btn-sm btn-base btn-gray cc_process_back" type="button" value="Go Back" alt="Back">
+                                    </p>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                    </script>
+                    <script>
+                        var isSubscriptionProductPresent =false;
+                        var isCardnumberComplete = false;
+                        var isCardExpiration = false;
+                        var isCardCvv = false;
+                        var isSubmitClicked = true;
+                        $( document ).ready(function() {                            
+                            for(i=0;i<CCRZ.cartCheckoutModel.attributes.cartItems.length;i++){
+                                if('installmentFrequency' in CCRZ.cartCheckoutModel.attributes.cartItems[i] || 'orderFrequency' in CCRZ.cartCheckoutModel.attributes.cartItems[i] || 'ignoreInstallmentFrequencyFields' in CCRZ.cartCheckoutModel.attributes.cartItems[i]){
+                                    isSubscriptionProductPresent = true;
+                                }
+                            }
+                        });
+                        Handlebars.registerHelper("displayCertificateLinkHelper", function(data) {
+                            if({!isDisplayUploadTaxCertificateLink}){
+                                if(CCRZ.currentUser.UserType == 'Guest'){
+                                    var pageLabelValue = 'Guest_User_profile';
+                                    if(typeof CCRZ.pagevars.pageLabels.Guest_User_profile !== 'undefined' && CCRZ.pagevars.pageLabels.Guest_User_profile !== null && CCRZ.pagevars.pageLabels.Guest_User_profile !== '' ){
+                                        pageLabelValue = CCRZ.pagevars.pageLabels.Guest_User_profile;
+                                    }
+                                    return new Handlebars.SafeString(' '+pageLabelValue);
+                                }else{
+                                    var pageLabelValue = 'Display_Certificate_Link_CC';
+                                    if(typeof CCRZ.pagevars.pageLabels.Display_Certificate_Link_CC !== 'undefined' && CCRZ.pagevars.pageLabels.Display_Certificate_Link_CC !== null && CCRZ.pagevars.pageLabels.Display_Certificate_Link_CC !== '' ){
+                                        pageLabelValue = CCRZ.pagevars.pageLabels.Display_Certificate_Link_CC;
+                                    }
+                                    return new Handlebars.SafeString('<a id="displayCertificateLink" href="#" onclick="openTaxExemptModal(); return false;">'+pageLabelValue+'</a>');
+                                }
+                            }else{
+                                if(CCRZ.currentUser.UserType == 'Guest'){
+                                    var pageLabelValue = 'Guest_User_profile';
+                                    if(typeof CCRZ.pagevars.pageLabels.Guest_User_profile !== 'undefined' && CCRZ.pagevars.pageLabels.Guest_User_profile !== null && CCRZ.pagevars.pageLabels.Guest_User_profile !== '' ){
+                                        pageLabelValue = CCRZ.pagevars.pageLabels.Guest_User_profile;
+                                    }
+                                    return new Handlebars.SafeString(' '+pageLabelValue);
+                                }else{
+                                    return '';
+                                }
+                                
+                            }
+          
+                        });
+                        jQuery(function($) {
+                            $("#overlayDivNew").css("display", "block");
+                            var sourceId;
+                            CCRZ.models.PaymentsCCModel = CCRZ.CloudCrazeModel.extend(); 
+                            // debugger;
+                            CCRZ.views.PaymentsCCView = CCRZ.CloudCrazeView.extend({ 
+                                viewName : "PaymentsCCView",
+                                managedSubView : true,
+                                templateDesktop : CCRZ.util.template("PaymentCC-Both"), 
+                                templatePhone : CCRZ.util.template("PaymentCC-Both"), 
+                                init : function(options)
+                                {
+                                    this.selector = options.selector;
+                                    this.render();
+                                    CCRZ.pubSub.trigger('action:paymentViewInit',this);
+                                    //debugger;
+                                },
+                                events:  
+                                {
+                                    
+                                },
+                                validateInfo: function(formName, fieldData)
+                                {
+                                    
+                                },
+                                
+                                parentPreRender : function()
+                                {
+                                    //Look for the instantiated iframe
+                                    //Detach it from the DOM
+                                    //Re-render the view but dont create the iframe
+                                    //Re-attach the iframe as appropriate in the rendered view
+                                },
+                                renderDesktop : function()
+                                {
+                                    this.setElement(this.selector);
+                                    this.data={};
+                                    this.$el.html(this.templateDesktop(this.data));
+                                    //setTimeout(renderDRIframe,10000);
+                                    //renderDRIframe();                                    
+                                },
+                                renderPhone : function()
+                                {
+                                    this.setElement(this.selector);
+                                    this.data={};
+                                    this.$el.html(this.templatePhone(this.data));
+                                    //setTimeout(renderDRIframe,10000);
+                                    //renderDRIframe();
+                                },
+                            });
+                            CCRZ.pubSub.trigger('action:paymentViewReady','cc',function(options) {
+                                CCRZ.payment = CCRZ.payment||{views:{}};
+                                CCRZ.payment.views.pod = new CCRZ.views.PaymentsCCView({
+                                    model : new CCRZ.models.PaymentsCCModel(),
+                                    selector : options.selector
+                                });
+                                setTimeout(renderDRIframe,'{!HTMLENCODE(renderTime)}');
+                                $('#submitCCPayment').attr('disabled','true');                                                               
+                            });
+                            //call after page loaded
+                            CCRZ.pubSub.on('view:PaymentsCCView:refresh', function() {
+                                setTimeout(renderDRIframe,'{!HTMLENCODE(renderTime)}');
+                                $('#submitCCPayment').attr('disabled','true');                                
+                                
+                            });
+                        });
+                        function unescapedHtml(){
+                            return $("<span />", { html: arguments[0] }).text();
+                        }
+                        function renderDRIframe() {
+                            var digitalriverjs = new DigitalRiver('{!JSENCODE(apiKeygetter)}');
+                            var style = {
+                                classes: {
+                                    base: "DRElement",
+                                    complete: "complete",
+                                    empty: "empty",
+                                    focus: "focus",
+                                    invalid: "invalid",
+                                    webkitAutofill: "autofill"
+                                },
+                                style: {
+                                    base: {
+                                        color: "#000",
+                                        fontFamily: "proxima-nova, Arial, Helvetica, sans-serif",
+                                        fontSize: "16px",
+                                        margin: "20px"
+                                        // '::-webkit-input-placeholder': {
+                                        //   color: red
+                                        // },
+                                        // '::placeholder': {
+                                        //   color: red
+                                        // } 
+                                    }
+                                },
+                                complete: {
+                                    color: "#99ffff !important",                            
+                                    
+                                },
+                                invalid: {
+                                    color: "#ff9999 !important",
+                                    
+                                }
+                            }
+                            //var cardNumber = digitalriverjs.createElement('cardnumber', style);
+                            var cardNumber = digitalriverjs.createElement('cardnumber', Object.assign({},style, {placeholderText: ''}));
+                            //Place the Card Number element within the container created above.
+                            cardNumber.mount('card-number');
+                            //Create your Card Expiration element
+                            var cardExpiration = digitalriverjs.createElement('cardexpiration', Object.assign({},style, {placeholderText: 'MM/YY'}));
+                            //Place the Card Expiration element within the container created above.
+                            cardExpiration.mount('card-expiration');
+                            //cardExpiration.mount('card-expiration',cardExpiration);
+                            //Create your Card Security Code element
+                            var cardSecurityCode = digitalriverjs.createElement('cardcvv', Object.assign({},style, {placeholderText: ''}));
+                            //Place the Card Security Code element within the container created above.
+                            cardSecurityCode.mount('cardcvv');
+                            
+                            cardNumber.on('change', function(event) {             
+                                const cardImgUrl = "{!URLFOR($Resource.CCErgotronTheme, 'images/cards')}";
+
+                                if(event?.brand?.toLowerCase() !== 'unknown') {
+                                    $('.ccrow.card-img #card-image').attr('src', `${cardImgUrl}/credit-cards-${event?.brand}.png`);
+                                    console.log('find img');
+                                } else {
+                                    $('.ccrow.card-img #card-image').attr('src', `${cardImgUrl}/credit-cards.png`);
+                                }
+                                      
+                                isCardnumberComplete = event.complete;
+                                changeSubmitBtn(isCardnumberComplete,isCardExpiration,isCardCvv);
+                            });
+                            cardExpiration.on('change', function(event) {
+                                isCardExpiration = event.complete;
+                                changeSubmitBtn(isCardnumberComplete,isCardExpiration,isCardCvv);
+                            });
+                            cardSecurityCode.on('change', function(event) {
+                                isCardCvv = event.complete;
+                                changeSubmitBtn(isCardnumberComplete,isCardExpiration,isCardCvv);
+                            });
+                              if(CCRZ.currentUser.UserType == 'Guest'){
+                                    $('#savecardRow').hide();
+                                }
+                            // Create a token or display an error when the form is submitted.
+                            var paymentForm = document.getElementById('payment-form');
+                            //debugger;
+                            paymentForm.addEventListener('submit', function(event) {
+                               /* if(isSubscriptionProductPresent) {
+                                    if(!$("#rememberMe").is(':checked')) {
+                                        alert("You have subscription product in your cart.So It is required to select the Save Payement option for future payments.");
+                                        //return ;
+                                    }
+                                }*/
+                               console.log('going to create source');
+                                event.preventDefault();
+                                $("#overlayDivNew").css("display", "block");
+                                populateUserInformation();
+                                //event.stopPropagation();
+                                $('#submitCCPayment').attr('disabled','true');
+                                var grandtotal = CCRZ.cartCheckoutModel.attributes.subTotal + CCRZ.cartCheckoutModel.attributes.tax + (CCRZ.cartCheckoutModel.attributes.shippingCharge == undefined ? 0 : CCRZ.cartCheckoutModel.attributes.shippingCharge) + (CCRZ.cartCheckoutModel.attributes.surchargeAmount ==  undefined ? 0 :CCRZ.cartCheckoutModel.attributes.surchargeAmount);
+                                console.log('grandtotal---->'+grandtotal);
+                                debugger;
+                                var payload = {
+                                    "type": "creditCard",
+                                    "owner": {
+                                        firstName: document.getElementById('firstName').value,
+                                        lastName: document.getElementById('lastName').value,
+                                        email: document.getElementById('email').value,
+                                        phoneNumber: CCRZ?.cartCheckoutModel?.attributes?.buyerPhone,
+                                        address: {
+                                            line1: document.getElementById('address').value,
+                                            line2: document.getElementById('address2').value,
+                                            city: document.getElementById('city').value,
+                                            state: document.getElementById('state').value,
+                                            postalCode: document.getElementById('zip').value,
+                                            country: document.getElementById('country').value
+                                        },
+                                    },
+                                    "amount": grandtotal,
+                                    "currency": CCRZ.cartCheckoutModel.attributes.currencyISOCode
+                                }
+                                //debugger
+                                digitalriverjs.createSource(cardNumber,payload).then(function(result) {
+                                    //debugger;
+                                    if(isSubmitClicked){
+                                        isSubmitClicked =false;
+                                    }
+                                    else{
+                                        return false;
+                                    }
+                                    if(result.source == null){
+                                        if(typeof  CCRZ.pagevars.pageLabels.DR_error_message_for_payments != 'undefined'){
+                                            showMessageToastCC('fail', CCRZ.pagevars.pageLabels.DR_error_message_for_payments);
+                                        }else{
+                                            showMessageToastCC('fail', 'DR_error_message_for_payments');
+                                        }
+                                        $('#submitCCPayment').attr('disabled','false');
+                                        $("#overlayDivNew").css("display", "none");
+                                    }else if(result.error) {
+                                        //Something went wrong, display the error message to the customer
+                                        handleCreateSourceErrors(result.error);
+                                        $('#submitCCPayment').attr('disabled','false');
+                                        $("#overlayDivNew").css("display", "none");
+                                        
+                                    }else {
+                                        //Success!  You can now send the token to your server for use in downstream API calls.
+                                        var source = result.source;
+                                       // debugger;
+                                        sourceId = source.id; 
+                                        callSubmitCreditCardPayment(sourceId,$("#rememberMe").is(':checked'),$("#nickName").val());
+                                        
+                                    }
+                                });
+                            });
+                            function changeSubmitBtn(isCardnumberComplete,isCardExpiration,isCardCvv){
+                                if(isCardnumberComplete && isCardExpiration && isCardCvv){
+                                    $('#submitCCPayment').prop("disabled", false);
+                                }else{
+                                    $('#submitCCPayment').prop("disabled", true);
+                                }
+                            }
+                            function handleErrors(error) {                                
+                                var errorMessage = document.getElementById('message');
+                                errorMessage.innerHTML = error.message;
+                            }
+                            function handleCreateSourceErrors(sourceError) {
+                                if(typeof  sourceError.errors[0].message != 'undefined' &&  sourceError.errors[0].message != null &&  sourceError.errors[0].message != '' ){
+                                    showMessageToastCC('fail', sourceError.errors[0].message);
+                                }else if(typeof sourceError.type  != 'undefined' &&  sourceError.type != null && sourceError.type != '' ){
+                                    if(typeof  CCRZ.pagevars.pageLabels.DR_error_message_for_payments != 'undefined'){
+                                        showMessageToastCC('fail', CCRZ.pagevars.pageLabels.DR_error_message_for_payments);
+                                    }else{
+                                        showMessageToastCC('fail', 'DR_error_message_for_payments');
+                                    }
+                                }else{
+                                    if(typeof  CCRZ.pagevars.pageLabels.DR_error_message_for_payments != 'undefined'){
+                                        showMessageToastCC('fail', CCRZ.pagevars.pageLabels.DR_error_message_for_payments);
+                                    }else{
+                                        showMessageToastCC('fail', 'DR_error_message_for_payments');
+                                    }
+                                }
+                            }
+                            function callSubmitCreditCardPayment(sourceId,saveCardToWallet,savedCardOptionName) {
+                                var cartId = CCRZ.cartCheckoutModel.attributes.sfid;
+                                intilizeCCPaymentRemoting();
+                                CCRZ.subsc.processCCPayments.submitCreditCardPayment(cartId, sourceId,saveCardToWallet,savedCardOptionName,false,'cc');
+                            }
+                            function intilizeCCPaymentRemoting(){
+                                CCRZ.subsc = _.extend(CCRZ.subsc||{});
+                                CCRZ.subsc.processCCPayments= _.extend(CCRZ.RemoteInvocation,{
+                                    className : 'digitalriverb2b.DRB2B_PaymentController',
+                                    submitCreditCardPayment: function(cartId, sourceId,saveCardToWallet,savedCardOptionName,isDefaultPayment,paymentType) {
+                                        var data = {ccCartId : cartId,sourceId : sourceId,saveCardToWallet : saveCardToWallet,savedCardOptionName : savedCardOptionName,isDefaultPayment : isDefaultPayment,paymentType : paymentType };
+                                        this.invokeCtx('submitPayments',JSON.stringify(data),                                   
+                                            function(result, event) {
+                                                //debugger;
+                                                    isSubmitClicked =true;
+                                                    $("#submitCCPayment").removeClass("validated");
+                                                    $("#submitCCPayment").addClass("clientValidation");
+                                                    $('#submitCCPayment').removeAttr("type").attr("type", "button");
+                                                    if(event.status){
+                                                    $('#submitCCPayment').attr('disabled','false');
+                                                    //$("#overlayDivNew").css("display", "none");
+                                                    if(result.error || !result.data) {
+                                                        if(typeof  CCRZ.pagevars.pageLabels.DR_SERVER_PAYMENT_FAILED != 'undefined'){
+                                                            showMessageToastCC('fail', CCRZ.pagevars.pageLabels.DR_SERVER_PAYMENT_FAILED);
+                                                        }else{
+                                                            showMessageToastCC('fail', 'DR_SERVER_PAYMENT_FAILED');
+                                                        }
+                                                    }else if(!result.success || typeof  result.data.ERROR != 'undefined' && result.data.ERROR.length > 0) {
+                                                        if(typeof  CCRZ.pagevars.pageLabels.Error_while_submitting_payments != 'undefined'){
+                                                            showMessageToastCC('fail', CCRZ.pagevars.pageLabels.Error_while_submitting_payments);
+                                                        }else{
+                                                            showMessageToastCC('fail', 'Error_while_submitting_payments');
+                                                        }
+                                                    }else {
+                                                        setTimeout(function(){ CCRZ.pubSub.trigger('action:processPayment', result.data['txObject']); }, 3000);
+                                                    }
+                                                }else{
+                                                    if(event.type == 'exception'){
+                                                        if(typeof  CCRZ.pagevars.pageLabels.Error_while_submitting_payments != 'undefined'){
+                                                            showMessageToastCC('fail', event.message);
+                                                        }else{
+                                                            showMessageToastCC('fail',  CCRZ.pagevars.pageLabels.Error_while_submitting_payments);
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                buffer:false, //this call will be executed by itself
+                                                nmsp : false,//defines that this is a call to a subscriber class
+                                                timeout: 120000
+                                            }
+                                        );//end invokeCtx call
+                                    }
+                                });
+                            }
+                            $("#overlayDivNew").css("display", "none");
+                        }
+                 
+                    </script>
+                    <!--- Populate User Information-->
+                    <script>
+                        var isSubmitFormValidated =false;
+                        function populateUserInformation() {
+                            $("#firstName").val(CCRZ.cartCheckoutModel.attributes.billingAddress.firstName);
+                            $("#lastName").val(CCRZ.cartCheckoutModel.attributes.billingAddress.lastName);
+                            //$("#email").val(CCRZ.currentUser.Email);
+                            $("#email").val(CCRZ.cartCheckoutModel.attributes.buyerEmail);
+                            $("#city").val(CCRZ.cartCheckoutModel.attributes.billingAddress.city);
+                            $("#state").val(CCRZ.cartCheckoutModel.attributes.billingAddress.stateCode);
+                            $("#zip").val(CCRZ.cartCheckoutModel.attributes.billingAddress.postalCode);
+                            $("#country").val(CCRZ.cartCheckoutModel.attributes.billingAddress.countryCode == undefined ? CCRZ.cartCheckoutModel.attributes.billingAddress.addressList[0].countryCode : CCRZ.cartCheckoutModel.attributes.billingAddress.countryCode);
+                            $("#address").val(CCRZ.cartCheckoutModel.attributes.billingAddress.address1);
+                            $("#address2").val(CCRZ.cartCheckoutModel.attributes.billingAddress.address2);
+                        }
+                        function submitFormValidationCC(){
+                            $("#messageDivCC").hide();
+                            if(isSubscriptionProductPresent) {
+                                if(!$("#rememberMe").is(':checked')) {
+                                   // alert("You have subscription product in your cart.So It is required to select the Save Payement option for future payments.");
+                                   if(typeof  CCRZ.pagevars.pageLabels.DR_SELECT_SAVE_PAYMENT_OPTION != 'undefined'){
+                                        showMessageToastCC('fail', CCRZ.pagevars.pageLabels.DR_SELECT_SAVE_PAYMENT_OPTION);
+                                    }else{
+                                        showMessageToastCC('fail', 'DR_SELECT_SAVE_PAYMENT_OPTION');
+                                    }
+                                    //return ;
+                                }else if($("#rememberMe").is(':checked') && (typeof $("#nickName").val() == 'undefined' ||  $("#nickName").val() == '')){
+                                    //alert("Card Name Required for Saved Payment.");
+                                    if(typeof  CCRZ.pagevars.pageLabels.DR_CARD_NAME_REQUIRED != 'undefined'){
+                                        showMessageToastCC('fail', CCRZ.pagevars.pageLabels.DR_CARD_NAME_REQUIRED);
+                                    }else{
+                                        showMessageToastCC('fail', 'DR_CARD_NAME_REQUIRED');
+                                    }
+
+                                }else {
+                                    $('#submitCCPayment').removeAttr("onclick");
+                                    $('#submitCCPayment').removeAttr("type").attr("type", "submit");
+                                    $("#submitCCPayment").addClass("validated");
+                                    $("#submitCCPayment").removeClass("clientValidation");
+                                    $( "#submitCCPayment" ).trigger("click");
+                                }
+                            }else if($("#rememberMe").is(':checked') && (typeof $("#nickName").val() == 'undefined' ||  $("#nickName").val() == '')){
+                                //alert("Card Name Required for Saved Payment.");
+                                if(typeof  CCRZ.pagevars.pageLabels.DR_CARD_NAME_REQUIRED != 'undefined'){
+                                    showMessageToastCC('fail', CCRZ.pagevars.pageLabels.DR_CARD_NAME_REQUIRED);
+                                }else{
+                                    showMessageToastCC('fail', 'DR_CARD_NAME_REQUIRED');
+                                }
+                            }else{
+                                $('#submitCCPayment').removeAttr("onclick");
+                                $("#submitCCPayment").addClass("validated");
+                                $('#submitCCPayment').removeAttr("type").attr("type", "submit");
+                                $("#submitCCPayment").removeClass("clientValidation");
+                                $( "#submitCCPayment" ).trigger( "click" );
+                            }
+                        }
+                        function showMessageToastCC(errorType,errorMsg){
+                            if($("#messageDivCC").length < 1){
+                                $( "#payment-form" ).prepend( '<div id="messageDivCC" class="alert alert-danger" style="margin-top:11px;display:none;"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><span id="messageTextCC"></span></div>');
+                            }
+                            if(errorType == 'success'){
+                                $("#messageDivCC").removeClass('alert-danger').addClass('alert-success');
+                                $("#messageTextCC").removeClass('alert-danger').addClass('alert-success');
+                                $("#messageTextCC").text(errorMsg);
+                                $("#messageDivCC").show();
+                            }else{
+                               // $("#successMsgDiv").removeClass('alert-success').addClass('alert-danger');
+                               // $("#messageTextCC").removeClass('alert-success').addClass('alert-danger');
+                                $("#overlayDivNew").css("display", "none");
+                                $("#messageTextCC").html(errorMsg);
+                                $('#submitCCPayment').removeAttr('disabled');
+                                $("#messageDivCC").show();
+                            }
+                        }
+                        function openTaxExemptModal(){  
+                           // debugger; 
+                            populatePageLabels();   
+                            $("#taxModal").show();  
+                            $(".loader").show();    
+                            $('#CertificateTable').hide();  
+                            $('.taxCertificateFormValid').hide();   
+                            $('#MyTaxCertificateUploadForm').hide();    
+                            $('.manageTaxExemption').hide();    
+                            var reqcheckCertificateStatus = { 'userId': '{!$User.Id}' };    
+                            var ajaxData = JSON.stringify(reqcheckCertificateStatus);   
+                            intilizeTaxRemoting();  
+                            CCRZ.subsc = _.extend(CCRZ.subsc || {});    
+                           // debugger; 
+                            CCRZ.subsc.MyRemote.checkCertificateStatus(ajaxData);   
+                        }
+                    </script>
+                    <script>
+                        var rememberMe=false;
+                        var nickName ="";
+                        function saveforfuture(){
+                            if($("#rememberMe").is(':checked')){
+                                rememberMe=true;
+                                nickName  = $("#nickName").val();
+                                $("#showhideemail").show();
+                            }else{
+                                rememberMe=false;
+                                $("#nickName").val("");
+                                $("#showhideemail").hide();
+                            }
+                        }
+                    </script>
+                <script>
+                    $(document).on("click", "a.close" , function() {
+                       // debugger;
+                        $( "#payment-form" ).prepend( '<div id="messageDivCC" class="alert alert-danger" style="margin-top:11px;display:none;"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><span id="messageTextCC"></span></div>');
+                    });
+                    $(document).on("click", "button.clientValidation" , function() {
+                      //  debugger;
+                        if(!$("#submitCCPayment").hasClass("validated"))
+                            submitFormValidationCC();
+                    });
+                    $(document).on("click", "a.cc_nav-tabs_anchor" , function() {
+                        if($(this).attr("href").trim() !== "#cc") 
+                            $("#messageDivCC").hide();
+                    });
+            </script>
+        </body>
+    </html>
+</apex:page>

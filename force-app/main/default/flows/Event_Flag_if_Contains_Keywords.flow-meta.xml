@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Searches Event text in Subject and Description fields to see if it contains Mosaic or Rhythm.  If it does update the IsMosaic and IsRhythm checkboxes on the task record.</description>
+        <name>Does_Event_Contain_Mosaic_or_Rhythm</name>
+        <label>Does Event Contain Mosaic</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Does_Event_Contain_Rhythm</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>ContainsMosaic</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Subject</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Mosaic</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Description</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Mosaic</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_IsMosaic</targetReference>
+            </connector>
+            <label>ContainsMosaic</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Does_Event_Contain_Rhythm</name>
+        <label>Does Event Contain Rhythm</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Contains_Rhythm</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Subject</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Rhythm</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Description</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Rhythm</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_IsRhythm</targetReference>
+            </connector>
+            <label>Contains Rhythm</label>
+        </rules>
+    </decisions>
+    <description>Searches Event text in Subject and Description fields to see if it contains Mosaic or Rhythm.  If it does update the IsMosaicand IsRhythm checkboxes on the Event record.</description>
+    <environments>Default</environments>
+    <interviewLabel>Event Flag if Contains Mosaic or Rhythm {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Event Flag if Contains Mosaic or Rhythm</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_IsMosaic</name>
+        <label>Update IsMosaic</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Does_Event_Contain_Rhythm</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>IsMosaic__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_IsRhythm</name>
+        <label>Update IsRhythm</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>IsRhythm__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Does_Event_Contain_Mosaic_or_Rhythm</targetReference>
+        </connector>
+        <object>Event</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

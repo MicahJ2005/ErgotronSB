@@ -1,0 +1,4 @@
+<apex:component controller="cls_CmpApprovalURL" access="global">  
+  <apex:attribute name="objID" description="Obj ID" type="Id" assignTo="{!recID}"/>  
+  <a href="{!urlStr}">Click Here to Approve or Reject</a>  
+</apex:component>

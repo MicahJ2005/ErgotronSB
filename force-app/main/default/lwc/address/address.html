@@ -1,0 +1,48 @@
+<!--
+  @File Name          : address.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 1/31/2020, 10:41:24 AM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    12/17/2019   James Loghry (Demand Chain)     Initial Version
+-->
+<template>
+    <template if:true={hideProvinceOptions}>
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <lightning-input label={streetLabel} variant="label-stacked" value={addrCopy.street} required={required} onchange={handleUpdateStreet}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                <lightning-input label={cityLabel} variant="label-stacked" value={addrCopy.city} required={required} onchange={handleUpdateCity}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                <lightning-input label={provinceLabel} variant="label-stacked" value={addrCopy.provinceLabel} onchange={handleUpdateProvince}></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                <lightning-combobox options={countryOptions} label={countryLabel} variant="label-stacked" value={addrCopy.country} required={required} onchange={handleUpdateCountry}></lightning-combobox>
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+    <template if:false={hideProvinceOptions}>
+        <lightning-input-address
+            address-label={addressLabel}
+            street-label={streetLabel}
+            city-label={cityLabel}
+            country-label={countryLabel}
+            province-label={provinceLabel}
+            postal-code-label={postalCodeLabel}
+            country-options={countryOptions}
+            province-options={provinceOptions}
+            street={addrCopy.street}
+            city={addrCopy.city}
+            country={addrCopy.country}
+            province={addrCopy.province}
+            postal-code={addrCopy.postalCode}
+            variant="standard"
+            required={required}
+            onchange={handleChange}></lightning-input-address>
+    </template>
+</template>

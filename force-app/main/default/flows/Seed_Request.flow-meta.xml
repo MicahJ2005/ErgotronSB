@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <choices>
+        <name>AC</name>
+        <choiceText>AC</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>AC</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>DC</name>
+        <choiceText>DC</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>DC</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Needed_during_demo</name>
+        <choiceText>Needed during demo</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Needed during demo</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Non_Powered</name>
+        <choiceText>Non-Powered</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Non-Powered</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Not_Yet</name>
+        <choiceText>Not Yet</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Not Yet</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Virtual</name>
+        <choiceText>Virtual</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Virtual</stringValue>
+        </value>
+    </choices>
+    <decisions>
+        <description>Evaluates whether the Mosaic cart demo was done and determines next step.</description>
+        <name>Mosaic_Demo_Done</name>
+        <label>Mosaic Demo Done</label>
+        <locationX>182</locationX>
+        <locationY>350</locationY>
+        <defaultConnector>
+            <targetReference>Quick_Seed_Request</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_Yet_Demo</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rdBttnMosaic_Cart_Demo_Conducted</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>Not_Yet</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Reach_out_to_your_Sales_Director</targetReference>
+            </connector>
+            <label>Not Yet</label>
+        </rules>
+    </decisions>
+    <description>A screen flow that creates an Internal Order type case and Seed Orders sub-type. It includes an option to request a Mosaic Cart.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Set the Subject for the request based on the status of the Mosaic Cart toggle  in the screen</description>
+        <name>frmlSubject</name>
+        <dataType>String</dataType>
+        <expression>IF({!tglMosaicCartRequest.value}, &quot;Mosaic Cart Seed Request for &quot; &amp; {!Opportunity.Name} , &quot;Seed Request for &quot; &amp; {!Opportunity.Name})</expression>
+    </formulas>
+    <formulas>
+        <description>Determines whether to includes the MosaicCartDetails template based on the Mosaic cart toggle in the screen</description>
+        <name>vFrmlMosaicCartDetails</name>
+        <dataType>String</dataType>
+        <expression>IF({!tglMosaicCartRequest.value}, {!txtTmpltMosaicCartDetails}, null)</expression>
+    </formulas>
+    <interviewLabel>Seed Request {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Seed Request</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordCreates>
+        <description>Create the seed request case</description>
+        <name>Seed_request_case</name>
+        <label>Seed request case</label>
+        <locationX>314</locationX>
+        <locationY>674</locationY>
+        <inputAssignments>
+            <field>AccountId</field>
+            <value>
+                <elementReference>Opportunity.AccountId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Additional_Information__c</field>
+            <value>
+                <elementReference>vCase.Additional_Information__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Mod_Cart_Request_Details__c</field>
+            <value>
+                <elementReference>vFrmlMosaicCartDetails</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Part_Num_Qty__c</field>
+            <value>
+                <elementReference>vCase.Part_Num_Qty__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RecordTypeId</field>
+            <value>
+                <elementReference>Internal_Order_Case_Record_Type.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Requester__c</field>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Reseller_Details__c</field>
+            <value>
+                <elementReference>scrLngTxtReseller_Details</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>SDO__c</field>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Ship_To_Details__c</field>
+            <value>
+                <elementReference>scrLngTxtShip_To_Details</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>New</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Sub_Type__c</field>
+            <value>
+                <stringValue>Seed Orders</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>frmlSubject</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Case</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <description>Get the id of the internal order case record type to be used in the creation of the case.</description>
+        <name>Internal_Order_Case_Record_Type</name>
+        <label>Internal Order Case Record Type</label>
+        <locationX>314</locationX>
+        <locationY>566</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Seed_request_case</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Internal Order</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>SobjectType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Case</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RecordType</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get the opportunity that launched this flow</description>
+        <name>Opportunity</name>
+        <label>Opportunity</label>
+        <locationX>182</locationX>
+        <locationY>134</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>scrMosaicCartRequest</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Opportunity</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <screens>
+        <name>Quick_Seed_Request</name>
+        <label>Quick Seed Request</label>
+        <locationX>314</locationX>
+        <locationY>458</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <connector>
+            <targetReference>Internal_Order_Case_Record_Type</targetReference>
+        </connector>
+        <fields>
+            <name>txtSubject</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <stringValue>Seed request for {!Opportunity.Name}</stringValue>
+            </defaultValue>
+            <fieldText>Subject</fieldText>
+            <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+            <objectFieldReference>vCase.Part_Num_Qty__c</objectFieldReference>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>Description_of_the_mosaic_cart_configuration</name>
+            <fieldText>Description of the Mosaic cart configuration</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>tglMosaicCartRequest.value</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>scrLngTxtShip_To_Details</name>
+            <fieldText>Ship-To Details (Account name, address, contact name and email)</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <helpText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;Enter the ship to account name and details, and contact name and details including email address.&lt;/span&gt;&lt;/p&gt;</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>scrLngTxtReseller_Details</name>
+            <fieldText>Reseller Details (Company name, contact name and email address)</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <helpText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;Enter the reseller contact and address associated to this seed request.&lt;/span&gt;&lt;/p&gt;</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <fieldType>ObjectProvided</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+            <objectFieldReference>vCase.Additional_Information__c</objectFieldReference>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>sctnMosaic_Cart_Details</name>
+            <fieldText>Mosaic Cart Details</fieldText>
+            <fieldType>RegionContainer</fieldType>
+            <fields>
+                <name>sctnMosaic_Cart_Details_Column1</name>
+                <fieldType>Region</fieldType>
+                <fields>
+                    <name>PC_and_monitor_make_model_that_will_be_powered</name>
+                    <fieldText>PC and monitor make/model that will be powered (please indicate LCD or Laptop)</fieldText>
+                    <fieldType>LargeTextArea</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <styleProperties>
+                        <verticalAlignment>
+                            <stringValue>top</stringValue>
+                        </verticalAlignment>
+                        <width>
+                            <stringValue>12</stringValue>
+                        </width>
+                    </styleProperties>
+                </fields>
+                <fields>
+                    <name>Bar_code_scanners_make_model_that_will_be_powered</name>
+                    <fieldText>Bar code scanners make/model that will be powered</fieldText>
+                    <fieldType>LargeTextArea</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <styleProperties>
+                        <verticalAlignment>
+                            <stringValue>top</stringValue>
+                        </verticalAlignment>
+                        <width>
+                            <stringValue>12</stringValue>
+                        </width>
+                    </styleProperties>
+                </fields>
+                <fields>
+                    <name>Printers_make_model</name>
+                    <fieldText>Printers make/model</fieldText>
+                    <fieldType>LargeTextArea</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <styleProperties>
+                        <verticalAlignment>
+                            <stringValue>top</stringValue>
+                        </verticalAlignment>
+                        <width>
+                            <stringValue>12</stringValue>
+                        </width>
+                    </styleProperties>
+                </fields>
+                <fields>
+                    <name>Other_scanners_make_model</name>
+                    <fieldText>Other scanners make/model</fieldText>
+                    <fieldType>LargeTextArea</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <styleProperties>
+                        <verticalAlignment>
+                            <stringValue>top</stringValue>
+                        </verticalAlignment>
+                        <width>
+                            <stringValue>12</stringValue>
+                        </width>
+                    </styleProperties>
+                </fields>
+                <fields>
+                    <name>radioPower_Option</name>
+                    <choiceReferences>DC</choiceReferences>
+                    <choiceReferences>AC</choiceReferences>
+                    <choiceReferences>Non_Powered</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Power Option</fieldText>
+                    <fieldType>RadioButtons</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <styleProperties>
+                        <verticalAlignment>
+                            <stringValue>top</stringValue>
+                        </verticalAlignment>
+                        <width>
+                            <stringValue>12</stringValue>
+                        </width>
+                    </styleProperties>
+                </fields>
+                <fields>
+                    <name>Drawers_configuration</name>
+                    <fieldText>Drawers configuration</fieldText>
+                    <fieldType>LargeTextArea</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <styleProperties>
+                        <verticalAlignment>
+                            <stringValue>top</stringValue>
+                        </verticalAlignment>
+                        <width>
+                            <stringValue>12</stringValue>
+                        </width>
+                    </styleProperties>
+                </fields>
+                <fields>
+                    <name>pckLstRhythmConnect</name>
+                    <choiceReferences>Needed_during_demo</choiceReferences>
+                    <dataType>String</dataType>
+                    <defaultSelectedChoiceReference>Needed_during_demo</defaultSelectedChoiceReference>
+                    <fieldText>RhythmConnect</fieldText>
+                    <fieldType>RadioButtons</fieldType>
+                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                    <isRequired>true</isRequired>
+                    <styleProperties>
+                        <verticalAlignment>
+                            <stringValue>top</stringValue>
+                        </verticalAlignment>
+                        <width>
+                            <stringValue>12</stringValue>
+                        </width>
+                    </styleProperties>
+                </fields>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>12</stringValue>
+                    </value>
+                </inputParameters>
+                <isRequired>false</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+            <regionContainerType>SectionWithHeader</regionContainerType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>tglMosaicCartRequest.value</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <nextOrFinishButtonLabel>Submit Request</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <description>Displays a message if the demo has not been done.</description>
+        <name>Reach_out_to_your_Sales_Director</name>
+        <label>Reach out to your Sales Director</label>
+        <locationX>50</locationX>
+        <locationY>458</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>ContactSalesDirector</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 24px;&quot;&gt;📌&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Reach out to your sales director if you have not conducted a Mosaic cart demo with this customer.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>scrMosaicCartRequest</name>
+        <label>Mosaic Cart Request</label>
+        <locationX>182</locationX>
+        <locationY>242</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Mosaic_Demo_Done</targetReference>
+        </connector>
+        <fields>
+            <name>tglMosaicCartRequest</name>
+            <extensionName>flowruntime:toggle</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>label</name>
+                <value>
+                    <stringValue>Mosaic Cart Seed Request</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>messageToggleActive</name>
+                <value>
+                    <stringValue>Yes. I am requesting a Mosaic cart</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>messageToggleInactive</name>
+                <value>
+                    <stringValue>No. I am not requesting a Mosaic cart</stringValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>rdBttnMosaic_Cart_Demo_Conducted</name>
+            <choiceReferences>Not_Yet</choiceReferences>
+            <choiceReferences>Virtual</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Mosaic Cart Demo Conducted</fieldText>
+            <fieldType>RadioButtons</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>tglMosaicCartRequest.value</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Opportunity</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Template with the Mosaic cart details captured in the screen</description>
+        <name>txtTmpltMosaicCartDetails</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>:::: Description of the Mosaic Cart Configuration ::::
+{!Description_of_the_mosaic_cart_configuration}
+
+:::: PC Make/Model that will be powered ::::
+{!PC_and_monitor_make_model_that_will_be_powered}
+
+:::: Bar code scanners make/model that will be powered ::::
+{!Bar_code_scanners_make_model_that_will_be_powered}
+
+:::: Printers Make/Model ::::
+{!Printers_make_model}
+
+:::: Other Scanners Make/Model ::::
+{!Other_scanners_make_model}
+
+:::: Power Option ::::
+{!radioPower_Option}
+
+:::: Drawers Configuration ::::
+{!Drawers_configuration}
+
+:::: RhythmConnect ::::
+{!pckLstRhythmConnect}</text>
+    </textTemplates>
+    <variables>
+        <description>Id of the opportunity that launched this flow</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>The Internal Order - seed request case to be created.</description>
+        <name>vCase</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Case</objectType>
+    </variables>
+</Flow>

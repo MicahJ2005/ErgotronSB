@@ -1,0 +1,21 @@
+<!--
+  @File Name          : pathStep.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 12/10/2019, 11:55:45 AM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    12/10/2019   James Loghry (Demand Chain)     Initial Version
+-->
+<template>
+    <li class={css} role="presentation">
+        <a aria-selected="false" class="slds-path__link" role="option">
+            <span class="slds-path__stage">
+                <lightning-icon icon-name="utility:check" size="x-small"></lightning-icon>
+             </span>
+            <span class="slds-path__title">{step.label} {step.status}</span>
+        </a>
+    </li>
+</template>

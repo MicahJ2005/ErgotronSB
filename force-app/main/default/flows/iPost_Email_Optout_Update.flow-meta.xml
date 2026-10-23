@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Send email to salesforce@ergotron.com notifying of the failure.</description>
+        <name>Email_Notification</name>
+        <label>Email Notification</label>
+        <locationX>440</locationX>
+        <locationY>755</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>salesforce@ergotron.com, esau.sanchez@ergotron.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>iPost Email Optout Flow - Fault Notification - {!$Record.Email}}</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>emailNotificationBody</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>useLineBreaks</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>59.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Updates any other contacts or leads with the same email address as the triggering contact. The update to the triggering contact comes from iPost optout file via Informatica.</description>
+    <environments>Default</environments>
+    <interviewLabel>iPost Email Optout Update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>iPost Email Optout Update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get the ID of the standard lead record type to be used in the Optout leads element. Only optout standard leads.</description>
+        <name>Record_type_Id_for_standard_lead</name>
+        <label>Record type Id for standard lead</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Optout_all_other_contacts</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>SobjectType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Lead</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Ergotron Standard Lead</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RecordType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Optout of email any other contacts with the same email address as the triggering record.</description>
+        <name>Optout_all_other_contacts</name>
+        <label>Optout all other contacts</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <connector>
+            <targetReference>Optout_Leads</targetReference>
+        </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Email_Notification</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Email</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Email_Optout_Update__c</field>
+            <value>
+                <stringValue>iPost - {!$Flow.CurrentDate}</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>HasOptedOutOfEmail</field>
+            <value>
+                <elementReference>$Record.HasOptedOutOfEmail</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Contact</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Optout of email all leads with the same email address as the triggering contact.</description>
+        <name>Optout_Leads</name>
+        <label>Optout Leads</label>
+        <locationX>176</locationX>
+        <locationY>647</locationY>
+        <faultConnector>
+            <targetReference>Email_Notification</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Email</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Record_type_Id_for_standard_lead.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Email_Optout_Update__c</field>
+            <value>
+                <stringValue>iPost - {!$Flow.CurrentDate}</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>HasOptedOutOfEmail</field>
+            <value>
+                <elementReference>$Record.HasOptedOutOfEmail</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Lead</object>
+    </recordUpdates>
+    <recordUpdates>
+        <description>The triggering record came in with &quot;Update&quot; in the Forde_Email_Optout_Update field. This element changes the value to &quot;Done&quot; to leave the record ready for a future update from iPost.</description>
+        <name>Update_Triggering_Contact</name>
+        <label>Update Triggering Contact</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <connector>
+            <targetReference>Record_type_Id_for_standard_lead</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Email_Optout_Update__c</field>
+            <value>
+                <stringValue>iPost - {!$Flow.CurrentDate}</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Triggering_Contact</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Email_Optout_Update__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>iPostUpdate</stringValue>
+            </value>
+        </filters>
+        <object>Contact</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Contains the body of the fault email notification.</description>
+        <name>emailNotificationBody</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;{!$Flow.CurrentDateTime}&lt;/p&gt;&lt;p&gt;{!$Flow.FaultMessage}&lt;/p&gt;&lt;p&gt;{!$Flow.CurrentRecord}&lt;/p&gt;&lt;p&gt;{!$Record.FirstName} {!$Record.LastName}  -  {!$Record.Email}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</text>
+    </textTemplates>
+</Flow>

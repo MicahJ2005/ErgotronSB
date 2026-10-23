@@ -1,0 +1,4 @@
+<apex:page >
+  <icrt:AeSalesGuides objectType="Account" objectId="" guideName="C360SaaS-SF-guide-search"/>
+  
+</apex:page>

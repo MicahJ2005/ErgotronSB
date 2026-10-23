@@ -1,0 +1,19 @@
+<!-- Displays campaign hierarchy - This page is specific to child campaigns of record type "Ergotron VIR/MDF Campaign" and is used as a related list on native page layouts.  The
+native campaign hierarchy related list is not used due to the limitation (as of Winter '15) of not being able to customize the fields displayed on the campaign hiearchy related list-->
+
+<apex:page standardController="Campaign" extensions="Campaign_Bucket_Hierarchy_Controller" rendered="{!bRendered}">
+	<apex:pageBlock >
+        <apex:pageBlockTable value="{!listBucketCampaigns}" var="bucketcamp">
+            <apex:column value="{!bucketcamp.Partner__r.Name}" />
+            <apex:column headerValue="Managed Partner Quarterly Checkbook">
+            	<apex:outputLink value="/{!bucketcamp.Id}" target="_top">{!bucketcamp.Name}</apex:outputLink>
+            </apex:column> 
+            <apex:column value="{!bucketcamp.StartDate}"/>
+            <apex:column value="{!bucketcamp.EndDate}"/>
+            <apex:column value="{!bucketcamp.Rollover_from_Previous__c}"/>
+            <apex:column value="{!bucketcamp.Budget_Accrual__c}"/>
+            <apex:column value="{!bucketcamp.Actual_Spend__c}"/>
+            <apex:column value="{!bucketcamp.Rollover_to_Next__c}"/>
+        </apex:pageBlockTable> 
+    </apex:pageBlock> 
+</apex:page>

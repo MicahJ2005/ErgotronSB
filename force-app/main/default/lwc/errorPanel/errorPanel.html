@@ -1,0 +1,26 @@
+<!--
+  @File Name          : errorPanel.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 12/17/2019, 1:12:19 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    12/10/2019   James Loghry (Demand Chain)     Initial Version
+-->
+<template>
+    <template if:true={errors}>
+        <template if:true={errors.length}>
+            <div class="slds-p-around_medium errorContainer">
+                <lightning-icon icon-name="utility:error"></lightning-icon>
+                <div class="slds-p-around_x-small">
+                    <p class="error-heading">{friendlyMessage}</p>
+                    <template for:each={errors} for:item="message">
+                        <p key={message} class="error-message">{message}</p>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </template>
+</template>

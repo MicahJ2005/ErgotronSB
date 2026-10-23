@@ -1,0 +1,95 @@
+<apex:page showHeader="true" sidebar="true" standardController="ServiceContract" extensions="Add_Service_Contract_Product_Cntrl">
+    <apex:includeScript value="{!$Resource.jQuery211}" />
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+
+        function disableButtons()
+        {    
+            j$("#divLoading").show();
+            j$("input[type='button']").prop({disabled: true});
+            j$("input[type='submit']").prop({disabled: true});
+        }
+
+        function enableButtons()
+        {
+            j$("#divLoading").hide();
+            j$("input[type='button']").prop({disabled: false});
+            j$("input[type='submit']").prop({disabled: false});           
+        }
+    </script>
+
+    <apex:form id="formMain">
+        <apex:pageblock id="mainBlock"> 
+            <apex:pageMessages id="pageMessages" />
+            <apex:actionStatus id="statusSearch" onstart="disableButtons()" onstop="enableButtons()" />
+            <apex:outputText value="{!$Label.Service_Contract_Installed_Product_Message}" style="font-size: 14px; font-weight: bold;">
+                <apex:param value="{!sSearchType}"/>
+                <apex:param value="{!ServiceContract.Name}"/>
+                <apex:param value="{!ServiceContract.Account.Name}"/>
+            </apex:outputText><br/><br/>
+            <apex:outputLabel for="searchNumber" value="Enter {!sSearchTypeCap} Number" />&nbsp;&nbsp;
+            <apex:inputText value="{!sSearchNumber}" id="searchNumber" />&nbsp;&nbsp;
+            <apex:commandButton value="Search For Products" action="{!installedProductSearch}" id="btnSearch" status="statusSearch" reRender="formMain"/>&nbsp;&nbsp;
+            <apex:commandButton value="Return To Service Contract" action="{!returnToServiceContract}" /><br/><br/>
+            <div id="divLoading" align="center" style="display: none;">
+                <div style="color:red; font-style:italic"><img  src="{!$Resource.loadingimg}" />&nbsp;&nbsp;Searching for installed products...</div>
+            </div>
+            <apex:outputText value="{!ServiceContract.Service_SKU__c}" rendered="false"/> 
+        </apex:pageBlock>
+        
+        <apex:pageBlock id="resultsBlock" rendered="{!bRenderList}">
+            <apex:outputText value="{!$Label.Service_Contract_Product_Search_Result}" style="font-size: 14px; font-weight: bold;" >
+                <apex:param value="{!sSearchSize}"/>
+                <apex:param value="{!sSearchType}"/>
+                <apex:param value="{!sSearchNumber}"/>
+                <apex:param value="{!ServiceContract.Name}"/>
+                <apex:param value="{!ServiceContract.Account.Name}"/>
+            </apex:outputText><br/><br/>
+
+            <apex:actionStatus id="statusProcessing" >
+                <apex:facet name="stop">        
+                    <apex:outputPanel >
+                        <apex:commandButton id="buttonAddToContract" action="{!addToContract}" value="Add To Service Contract" status="statusProcessing" rerender="formMain"/>&nbsp;&nbsp;
+                        <apex:commandButton id="buttonSelectAll" action="{!selectAll}" value="Select All" status="statusProcessing" rerender="formMain"/>&nbsp;&nbsp;
+                        <apex:commandButton id="buttonUnselectAll" action="{!unselectAll}" value="Unselect All" status="statusProcessing" rerender="formMain"/>
+                    </apex:outputPanel>
+                </apex:facet>
+                
+                <apex:facet name="start">
+                    <apex:outputPanel >
+                        <apex:image id="imageProcessing" value="{!$Resource.loadingimg}" />
+                        <apex:commandButton id="buttonSaveDisabled" value="{!$Label.Processing}" status="statusProcessing" disabled="true"/>&nbsp;&nbsp;
+                        <apex:commandButton id="buttonSelectAllDisabled" value="{!$Label.Processing}" status="statusProcessing" disabled="true"/>&nbsp;&nbsp;
+                        <apex:commandButton id="buttonUnselectAllDisabled" value="{!$Label.Processing}" status="statusProcessing" disabled="true"/>
+                    </apex:outputPanel>
+                </apex:facet>
+
+            </apex:actionStatus><br/><br/>
+
+            <apex:pageBlockTable value="{!listInstalledProducts}" var="product" id="listProducts" >
+                <apex:column headerValue="Select">
+                    <apex:inputCheckbox value="{!product.bSelected}" />
+                </apex:column>
+                <apex:column headervalue="Serial Number">
+                    <apex:outputText value="{!product.sSerial}" />
+                </apex:column>  
+                <apex:column headervalue="Part Number">
+                    <apex:outputText value="{!product.sPartNumber}" />
+                </apex:column>
+                <apex:column headervalue="Part Name">
+                    <apex:outputText value="{!product.sPartName}" />
+                </apex:column>
+                <apex:column headervalue="Shipped Date">
+                    <apex:outputText value="{!product.sShippedDate}" />
+                </apex:column>
+                <apex:column headervalue="End User Location">
+                    <apex:outputText value="{!SUBSTITUTE(JSENCODE(product.sEndUserLocation),'\n','<br/>')}" escape="false" />
+                </apex:column>
+                <apex:column headervalue="Oracle Item Status">
+                    <apex:outputText value="{!product.sStatus}" />
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

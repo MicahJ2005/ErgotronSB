@@ -1,0 +1,150 @@
+<apex:page standardController="Lead" extensions="SeedUnitOrderDraftController" showHeader="false" sidebar="false" title="Seed Unit Request">
+	<script src="https://code.jquery.com/jquery-2.0.0.min.js" />
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+		j$(document).ready(function () { 
+
+			j$('.copyAddress').change(function(e) {
+		    	if(j$(this).is(':checked')) {
+		        	j$('textarea[id$=shippingStreet]').val(j$('textarea[id$=billingStreet]').val());
+		        	j$('input[id$=shippingCity]').val(j$('input[id$=billingCity]').val());
+		        	j$('select[id$=shippingCountry]').val(j$('select[id$=billingCountry]').val());
+		        	j$('select[id$=shippingState]').val(j$('select[id$=billingState]').val());
+		        	j$('input[id$=shippingPostal]').val(j$('input[id$=billingPostal]').val());
+		    	}
+			});
+
+		});
+
+        function inputDisable() {
+        	j$("input[type='button']").prop({disabled: true});
+            j$("input[type='submit']").prop({disabled: true});
+        }
+
+        function inputEnable() {
+        	j$("input[type='button']").prop({disabled: false});
+            j$("input[type='submit']").prop({disabled: false});
+        }
+
+	    function startSave()
+	    {    
+            j$("#divSave").show();
+            inputDisable();
+	    }
+
+	    function stopSave()
+	    {
+            j$("#divSave").hide();
+            inputEnable();  
+	    }
+
+    </script>
+
+<apex:form id="frmMain">
+<apex:actionStatus id="statusSave" onstart="startSave()" onstop="stopSave()" />
+
+<div class="slds">
+
+	<apex:pageBlock title="Submit a Seed Unit Order Request" rendered="{!NOT(bolShowResults)}">
+
+		<apex:pageBlockButtons location="bottom">
+			<apex:commandButton id="cmdSave" action="{!saveLead}" value="Save and Submit" rerender="messageTop, messageBottom" status="statusSave"/>
+		</apex:pageBlockButtons>
+
+		<div id="divSave" align="center" style="display: none;">
+	       	<div style="color:red; font-style:italic"><img  src="{!$Resource.loadingimg}" />&nbsp;&nbsp;Processing Request...</div>
+	   	</div>
+        
+        <apex:pageBlockSection columns="1" id="messageTop">
+        	<apex:pageMessages />
+        </apex:pageBlockSection>
+
+		<apex:pageBlockSection title="End User Information" columns="2">
+			<apex:repeat value="{!$ObjectType.Lead.FieldSets.Seed_Unit_Request_Customer}" var="f"> 
+		        <apex:pageBlockSectionItem >
+		        	<apex:outputLabel value="{!f.Label}" />
+		        	<apex:inputField value="{!soLead[f]}" required="{!f.required}" />
+		        </apex:pageBlockSectionItem>
+		    </apex:repeat>
+		    
+		</apex:pageBlockSection>
+
+		<apex:pageBlockSection title="End User Address Information" columns="2">
+			<apex:pageBlockSectionItem >
+				<apex:outputText value="Billing Address" style="font-weight: bold" />
+				<apex:outputText value="" />
+			</apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+				<apex:outputText value="Shipping Address (check if same)" style="font-weight: bold" />
+				<apex:inputCheckbox styleClass="copyAddress" value="{!bolSameAddress}" />
+			</apex:pageBlockSectionItem>
+			<apex:inputField id="billingStreet" value="{!soLead.Street}" required="true" />
+			<apex:inputField id="shippingStreet" value="{!soLeadShipping.Street}" />
+			<apex:inputField id="billingCity" value="{!soLead.City}" required="true" />
+			<apex:inputField id="shippingCity" value="{!soLeadShipping.City}" />
+			<apex:inputField id="billingCountry" value="{!soLeadBillingAddress.Ship_To_Country__c}" required="true" />
+			<apex:inputField id="shippingCountry" value="{!soLeadShippingAddress.Ship_To_Country__c}" />
+			<apex:inputField id="billingState" value="{!soLeadBillingAddress.Ship_To_State_Province__c}" required="true" />
+			<apex:inputField id="shippingState" value="{!soLeadShippingAddress.Ship_To_State_Province__c}" />
+			<apex:inputField id="billingPostal" value="{!soLead.PostalCode}" />
+			<apex:inputField id="shippingPostal" value="{!soLeadShipping.PostalCode}" />
+			<apex:outputText value="" />
+			<apex:inputField value="{!soLead.IsLiftGateRequired__c}" />
+		</apex:pageBlockSection>
+
+		<apex:pageBlockSection title="Reseller Information" columns="2">
+			<apex:repeat value="{!$ObjectType.Lead.FieldSets.Seed_Unit_Request_Reseller}" var="f"> 
+		        <apex:pageBlockSectionItem >
+		        	<apex:outputLabel value="{!f.Label}" />
+		        	<apex:inputField value="{!soLead[f]}" required="{!f.required}" />
+		        </apex:pageBlockSectionItem>
+		    </apex:repeat>
+		</apex:pageBlockSection>
+
+		<apex:pageBlockSection title="Product to Seed" columns="1" id="pbsProduct">
+			<apex:pageBlockSectionItem >
+	        	<apex:outputLabel for="ifJustification" value="Opportunity Details" />
+	        	<apex:inputField id="ifJustification" value="{!soLead.Description}" style="width: 500px; height: 50px;" required="true" />
+	        </apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel for="ifVertical" value="Choose your industry" />
+	        	<apex:inputField id="ifVertical" value="{!soLead.Ergotron_Vertical_Market__c}" required="true">
+					<apex:actionSupport event="onchange"
+										action="{!NULL}"
+										rerender="pbsProduct" 
+					/>
+	        	</apex:inputField>
+			</apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+	        	<apex:outputLabel for="ifProduct" value="Product Requested to Seed" />
+	        	<apex:selectList value="{!soLead.WebSeedProductRequested__c}" size="1">
+					<apex:selectOptions value="{!lstProducts}" />
+	        	</apex:selectList>
+	        </apex:pageBlockSectionItem>
+		</apex:pageBlockSection>
+        
+        <apex:pageBlockSection >
+        	<c:reCaptcha />
+        </apex:pageBlockSection>
+
+		<apex:pageBlockSection columns="1" id="messageBottom">
+        	<apex:pageMessages />
+        </apex:pageBlockSection>
+
+	</apex:pageBlock>
+
+	<apex:pageBlock title="Submit a Seed Unit Order Request" rendered="{!bolShowResults}">
+
+		<apex:pageBlockSection title="Confirmation" columns="1">
+			<apex:outputPanel >
+				You have successfully submitted a Seed Unit Order Request. Your request will be reviewed and you will be contacted with additional information within three business days.
+			</apex:outputPanel>
+		</apex:pageBlockSection>
+
+	</apex:pageBlock>
+
+</div>
+
+</apex:form>
+</apex:page>

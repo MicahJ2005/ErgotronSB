@@ -1,0 +1,91 @@
+<apex:component controller="Opportunity_Product_Utility" access="global">
+    <apex:attribute name="opptyId" description="Opportunity Id" required="false" type="String" assignTo="{!sOpportunityId}" />
+    <html>
+        <body>
+            <p>Below is a list of products, corresponding pricing, and item margins related to the special pricing request.⚡</p>
+            <table border="0">
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>MSRP/<br>Max Rebate Allowed</br></th>
+                    <th>Target End User Price</th>
+                    <th>Estimated Reseller Margin %</th>
+                    <th>Target Reseller Price</th>
+                    <th>Estimated Distribution Margin %</th>
+                    <th>Distribution List Price</th>
+                    <th>Target Distribution Price</th>
+                    <th>Target Rebate Amount/<br>Percent</br></th>
+                    <th>Item Margin</th>
+                    <th>Extended Margin</th>
+                    <th>Notes</th>
+                </tr>
+                <apex:repeat var="oppProd" value="{!listProducts}">
+                    <tr>
+                        <td>{!oppProd.ProductName}</td>
+                        <td>
+                        	<apex:outputText value="{0,number,#,###}">
+                        		<apex:param value="{!oppProd.Quantity}"/>
+                        	</apex:outputText>
+						</td>
+                        <td>
+                            <apex:outputText value="{!oppProd.CurrencyIsoCode}" />
+                            <apex:outputText value="{0, number, ###,###,##0.00}">
+                                <apex:param value="{!oppProd.ListPrice}"/>
+                            </apex:outputText>
+                            <br>{!oppProd.MaxRebatePercent}%</br>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!oppProd.CurrencyIsoCode}" />
+                            <apex:outputText value="{0, number, ###,###,##0.00}">
+                                <apex:param value="{!oppProd.TargetEndUserPrice}"/>
+                            </apex:outputText>   
+                        </td>
+                        <td>
+                            <apex:outputText value="{!oppProd.EstimatedResellerMargin}%"/>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!oppProd.CurrencyIsoCode}" />
+                            <apex:outputText value="{0, number, ###,###,##0.00}">
+                                <apex:param value="{!oppProd.TargetResellerPrice}"/>
+                            </apex:outputText>   
+                        </td>
+                        <td>
+                            <apex:outputText value="{!oppProd.EstimatedDistributionMargin}%"/>
+                        </td>
+                        <td>
+                            <apex:outputText value="{!oppProd.CurrencyIsoCode}" />
+                            <apex:outputText value="{0, number, ###,###,##0.00}">
+                                <apex:param value="{!oppProd.DistributionPrice}"/>
+                            </apex:outputText>   
+                        </td> 
+                        <td>
+                            <apex:outputText value="{!oppProd.CurrencyIsoCode}" />
+                            <apex:outputText value="{0, number, ###,###,##0.00}">
+                                <apex:param value="{!oppProd.TargetDistributionPrice}"/>
+                            </apex:outputText>   
+                        </td>
+                        <td>
+                            <apex:outputText value="{!oppProd.CurrencyIsoCode}" />
+                            <apex:outputText value="{0, number, ###,###,##0.00}">
+                                <apex:param value="{!oppProd.TargetRebateAmount}"/>
+                            </apex:outputText>
+                            <br><apex:outputText value="{!oppProd.TargetRebate}%" style="{!IF(oppProd.ExceedsMaxRebate, 'color: blue', 'color: black')}"/></br>
+                        </td>
+                        <td>
+                        	<apex:outputText value="{!oppProd.ItemMargin}%"/>
+						</td>
+                        <td>
+                            <apex:outputText value="{!oppProd.CurrencyIsoCode}" />
+                            <apex:outputText value="{0, number, ###,###,##0.00}">
+                                <apex:param value="{!oppProd.ExtendedMargin}"/>
+                            </apex:outputText>   
+                        </td>
+                        <td>
+                        	<apex:outputText value="{!oppProd.Description}"/>
+						</td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </body>
+    </html>
+</apex:component>

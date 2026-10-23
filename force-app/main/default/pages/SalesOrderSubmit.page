@@ -1,0 +1,10 @@
+<apex:page standardController="Sales_Order__c" extensions="Sales_Order_Submit_Controller" action="{!submitSalesOrder}" docType="html-5.0">
+	<apex:form >
+		<apex:pageBlock >
+			<!-- Hidden fields used by the controller extension -->
+			<apex:outputField rendered="false" value="{!Sales_Order__c.Ship_To_Org_Id__c}" />
+			<apex:outputField rendered="false" value="{!Sales_Order__c.Order_Submitted__c}" />
+			<apex:outputField rendered="false" value="{!Sales_Order__c.Total_Quantity__c}" />
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>SPR_Header_Oppty_Outbound_Message</name>
+        <label>SPR Header Oppty Outbound Message</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Opportunity.SPR_Header_Oppty</actionName>
+        <actionType>outboundMessage</actionType>
+        <connector>
+            <targetReference>Update_Products_Trigger_SPR_Outbound_Line</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <nameSegment>Opportunity.SPR_Header_Oppty</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>66.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Record-triggered flow that sends the SPR (Special Pricing Request) header and lines outbound messages to Informatica when the ‘Trigger SPR Outbound’ checkbox is set to TRUE on Opportunity. The outbound messages initiate the integration to Informatica, which then creates the Oracle SPR header and lines. This flow should only be invoked by automation—never manually</description>
+    <environments>Default</environments>
+    <interviewLabel>SPR Outbound Message Trigger {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SPR Outbound Message Trigger</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Update all the opportunity products on this opportunity to set the &quot;Trigger SPR Outbound Line&quot; field to True. Which in turn will launch a record-triggered flow on the opportunity products to send the corresponding outbound message.</description>
+        <name>Update_Products_Trigger_SPR_Outbound_Line</name>
+        <label>Update Products - Trigger SPR Outbound Line</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Trigger_SPR_Outbound_Line__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.OpportunityLineItems</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>SPR_Header_Oppty_Outbound_Message</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Trigger_SPR_Outbound__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

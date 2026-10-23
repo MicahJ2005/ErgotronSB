@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Submit_for_Approval_Seed_Unit_Request</name>
+        <label>Submit for Approval Seed Unit Request</label>
+        <locationX>446</locationX>
+        <locationY>1247</locationY>
+        <actionName>submit</actionName>
+        <actionType>submit</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>objectId</name>
+            <value>
+                <stringValue>{!$Record.Id}</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>submit</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>Set the approver type to Customer Care Director</description>
+        <name>Approver_CCD</name>
+        <label>Approver = CCD</label>
+        <locationX>314</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>vApproversType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>CCD</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Evaluate_Records_Owners</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set the approver type to Manager</description>
+        <name>Approver_Manager</name>
+        <label>Approver = Manager</label>
+        <locationX>578</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>vApproversType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Manager</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Evaluate_Records_Owners</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set the approvers type to Manager and Customer Care Director</description>
+        <name>Approver_ManagerCCD</name>
+        <label>Approver = ManagerCCD</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>vApproversType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>ManagerCCD</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Evaluate_Records_Owners</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Assign the appropriate owner and owner&apos;s manager to variables to use in the &quot;Prepare case for submission&quot; element.</description>
+        <name>NewOwner_Manager_Assignment</name>
+        <label>New Owner/Manager Assignment</label>
+        <locationX>314</locationX>
+        <locationY>947</locationY>
+        <assignmentItems>
+            <assignToReference>vCaseOwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.SDO__r.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>vCaseOwnersManager</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.SDO__r.Owner.ManagerId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Prepare_case_for_submission</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_owner_manager</name>
+        <label>Set owner/manager</label>
+        <locationX>578</locationX>
+        <locationY>947</locationY>
+        <assignmentItems>
+            <assignToReference>vCaseOwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>vCaseOwnersManager</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Owner:User.ManagerId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Prepare_case_for_submission</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Compare the owner of the seed request to the owner of the SDO. If different, reassign the seed request to the SDO owner.</description>
+        <name>Evaluate_Records_Owners</name>
+        <label>Evaluate Records Owners</label>
+        <locationX>446</locationX>
+        <locationY>839</locationY>
+        <defaultConnector>
+            <targetReference>Set_owner_manager</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Same Owners</defaultConnectorLabel>
+        <rules>
+            <name>Different_Owners</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.SDO__r.OwnerId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>NewOwner_Manager_Assignment</targetReference>
+            </connector>
+            <label>Different Owners</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Evaluates the region of the account associated to the case.</description>
+        <name>Region_Evaluation</name>
+        <label>Region Evaluation</label>
+        <locationX>776</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Americas</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account.Region__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Americas</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Request_Condition</targetReference>
+            </connector>
+            <label>Americas</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>1. If the request is submitted by a user with a [SalesRepProfile], and contains service SKU, the approval request goes to the sales rep manager and the customer care director (Unanimous Approval Required).  IF NOT...
+2. If the request is submitted by a user with a [DirectorProfile],  and contains service SKU, the approval request goes to the Customer Care Director. IF NOT...
+3. If the request is submitted by a user with a [SalesRepProfile], (DOES NOT contain service SKU), the approval request goes only to the manager. IF NOT...
+4. The request gets Approved automatically.</description>
+        <name>Request_Condition</name>
+        <label>Request Condition</label>
+        <locationX>446</locationX>
+        <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>Approve_Case</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Approve the Request</defaultConnectorLabel>
+        <rules>
+            <name>Sales_Rep_w_Service</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Part_Num_Qty__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>srvc</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>SalesRepProfile</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Approver_ManagerCCD</targetReference>
+            </connector>
+            <label>Sales Rep w/Service</label>
+        </rules>
+        <rules>
+            <name>Director_w_Service</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>DirectorProfile</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Part_Num_Qty__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>srvc</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Approver_CCD</targetReference>
+            </connector>
+            <label>Director w/Service</label>
+        </rules>
+        <rules>
+            <name>Sales_Rep</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>SalesRepProfile</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Approver_Manager</targetReference>
+            </connector>
+            <label>Sales Rep</label>
+        </rules>
+    </decisions>
+    <description>Launches approval process for seed unit request case (Internal Orders, Sub-Type: Seed Request).</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>The profile of the running user is a sales director profile</description>
+        <name>DirectorProfile</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+{!$Profile.Name} = &apos;Ergotron Sales Director Profile&apos;,
+{!$Profile.Name} = &apos;Custom Sales Director Profile&apos;,
+{!$Profile.Name} = &apos;Channel Sales Director&apos;
+)</expression>
+    </formulas>
+    <formulas>
+        <description>Returns true if the profile of the running user is listed in the formula.</description>
+        <name>SalesRepProfile</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+{!$Profile.Name} = &apos;Ergotron Sales Profile&apos;,
+{!$Profile.Name} = &apos;Ergotron Inside Sales Profile&apos;
+)</expression>
+    </formulas>
+    <interviewLabel>Submit Seed Unit Request for Approval {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Submit Seed Unit Request for Approval</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Set the approval status to Approved</description>
+        <name>Approve_Case</name>
+        <label>Approve Case</label>
+        <locationX>842</locationX>
+        <locationY>539</locationY>
+        <inputAssignments>
+            <field>Approval_Status__c</field>
+            <value>
+                <stringValue>Approved</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Prepare the request fields on the case so it can be used in the Seed Unit Request approval process</description>
+        <name>Prepare_case_for_submission</name>
+        <label>Prepare case for submission</label>
+        <locationX>446</locationX>
+        <locationY>1139</locationY>
+        <connector>
+            <targetReference>Submit_for_Approval_Seed_Unit_Request</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Case_Owner_s_Manager__c</field>
+            <value>
+                <elementReference>vCaseOwnersManager</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>vCaseOwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Seed_Request_Approvers__c</field>
+            <value>
+                <elementReference>vApproversType</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>650</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Region_Evaluation</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Record_Type_Name__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Internal Order</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Sub_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Seed Orders</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>AccountId</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Case</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>vApproversType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>User Id of the owner of the SDO associated to the seed request.</description>
+        <name>vCaseOwnerId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>User id of the manager of the owner of the SDO associated to the seed request.</description>
+        <name>vCaseOwnersManager</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

@@ -1,0 +1,12 @@
+<apex:page standardController="Case" lightningStylesheets="true"  >
+    <apex:slds />
+    <apex:form target="_blank">
+        <div align = "center" 
+             draggable = "false"
+             >
+            <apex:commandLink styleClass="slds-button slds-button_neutral"
+                              action="http://ergotron--full--ccrz.sandbox.vf.force.com/apex/CCPage?pagekey=OrderCreate&caseID={!Case.id}"
+                              value="Buy Now"/>
+        </div>
+    </apex:form>
+</apex:page>

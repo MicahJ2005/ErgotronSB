@@ -1,0 +1,26 @@
+<apex:page standardController="Sales_Order__c" extensions="Sales_Order_Summary_Controller" docType="html-5.0">
+	<apex:form >
+		<!-- Hidden fields used by the controller extension -->
+		<apex:outputField rendered="false" value="{!Sales_Order__c.Date_Time_Submitted__c}" />
+
+		<!-- No Products Page Block - Displayed to user when no products have been selected on the sales order -->
+		<apex:pageBlock title="{!$Label.Sales_Order_Summary_Title}" rendered="{!Sales_Order__c.Total_Quantity__c=0}">
+			<apex:pageMessage severity="error" strength="3" summary="{!$Label.Sales_Order_Summary_No_Products}" />
+			<apex:pageBlockButtons location="Top" >
+				<apex:commandButton action="{!returnToSalesOrder}" value="Return To Sales Order" />
+			</apex:pageBlockButtons>
+		</apex:pageBlock>
+
+		<!-- Order Submitted Page Block - Displayed when the Sales Order has been submitted -->
+		<apex:pageBlock title="{!$Label.Sales_Order_Summary_Title}" rendered="{!Sales_Order__c.Order_Submitted__c}">
+			<apex:outputText value="{!$Label.Sales_Order_Submitted}">
+					<apex:param value="{!FormattedSubmissionDate}"/>
+			</apex:outputText>
+			<apex:pageBlockButtons location="Top" >
+				<apex:commandButton action="{!returnToSalesOrder}" value="Return To Sales Order" />
+				<apex:commandButton action="{!returnToServiceRequest}" value="Return To Service Request" rendered="{!IF(Sales_Order__c.Service_Request__c!=NULL,true,false)}"/>
+				<apex:commandButton action="{!returnToServiceContract}" value="Return To Servcie Contract" rendered="{!IF(Sales_Order__c.Service_Contract__c!=NULL,true,false)}"/>
+			</apex:pageBlockButtons>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

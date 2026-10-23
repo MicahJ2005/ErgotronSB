@@ -1,0 +1,140 @@
+<!--
+This page converts a deal registration lead to an opportunity, adds contact to end user, adds partner and contact roles to opportunity, and updates products on opportunity
+08/05/2019 - Sophia Murphy (Demand Chain)	
+					Added opp Partner field
+-->
+<apex:page standardController="Lead" extensions="Lead_Convert_Reg_Cntrl" docType="html-5.0">
+	<apex:includeScript value="{!$Resource.jQuery1111}" />
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+
+	    function disableButtons()
+	    {    
+            j$("#divLoading").show();
+            j$("input[type='button']").prop({disabled: true});
+            j$("input[type='submit']").prop({disabled: true});
+	    }
+
+	    function enableButtons()
+	    {
+            j$("#divLoading").hide();
+            j$("input[type='button']").prop({disabled: false});
+            j$("input[type='submit']").prop({disabled: false});           
+	    }
+    </script>
+
+    <!--Hidden fields used by controller-->
+    <apex:outputField value="{!Lead.End_User_Account__r.Name}" rendered="false" />
+    <apex:outputField value="{!Lead.Expected_Ship_Date__c}" rendered="false" />
+    <apex:outputField value="{!Lead.Title}" rendered="false" />
+    <apex:outputField value="{!Lead.Department_Division__c}" rendered="false" />
+    <apex:outputField value="{!Lead.Street}" rendered="false" />
+    <apex:outputField value="{!Lead.City}" rendered="false" />
+    <apex:outputField value="{!Lead.StateCode}" rendered="false" />
+    <apex:outputField value="{!Lead.PostalCode}" rendered="false" />
+    <apex:outputField value="{!Lead.CountryCode}" rendered="false" />
+    <apex:outputField value="{!Lead.CurrencyIsoCode}" rendered="false" />
+	<apex:outputField value="{!Lead.D_H_Distributing_Oracle_Account_Id__c}" rendered="false"/>
+	<apex:outputField value="{!Lead.Ingram_Micro_Oracle_Account_Id__c}" rendered="false"/>
+	<apex:outputField value="{!Lead.TD_Synnex_Oracle_Account_Id__c}" rendered="false"/>	
+
+	<apex:form id="formAlreadConverted" rendered="{!bAlreadyConverted}">
+		<apex:pageMessage severity="error" strength="3" summary="{!$Label.Deal_Reg_Already_Converted}" /><br/>
+		<apex:pageMessages id="pageMessagesAlreadyConverted"/>
+		<apex:pageBlock >
+			<apex:pageBlockSection columns="1" collapsible="false" >
+				<apex:outputField value="{!Lead.Deal_Registration_Opportunity__r.AccountId}" />
+				<apex:outputField value="{!Lead.Deal_Registration_Opportunity__c}" />
+				<apex:outputLink target="_parent" value="{!'/'+Lead.Id}">Return To Lead</apex:outputLink>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+
+	<apex:form id="formRequiredFields" rendered="{!!bAlreadyConverted && !bRequiredFields}">
+		<apex:pageMessage severity="error" strength="3" summary="{!$Label.Deal_Reg_Convert_Required_Fields}" rendered="{!IF(sConvertType='dealreg',true,false)}"/><br/>
+		<apex:pageMessage severity="error" strength="3" summary="{!$Label.Deal_Reg_Convert_Required_Fields_SPR}" rendered="{!IF(sConvertType='spr',true,false)}"/><br/>
+		<apex:pageMessages id="pageMessagesRequiredFields"/>
+		<apex:pageBlock >
+			<apex:pageBlockSection columns="2" collapsible="false" >
+				<apex:outputField value="{!Lead.End_User_Account__c}" />
+				<apex:outputField value="{!Lead.FirstName}" />
+				<apex:outputField value="{!Lead.Partner_Account__c}" />
+				<apex:outputField value="{!Lead.LastName}" />
+				<apex:outputField value="{!Lead.Partner_Contact__c}" />
+				<apex:outputField value="{!Lead.Phone}" />
+				<apex:outputField value="{!Lead.Territory_Account_Manager__c}" />
+				<apex:outputField value="{!Lead.Email}" />
+				<apex:outputField value="{!Lead.Rebate__c}" rendered="{!IF(sConvertType='dealreg',true,false)}"/>
+				<apex:outputField value="{!Lead.Status}" />
+				<apex:outputField value="{!Lead.Total_Quantity__c}" />
+				<apex:outputField value="{!Lead.Registration_Approval_Status__c}" />
+				<apex:outputField value="{!Lead.Expiration_Date__c}" rendered="{!IF(sConvertType='dealreg',true,false)}"/>
+				<apex:outputField value="{!Lead.Date_Approved__c}" rendered="{!IF(sConvertType='dealreg',true,false)}"/>
+				<apex:outputField value="{!Lead.Deal_Registration_Rejection_Reason__c}" rendered="{!IF(sConvertType='spr',true,false)}"/>
+                <apex:outputText label="Opportunity Partner" value="{!oppPartnerName}" />
+                <!-- need this on the page to pull in the value - so it's hidden -->
+                <apex:inputHidden value="{!Lead.Opp_Partner_ID__c}" />
+			</apex:pageBlockSection>
+			<apex:pageBlockSection columns="1" collapsible="false" >
+				<apex:outputField value="{!Lead.Description}" />
+			</apex:pageBlockSection>
+			<apex:pageBlockSection columns="1" collapsible="false" >	
+				<apex:pageBlockTable rendered="{!IF(Lead.Total_Quantity__c>0,true,false)}" value="{!Lead.Lead_Products__r}" var="product">
+					<apex:column value="{!product.Name}" />
+					<apex:column value="{!product.Product__r.Name}" />
+					<apex:column value="{!product.Quantity__c}" />
+					<apex:column value="{!product.Competitive_Make_Model__c}" />
+					<apex:column value="{!product.Notes__c}" />
+				</apex:pageBlockTable>
+				<apex:outputLink target="_parent" value="{!'/'+Lead.Id}">Return To Lead</apex:outputLink>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+
+	<apex:form id="formConfirm" rendered="{!!bAlreadyConverted && bRequiredFields}">
+		<apex:pageMessage severity="confirm" strength="3" summary="{!$Label.Deal_Reg_Convert_Confirm}" rendered="{!IF(sConvertType='dealreg',true,false)}"/><br/>
+		<apex:pageMessage severity="confirm" strength="3" summary="{!$Label.Deal_Reg_Convert_Confirm_SPR}" rendered="{!IF(sConvertType='spr',true,false)}"/><br/>
+		<apex:pageMessages id="pageMessagesConfirmation"/>
+		<apex:actionStatus id="statusConvertReg" onstart="disableButtons()" onstop="enableButtons()" />
+		<!-- Submit/Cancel Buttons -->
+		<apex:commandButton action="{!convertRegistration}" value="Convert Registration" id="btnSubmit" status="statusConvertReg" rerender="btnSubmit,btnCancel,divLoading,pageMessagesConfirmation"/>&nbsp;&nbsp;
+		<apex:commandButton action="{!cancel}" value="Cancel" id="btnCancel"/><br/><br/>
+
+	   	<div id="divLoading" align="center" style="display: none;">
+	       	<div style="color:red; font-style:italic"><img  src="{!$Resource.loadingimg}" />&nbsp;&nbsp;Converting Registration To Opportunity...</div>
+	   	</div>
+		<apex:pageBlock >
+			<apex:pageBlockSection columns="2" collapsible="false" >
+				<apex:outputField value="{!Lead.End_User_Account__c}" />
+				<apex:outputField value="{!Lead.FirstName}" />
+				<apex:outputField value="{!Lead.Partner_Account__c}" />
+				<apex:outputField value="{!Lead.LastName}" />
+				<apex:outputField value="{!Lead.Partner_Contact__c}" />
+				<apex:outputField value="{!Lead.Phone}" />
+				<apex:outputField value="{!Lead.Territory_Account_Manager__c}" />
+				<apex:outputField value="{!Lead.Email}" />
+				<apex:outputField value="{!Lead.Rebate__c}" rendered="{!IF(sConvertType='dealreg',true,false)}"/>
+				<apex:outputField value="{!Lead.Status}" />
+				<apex:outputField value="{!Lead.Total_Quantity__c}" />
+				<apex:outputField value="{!Lead.Registration_Approval_Status__c}" />
+				<apex:outputField value="{!Lead.Expiration_Date__c}" rendered="{!IF(sConvertType='dealreg',true,false)}"/>
+				<apex:outputField value="{!Lead.Date_Approved__c}" rendered="{!IF(sConvertType='dealreg',true,false)}"/>
+				<apex:outputField value="{!Lead.Deal_Registration_Rejection_Reason__c}" rendered="{!IF(sConvertType='spr',true,false)}"/>
+			</apex:pageBlockSection>
+			<apex:pageBlockSection columns="1" collapsible="false" >
+				<apex:outputField value="{!Lead.Description}" />
+			</apex:pageBlockSection>
+			<apex:pageBlockSection columns="1" collapsible="false" >	
+				<apex:pageBlockTable rendered="{!IF(Lead.Total_Quantity__c>0,true,false)}" value="{!Lead.Lead_Products__r}" var="product">
+					<apex:column value="{!product.Name}" />
+					<apex:column value="{!product.Product__r.Name}" />
+					<apex:column value="{!product.Quantity__c}" />
+					<apex:column value="{!product.Competitive_Make_Model__c}" />
+					<apex:column value="{!product.Notes__c}" />
+				</apex:pageBlockTable>
+				<apex:outputLink target="_parent" value="{!'/'+Lead.Id}">Return To Lead</apex:outputLink>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

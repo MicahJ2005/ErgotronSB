@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Launch email alert &quot;Email counter not updated&quot;</description>
+        <name>eMail_Alert</name>
+        <label>eMail Alert</label>
+        <locationX>855</locationX>
+        <locationY>53</locationY>
+        <actionName>Case.Email_counter_not_updated</actionName>
+        <actionType>emailAlert</actionType>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>CaseId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Case.Email_counter_not_updated</nameSegment>
+    </actionCalls>
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Add_1</name>
+        <label>Add 1</label>
+        <locationX>390</locationX>
+        <locationY>281</locationY>
+        <assignmentItems>
+            <assignToReference>Counter</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Count_Emails</targetReference>
+        </connector>
+    </assignments>
+    <formulas>
+        <name>caseLink</name>
+        <dataType>String</dataType>
+        <expression>HYPERLINK({!CaseId},{!Case.CaseNumber})</expression>
+    </formulas>
+    <interviewLabel>Case unread Email Counter {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Case unread Email Counter</label>
+    <loops>
+        <name>Count_Emails</name>
+        <label>Count Emails</label>
+        <locationX>389</locationX>
+        <locationY>49</locationY>
+        <assignNextValueToReference>SingleEmail</assignNextValueToReference>
+        <collectionReference>UnreadEmails</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Add_1</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_Case_Counter</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Case</name>
+        <label>Case</label>
+        <locationX>178</locationX>
+        <locationY>50</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Unread_emails</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>CaseId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Case</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Unread_emails</name>
+        <label>Unread emails</label>
+        <locationX>288</locationX>
+        <locationY>50</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Count_Emails</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Incoming</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>ParentId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>CaseId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>0</stringValue>
+            </value>
+        </filters>
+        <object>EmailMessage</object>
+        <outputReference>UnreadEmails</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Case_Counter</name>
+        <label>Update Case Counter</label>
+        <locationX>684</locationX>
+        <locationY>55</locationY>
+        <faultConnector>
+            <targetReference>eMail_Alert</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>CaseId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>New_Email_Count__c</field>
+            <value>
+                <elementReference>Counter</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Case</object>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Case</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>The email counter was not updated on the related case</description>
+        <name>emailCountNotUpdated</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>Hi!
+
+The email counter on this case could not be updated. Please go to the case and make sure you can edit and save the case successfully.
+Also, please check the email related list to see if there are any new emails.
+
+Case: {!Case.CaseNumber}
+Counter: {!Counter}
+
+This is why the counter could not be updated: {!$Flow.FaultMessage}
+
+If you need further assistance, please enter a HelpMe ticket.
+
+Thanks.</text>
+    </textTemplates>
+    <variables>
+        <name>CaseId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>Counter</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>SingleEmail</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>EmailMessage</objectType>
+    </variables>
+    <variables>
+        <name>UnreadEmails</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>EmailMessage</objectType>
+    </variables>
+</Flow>

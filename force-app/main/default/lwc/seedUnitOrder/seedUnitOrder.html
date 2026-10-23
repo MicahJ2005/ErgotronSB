@@ -1,0 +1,425 @@
+<!--
+  @File Name          : resellerForm.html
+  @Description        :
+  @Author             : James Loghry (Demand Chain)
+  @Group              :
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 12/16/2019, 10:47:46 AM
+  @Modification Log   :
+  Ver       Date            Author      		    Modification
+  1.0    12/4/2019   James Loghry (Demand Chain)     Initial Version
+-->
+<template>
+    abcdef
+    <lightning-card class="slds-p-around_small">
+        <c-path default-steps={steps} onstepchange={handleStepChange}></c-path>
+
+        <lightning-messages></lightning-messages>
+        <lightning-record-edit-form object-api-name="Lead">
+            <lightning-card>
+                <c-error-panel friendly-message="An error occurred" errors={errors}></c-error-panel>
+
+                <lightning-layout multiple-rows horizontal-align="spread" vertical-align="stretch">
+                    <lightning-layout-item size="6" padding="horizontal-small" class={partnerInfoCSS}>
+                        <lightning-input-field field-name="FirstName" variant="label-stacked"></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerInfoCSS}
+                    >
+                        <lightning-input-field field-name="LastName" variant="label-stacked"></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerInfoCSS}
+                    >
+                        <lightning-input-field field-name="Phone" variant="label-stacked"></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerInfoCSS}
+                    >
+                        <lightning-input-field field-name="MobilePhone" variant="label-stacked"></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerInfoCSS}
+                    >
+                        <lightning-input-field field-name="Email" variant="label-stacked"></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerInfoCSS}
+                    >
+                        <lightning-input-field field-name="Title" variant="label-stacked"></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerInfoCSS}
+                    >
+                        <lightning-input-field field-name="Company" variant="label-stacked"></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerInfoCSS}
+                    >
+                        <lightning-input-field field-name="Website" variant="label-stacked"></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerInfoCSS}
+                    >
+                        <p class="slds-p-around_small label">Partner Address (Corporate Headquarters)</p>
+                        <lightning-input-field field-name="Address" variant="label-stacked"></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12">
+                        <lightning-layout>
+                            <lightning-layout-item
+                                size="12"
+                                small-device-size="12"
+                                large-device-size="12"
+                                medium-device-size="12"
+                                padding="horizontal-small"
+                                class={addressCSS}
+                            >
+                                <p class="slds-p-around_small">
+                                    Please identify the primary vendor management point-of-contact for your company, if
+                                    other than yourself:<br />This would be the person that would determine Web pricing
+                                    and/or facilitate channel pricing programs.
+                                </p>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={addressCSS}
+                    >
+                        <label>Name</label>
+                        <lightning-input-field
+                            field-name="WebResellerName__c"
+                            variant="label-hidden"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={addressCSS}
+                    >
+                        <label>Title</label>
+                        <lightning-input-field
+                            field-name="WebResellerTitle__c"
+                            variant="label-hidden"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={addressCSS}
+                    >
+                        <label>Email</label>
+                        <lightning-input-field
+                            field-name="WebResellerEmail__c"
+                            variant="label-hidden"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={addressCSS}
+                    >
+                        <label>Phone</label>
+                        <lightning-input-field
+                            field-name="WebResellerPhone__c"
+                            variant="label-hidden"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        class={addressCSS}
+                    >
+                        <lightning-layout>
+                            <lightning-layout-item size="12" padding="horizontal-small">
+                                <lightning-input-address
+                                    address-label="Primary Vendor Address"
+                                    street-label="Street"
+                                    city-label="City"
+                                    country-label="Country"
+                                    province-label="Province"
+                                    postal-code-label="PostalCode"
+                                    country-options={countryOptions}
+                                    province-options={provinceOptions}
+                                    street={lead.Street}
+                                    city={lead.City}
+                                    country={lead.Ship_To_Country__c}
+                                    province={lead.Ship_To_State_Province__c}
+                                    postal-code={lead.PostalCode}
+                                    onchange={handleAddressChange}
+                                ></lightning-input-address>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>
+
+                    <!--<lightning-layout-item size="12" small-device-size="12" large-device-size="2" medium-device-size="2"  padding="around-small" class={addressCSS}>
+                        <div class="copyButtonContainer">
+                            <lightning-button
+                                label="Copy Address"
+                                icon-name="utility:chevronright"
+                                variant="brand"
+                                onclick={copyAddress}
+                            ></lightning-button>
+                        </div>
+                    </lightning-layout-item>-->
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="ResellerType__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="ResellerTypeOther__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="PrimaryFurnitureLine__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="FurnitureTypeOther__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="MarketsServed__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="BusinessClassification__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="NumberofFieldReps__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="NumberofInsideReps__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="BusinessClassificationOther__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="OtherSellingNames__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                        <lightning-input-field
+                            field-name="OtherBuyingNames__c"
+                            variant="label-stacked"
+                        ></lightning-input-field>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item
+                        size="12"
+                        small-device-size="12"
+                        large-device-size="6"
+                        medium-device-size="6"
+                        padding="horizontal-small"
+                        class={partnerClassificationCSS}
+                    >
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <template if:true={hasNext}>
+                            <button class="right slds-button slds-button_brand" onclick={next}>
+                                Next
+                                <lightning-icon
+                                    icon-name="utility:chevronright"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                            </button>
+                        </template>
+                        <template if:true={hasPrev}>
+                            <button class="right slds-button slds-button_brand" onclick={prev}>
+                                Previous
+                                <lightning-icon
+                                    icon-name="utility:chevronleft"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                            </button>
+                        </template>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-card>
+        </lightning-record-edit-form>
+    </lightning-card>
+</template>

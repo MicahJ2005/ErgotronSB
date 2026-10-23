@@ -1,0 +1,1044 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <apiVersion>58.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>Set the Boolean variable varBolFieldsMissing to true so an error messages displays on the scrnGlobalActn1 screen.</description>
+        <name>Raise_Fields_Missing_flag</name>
+        <label>Raise Fields Missing flag🚩</label>
+        <locationX>578</locationX>
+        <locationY>674</locationY>
+        <assignmentItems>
+            <assignToReference>varBolFieldsMissing</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <isGoTo>true</isGoTo>
+            <targetReference>scrnGlobalActn1</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Sets the case subtype and issue description for the sales ops request</description>
+        <name>Set_Acct_Req_Type_and_Details</name>
+        <label>Set Acct Req Type and Details</label>
+        <locationX>50</locationX>
+        <locationY>890</locationY>
+        <assignmentItems>
+            <assignToReference>recVarSalesOpsReq.Sub_Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>pl_AcctReqType</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>recVarSalesOpsReq.Description</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>lngtxtAcctReqDetails</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>recVarSalesOpsReq.Subject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>tmpltSubject</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Sales_Ops_Request</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Assign the sales operations record type to the case to be created. This will help filter picklist values on subsequent screens.</description>
+        <name>Set_case_to_Sales_Operations_type</name>
+        <label>Set case to Sales Operations type</label>
+        <locationX>446</locationX>
+        <locationY>242</locationY>
+        <assignmentItems>
+            <assignToReference>recVarSalesOpsReq.RecordTypeId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varSalesOpsRecTypeId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>recVarSalesOpsReq.Related_Record_Link__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>LinkToRecord</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>recVarSalesOpsReq.Related_Record_Name__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varRelatedRecordName</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>recVarSalesOpsReq.Region__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>frmlRegionOfCreator</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Launch_Method</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set the subject variables for the account request</description>
+        <name>Set_subject_vars_acct_req</name>
+        <label>Set subject vars acct req</label>
+        <locationX>50</locationX>
+        <locationY>782</locationY>
+        <assignmentItems>
+            <assignToReference>varSbjtObjectName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Related_Record_Object_Type.Label</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSbjtReqType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>pl_AcctReqType</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSbjtDesc</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varRelatedRecordName</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Set_Acct_Req_Type_and_Details</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set the subject variables for the create account request</description>
+        <name>Set_subject_vars_create_acct</name>
+        <label>Set subject vars create acct</label>
+        <locationX>842</locationX>
+        <locationY>674</locationY>
+        <assignmentItems>
+            <assignToReference>varSbjtObjectName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Account</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSbjtReqType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Create Account</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varSbjtDesc</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>txtCreateAcctName</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Set_values_for_create_account_request</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Sets the case subtype and issue description for the sales ops request</description>
+        <name>Set_values_for_create_account_request</name>
+        <label>Set values for create account request</label>
+        <locationX>842</locationX>
+        <locationY>782</locationY>
+        <assignmentItems>
+            <assignToReference>recVarSalesOpsReq.Sub_Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Create Account</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>recVarSalesOpsReq.Description</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>tmpltCreateAccountDetails</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>recVarSalesOpsReq.Subject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>tmpltSubject</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Sales_Ops_Request</targetReference>
+        </connector>
+    </assignments>
+    <choices>
+        <name>Change_Account</name>
+        <choiceText>Change Account</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Change Account</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Merge_Account</name>
+        <choiceText>Merge Account</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Merge Account</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Transfer Account of ownership  
+Sales Rep Level ownership</description>
+        <name>TransferAccount</name>
+        <choiceText>Transfer Account</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Transfer Account</stringValue>
+        </value>
+    </choices>
+    <decisions>
+        <description>Follow different paths depending on how the flow was launched. For example, global action or object button.</description>
+        <name>Launch_Method</name>
+        <label>Launch Method</label>
+        <locationX>446</locationX>
+        <locationY>350</locationY>
+        <defaultConnector>
+            <targetReference>scrnGlobalActn1</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Object_Button</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>recordId</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Related_Record_Object_Type</targetReference>
+            </connector>
+            <label>Object Button</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Object type paths -- Account, Opportunity, etc.</description>
+        <name>Object_Paths</name>
+        <label>Object Paths</label>
+        <locationX>182</locationX>
+        <locationY>566</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Account</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Related_Record_Object_Type.Label</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Account</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Account_Request</targetReference>
+            </connector>
+            <label>Account</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>If any of the account creation fields are missing, set the varBolFieldsMissing to true and return to previous screen.</description>
+        <name>Validate_Required_Account_Fields</name>
+        <label>Validate Required Account Fields</label>
+        <locationX>710</locationX>
+        <locationY>566</locationY>
+        <defaultConnector>
+            <targetReference>Set_subject_vars_create_acct</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Required_Fields_Missing</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>frmlBolCreateAcctFieldsMissing</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>frmlBolStateRequired</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Raise_Fields_Missing_flag</targetReference>
+            </connector>
+            <label>Required Fields Missing</label>
+        </rules>
+    </decisions>
+    <description>Enhancement: Make account creation screen fields required.</description>
+    <dynamicChoiceSets>
+        <description>Pick list values from Account: Customer type</description>
+        <name>pcsAcctCustType</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Type</picklistField>
+        <picklistObject>Account</picklistObject>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <description>Case sub type picklist</description>
+        <name>pcsCaseSubType</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Sub_Type__c</picklistField>
+        <picklistObject>Case</picklistObject>
+    </dynamicChoiceSets>
+    <environments>Default</environments>
+    <formulas>
+        <description>Flag to detect missing fields on the create account screen.</description>
+        <name>frmlBolCreateAcctFieldsMissing</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+ISBLANK( {!pcklstCreateAcctCustType} ),
+ISBLANK( {!txtCreateAcctName} ),
+ISBLANK( {!varAcctAddressStreet} ),
+ISBLANK( {!varAcctAddressCity} ),
+ISBLANK( {!varAcctAddressPostalCode} ),
+ISBLANK( {!varAcctAddressCountry} )
+)</expression>
+    </formulas>
+    <formulas>
+        <description>This flag is true if the country is US, MX, CA and the state code is null.</description>
+        <name>frmlBolStateRequired</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+ISBLANK( {!varAcctAddressProvince} ),
+OR(
+{!varAcctAddressCountry} = &apos;United States&apos;,
+{!varAcctAddressCountry} = &apos;Canada&apos;,
+{!varAcctAddressCountry} = &apos;Mexico&apos;
+)
+)</expression>
+    </formulas>
+    <formulas>
+        <description>Displays the region of the user submitting the request. Region is sourced from the user record.</description>
+        <name>frmlRegionOfCreator</name>
+        <dataType>String</dataType>
+        <expression>TEXT({!$User.User_Region__c})</expression>
+    </formulas>
+    <formulas>
+        <description>Retrieve the key prefix from the ID of the record related to this sales ops request.</description>
+        <name>frmlRelatedRecKeyPrefix</name>
+        <dataType>String</dataType>
+        <expression>LEFT( {!recordId}, 3 )</expression>
+    </formulas>
+    <formulas>
+        <description>Link to the record from which this flow is invoked.</description>
+        <name>LinkToRecord</name>
+        <dataType>String</dataType>
+        <expression>LEFT({!$Api.Enterprise_Server_URL_560}, FIND(&apos;/services&apos;, {!$Api.Enterprise_Server_URL_560}))&amp;{!recordId}</expression>
+    </formulas>
+    <interviewLabel>Sales Ops Request {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Sales Ops Request</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordCreates>
+        <description>Create a case of Sales Operations type</description>
+        <name>Sales_Ops_Request</name>
+        <label>Sales Ops Request</label>
+        <locationX>446</locationX>
+        <locationY>1166</locationY>
+        <assignRecordIdToReference>varTxtSalesOpsCaseId</assignRecordIdToReference>
+        <connector>
+            <targetReference>scrnFileUpld</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <elementReference>recVarSalesOpsReq.Description</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RecordTypeId</field>
+            <value>
+                <elementReference>recVarSalesOpsReq.RecordTypeId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Region__c</field>
+            <value>
+                <elementReference>recVarSalesOpsReq.Region__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Related_Record_Link__c</field>
+            <value>
+                <elementReference>recVarSalesOpsReq.Related_Record_Link__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Related_Record_Name__c</field>
+            <value>
+                <elementReference>recVarSalesOpsReq.Related_Record_Name__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Sub_Type__c</field>
+            <value>
+                <elementReference>recVarSalesOpsReq.Sub_Type__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>recVarSalesOpsReq.Subject</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Case</object>
+    </recordCreates>
+    <recordLookups>
+        <description>Get the object of the record related to this sales ops request</description>
+        <name>Related_Record_Object_Type</name>
+        <label>Related Record Object Type</label>
+        <locationX>182</locationX>
+        <locationY>458</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Object_Paths</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>KeyPrefix</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>frmlRelatedRecKeyPrefix</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>EntityDefinition</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get the Id of the sales operations case record type</description>
+        <name>Sales_Ops_Case_Record_Type_Id</name>
+        <label>Sales Ops Case Record Type Id</label>
+        <locationX>446</locationX>
+        <locationY>134</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Set_case_to_Sales_Operations_type</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Sales Operations</stringValue>
+            </value>
+        </filters>
+        <object>RecordType</object>
+        <outputAssignments>
+            <assignToReference>varSalesOpsRecTypeId</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+    </recordLookups>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <screens>
+        <description>Screen presenting the request type options and a text field for the details of the request.</description>
+        <name>Account_Request</name>
+        <label>Account Request</label>
+        <locationX>50</locationX>
+        <locationY>674</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Set_subject_vars_acct_req</targetReference>
+        </connector>
+        <fields>
+            <name>dsipTxtAcctReqHeader</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Account Request&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>dispTxtAcctReqInstructions</name>
+            <fieldText>&lt;ol&gt;&lt;li&gt;Select the request type.&lt;/li&gt;&lt;li&gt;Provide a detailed description of the request.&lt;/li&gt;&lt;li&gt;Click &lt;strong&gt;Submit &lt;/strong&gt;to submit your request.&lt;/li&gt;&lt;/ol&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>pl_AcctReqType</name>
+            <choiceReferences>Merge_Account</choiceReferences>
+            <choiceReferences>Change_Account</choiceReferences>
+            <choiceReferences>TransferAccount</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Type</fieldText>
+            <fieldType>RadioButtons</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>dispTxtAcctReqMergeInstructions</name>
+            <fieldText>&lt;p&gt;📌 Please identify the account(s) to be merged with the current account.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>pl_AcctReqType</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <elementReference>Merge_Account</elementReference>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>dispTxtAcctReqChangeInstructions</name>
+            <fieldText>&lt;p&gt;📌 Please specify updates to the relevant values below:&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Customer Type&lt;/strong&gt; - Business to Business (B2B), Business to Consumer (B2C), Reseller, Distributor.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Address &lt;/strong&gt;- Please provide full address including details such as suite #, City, State, Zip/Postal, Country.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Partner Level&lt;/strong&gt; (Resellers Only) - Platinum, Gold, Silver Plus, Silver, Bronze, Not Authorized, DeAuthorized.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Account Ownership&lt;/strong&gt; - Please specify the new owner for this account.&lt;/li&gt;&lt;/ul&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>pl_AcctReqType</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <elementReference>Change_Account</elementReference>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>TransferAccountText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;📌 Please identify the new owner for this account.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>pl_AcctReqType</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Transfer Account</stringValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>lngtxtAcctReqDetails</name>
+            <fieldText>Details</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Submit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Final screen including an opportunity to upload required files to complete the request.</description>
+        <name>scrnFileUpld</name>
+        <label>scrnFileUpld</label>
+        <locationX>446</locationX>
+        <locationY>1274</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>dspTxtFileUpldReminder</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;Thank you!&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;✅ Your request has been submitted.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>dspTxtFileUpldInstructions</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;You may upload any files required to complete your request&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;or close this screen.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>varBolFileUpldRequired</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>fileUpldSalesOpsReq</name>
+            <extensionName>forceContent:fileUpload</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>varTxtSalesOpsCaseId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>label</name>
+                <value>
+                    <stringValue>Files to complete the request</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>multiple</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>fileNames</name>
+                <value>
+                    <elementReference>varTxtColUpldFileNames</elementReference>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>varBolFileUpldRequired</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Entry screen when the flow is invoked by global action</description>
+        <name>scrnGlobalActn1</name>
+        <label>scrnGlobalActn1</label>
+        <locationX>710</locationX>
+        <locationY>458</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Validate_Required_Account_Fields</targetReference>
+        </connector>
+        <fields>
+            <name>dispTxtCreateAcctHeader</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;Account Creation&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>dispTxtCreateAcctInstructions</name>
+            <fieldText>&lt;ol&gt;&lt;li&gt;Select the customer type.&lt;/li&gt;&lt;li&gt;Enter the account name.&lt;/li&gt;&lt;li&gt;Complete all address fields.&lt;/li&gt;&lt;li&gt;Click &lt;strong&gt;Submit&lt;/strong&gt; to complete your request.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 14px; color: rgb(255, 0, 0);&quot;&gt;*&lt;/strong&gt; All fields are required&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>dispTxtCreateAcctErrorMessage</name>
+            <fieldText>&lt;p&gt;🚩 &lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;Please complete all fields.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>varBolFieldsMissing</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>pcklstCreateAcctCustType</name>
+            <choiceReferences>pcsAcctCustType</choiceReferences>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>pcklstCreateAcctCustType</elementReference>
+            </defaultValue>
+            <fieldText>Customer Type</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>txtCreateAcctName</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>txtCreateAcctName</elementReference>
+            </defaultValue>
+            <fieldText>Name</fieldText>
+            <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>scrnCreateAcctAddress</name>
+            <extensionName>flowruntime:address</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>city</name>
+                <value>
+                    <elementReference>varAcctAddressCity</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>country</name>
+                <value>
+                    <elementReference>varAcctAddressCountry</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>postalCode</name>
+                <value>
+                    <elementReference>varAcctAddressPostalCode</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>province</name>
+                <value>
+                    <elementReference>varAcctAddressProvince</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>street</name>
+                <value>
+                    <elementReference>varAcctAddressStreet</elementReference>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <outputParameters>
+                <assignToReference>varAcctAddressCity</assignToReference>
+                <name>city</name>
+            </outputParameters>
+            <outputParameters>
+                <assignToReference>varAcctAddressCountry</assignToReference>
+                <name>country</name>
+            </outputParameters>
+            <outputParameters>
+                <assignToReference>varAcctAddressProvince</assignToReference>
+                <name>province</name>
+            </outputParameters>
+            <outputParameters>
+                <assignToReference>varAcctAddressStreet</assignToReference>
+                <name>street</name>
+            </outputParameters>
+            <outputParameters>
+                <assignToReference>varAcctAddressPostalCode</assignToReference>
+                <name>postalCode</name>
+            </outputParameters>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Submit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <start>
+        <locationX>320</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Sales_Ops_Case_Record_Type_Id</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Construction of the details for the Create Account request</description>
+        <name>tmpltCreateAccountDetails</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Customer Type: {!pcklstCreateAcctCustType}
+Account Name: {!txtCreateAcctName}
+Address:
+{!varAcctAddressStreet}
+{!varAcctAddressCity}, {!varAcctAddressProvince} {!varAcctAddressPostalCode}
+{!varAcctAddressCountry}</text>
+    </textTemplates>
+    <textTemplates>
+        <description>Construction of the subject for the sales ops request case to be created.</description>
+        <name>tmpltSubject</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>{!varSbjtObjectName} - {!varSbjtReqType} - {!varSbjtDesc}</text>
+    </textTemplates>
+    <variables>
+        <description>Stores the id of the record invoking this flow</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>This is the sales ops request Case to be created</description>
+        <name>recVarSalesOpsReq</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Case</objectType>
+    </variables>
+    <variables>
+        <name>varAcctAddressCity</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varAcctAddressCountry</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varAcctAddressPostalCode</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varAcctAddressProvince</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varAcctAddressStreet</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Flag to be used to display an error message on the scrnGlobalActn1 screen.</description>
+        <name>varBolFieldsMissing</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <description>Controller used to condition the visibility of the file upload component on the final screen.</description>
+        <name>varBolFileUpldRequired</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>true</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>varRelatedRecordName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Store the ID of the Sales Operations case record type</description>
+        <name>varSalesOpsRecTypeId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Stores a short description of the request to be used in the subject template.</description>
+        <name>varSbjtDesc</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Store the name of the object related to the request</description>
+        <name>varSbjtObjectName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Stores the request type to be used in the subject template</description>
+        <name>varSbjtReqType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varTxtColUpldFileNames</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>This is the ID of the Sales Operations case created by this flow.  It is store in this variable so we can use it with a File Upload component in the next screen element.</description>
+        <name>varTxtSalesOpsCaseId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

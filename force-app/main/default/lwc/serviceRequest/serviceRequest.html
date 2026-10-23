@@ -1,0 +1,87 @@
+<template>
+    <div>
+        <template if:true={formDisabled}>
+            <lightning-spinner
+                alternative-text="Loading..." variant="brand">
+            </lightning-spinner>
+        </template>
+        <!--
+            //Not disabling the form - because if there is an error in the submission it clears out all the values
+            // so they can't fix and resubmit.
+            
+        -->
+        <!--<template if:false={formDisabled}>-->
+            <form id="eKinnexRequestForm">
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="firstName-input"><abbr class="slds-required" title="required">* </abbr>First Name</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="firstName-input" class="slds-input" onchange={handleFirstNameIn}/>
+                </div>
+                <template if:true={firstnameBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="lastName-input"><abbr class="slds-required" title="required">* </abbr>Last Name</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="lastName-input" class="slds-input" onchange={handleLastNameIn}/>
+                </div>
+                <template if:true={lastnameBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="postalCode-input"><abbr class="slds-required" title="required">* </abbr>Postal Code</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="postalCode-input" class="slds-input" onchange={handlePostalCodeIn}/>
+                </div>
+                <template if:true={postalCodeBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="phone-input"><abbr class="slds-required" title="required">* </abbr>Telephone</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="phone-input" class="slds-input" onchange={handlePhoneIn}/>
+                </div>
+                <template if:true={phoneBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="email-input"><abbr class="slds-required" title="required">* </abbr>Email</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="email-input" class="slds-input" onchange={handleEmailIn}/>
+                </div>
+                <template if:true={emailBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+                <template if:true={emailWrongFormat}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">Please enter email in the correct format: something@example.com.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+              <label class="slds-form-element__label" for="partnum-input">Model / part number</label>
+              <div class="slds-form-element__control">
+                <input type="text" id="partnum-input" class="slds-input" onchange={handlePartNumIn}/>
+              </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+              <label class="slds-form-element__label" for="quantity-input">Quantity of products needing service</label>
+              <div class="slds-form-element__control">
+                <input type="text" id="quantity-input" class="slds-input" onchange={handleQuantityIn}/>
+              </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="comment-input">Comment or question</label>
+                <div class="slds-form-element__control">
+                    <textarea id="comment-input" class="slds-input" onchange={handleCommentIn} style="height:200px;"></textarea>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button type="submit" class="slds-button slds-button_brand" form="eKinnexRequestForm" onclick={handleSubmit} style="text-align: center;">SUBMIT</button>
+            </div>
+        </form>
+    <!--</template>-->
+    </div>
+</template>

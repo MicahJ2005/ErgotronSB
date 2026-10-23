@@ -1,0 +1,34 @@
+<apex:page standardController="Lead" 
+    showHeader="false" 
+    sidebar="false" 
+    title="Ergotron Partner Authorization Request Confirmation" 
+    standardStylesheets="false" 
+    doctype="html-5.0" 
+    applyhtmltag="false" 
+    language="{!$CurrentPage.parameters.lang}"
+>
+    
+    <head>
+        <title>Ergotron Partner Authorization Request</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+        <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+
+        <apex:includescript value="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js" />
+        <apex:includescript value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" />
+
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <div class="page-header">
+                <h2>Ergotron Partner Authorization Request Confirmation</h2>
+            </div>
+
+            <div class="alert alert-success">
+                <strong>Success!</strong> Your partner authorization request has been submitted.
+            </div>
+        </div>
+    </body>
+
+</apex:page>

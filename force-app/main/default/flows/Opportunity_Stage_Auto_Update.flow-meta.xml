@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Stage_Update_Failed</name>
+        <label>Stage Update Failed</label>
+        <locationX>1194</locationX>
+        <locationY>887</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>body</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>esau.sanchez@ergotron.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>SPR Stage Update Failure</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>56.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>SPR Expiration Date comparison to current date</description>
+        <name>SPR_Expiration_Date</name>
+        <label>SPR Expiration Date</label>
+        <locationX>402</locationX>
+        <locationY>276</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Greater_than_today</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.SPR_Expiration_Date__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <elementReference>$Flow.CurrentDate</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Stage_Active</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Greater than today</label>
+        </rules>
+        <rules>
+            <name>Expiration_date_in_past</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.SPR_Expiration_Date__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Flow.CurrentDate</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.SPR_Expiration_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Stage_Expired</targetReference>
+            </connector>
+            <label>Expiration date in past</label>
+        </rules>
+    </decisions>
+    <description>Change: Set batch size to 10 in an effort to minimize the &quot;LOCKED RECORD&quot; error.</description>
+    <environments>Default</environments>
+    <interviewLabel>Opportunity Stage Auto Update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity Stage Auto Update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Set the stagename to Active</description>
+        <name>Stage_Active</name>
+        <label>Stage = Active</label>
+        <locationX>50</locationX>
+        <locationY>384</locationY>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Stage_Update_Failed</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>StageName</field>
+            <value>
+                <stringValue>Active</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Set the stageName to Expired</description>
+        <name>Stage_Expired</name>
+        <label>Stage = Expired</label>
+        <locationX>710</locationX>
+        <locationY>779</locationY>
+        <faultConnector>
+            <targetReference>Stage_Update_Failed</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>StageName</field>
+            <value>
+                <stringValue>Expired</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>584</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>SPR_Expiration_Date</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Record_Type_Name__c</field>
+            <operator>StartsWith</operator>
+            <value>
+                <stringValue>Ergotron Forecast Opportunity</stringValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <scheduledPaths>
+            <name>SPR_Expired</name>
+            <connector>
+                <targetReference>Stage_Expired</targetReference>
+            </connector>
+            <label>SPR Expired</label>
+            <maxBatchSize>10</maxBatchSize>
+            <offsetNumber>6</offsetNumber>
+            <offsetUnit>Hours</offsetUnit>
+            <recordField>SPR_Expiration_Date__c</recordField>
+            <timeSource>RecordField</timeSource>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>body</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;{!$Flow.CurrentDateTime}&lt;/p&gt;&lt;p&gt;Fault message: {!$Flow.FaultMessage}&lt;/p&gt;&lt;p&gt;Opportunity ID: {!$Record.Id}&lt;/p&gt;&lt;p&gt;Opportunity Number: {!$Record.Opportunity_Number__c}&lt;/p&gt;&lt;p&gt;Opportunity Name: {!$Record.Name}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</text>
+    </textTemplates>
+</Flow>

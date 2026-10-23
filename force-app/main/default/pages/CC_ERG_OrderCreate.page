@@ -1,0 +1,114 @@
+<apex:page id="CC_ERG_OrderCreate" docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false" controller="CC_ERG_OrderCreate" action="{!createOrUpdateUser}">
+
+       Please Select Order Type<Br/>
+       <apex:outputText value="{!theOrderTypeDropDown}"  escape="false"/>
+       <br/>
+       <br/>       
+
+       <br/>
+       <br/>       
+       Please Select Price List<Br/>
+       <apex:outputText value="{!thePriceListsDropDown}"  escape="false"/>
+       <br/>
+       <br/>       
+
+       
+       <br/><br/>
+     
+    <table>
+        <tr>
+            <td>
+                <button onclick="jumptopage('yes')">Start Order</button>     
+            </td>
+            <td>
+            <!--     <button onclick="jumptopage('no')">Verify Data(testing)</button>  -->
+            </td>
+        </tr>
+        </table>
+    
+
+
+
+<script type="text/javascript">
+jQuery(function ($) {
+
+    CCRZ.subsc = _.extend(CCRZ.subsc || {});
+
+    CCRZ.subsc.customActions = _.extend({
+        
+    className: 'CC_ERG_OrderCreate',
+    manageCarts: function (caseID, priceListID, orderTypeId, callback) {
+        //debugger;
+        this.invokeCtx('manageCarts', caseID, priceListID, orderTypeId, function (response) {
+            //debugger;
+            callback(response);
+        },
+        {
+            buffer: false, nmsp: false
+        }
+        );
+    },
+
+
+
+        
+    }, CCRZ.RemoteInvocation);
+    
+});
+</script>    
+    <script type="text/javascript">
+    
+        function jumptopage(doit)
+        {
+            //debugger;  
+            var pricelist = document.getElementById('selectedpricelist').value;
+            
+            var ordertype = document.getElementById('ordertype').value;
+
+            var pricelisthtml = '<br>Pricelist: '+pricelist;
+            var buttonhtml    = '<br>Ordertype: '+ordertype;
+            var Caseid        = '<br>Caseid: {!ThisCaseID}'; 
+            var ContactID     = '<br>ContactID: {!ThiscontactId}';                    
+            
+            var baseurl       = '<br>{!GoToThisPLPURL}';
+            var theurl        = '{!GoToThisPLPURL}';
+            
+            theurl += '&pricelistID='+pricelist+'&orderType='+ordertype;
+            baseurl += '&pricelistID='+pricelist+'&orderType='+ordertype;
+            
+            //            var outputhtml = '<u>Selected Values</u><br>' + pricelisthtml + buttonhtml +Caseid +ContactID+ User+baseurl;
+            var outputhtml = '<u>Selected Values</u><br>' + pricelisthtml + buttonhtml +Caseid +ContactID+ baseurl;
+            
+            // document.getElementById("outputWindow").innerHTML = outputhtml;            
+            
+            if( doit == "yes" )
+            {
+                //alert (" jump to page commented out ");
+
+                //Terry's original code: CCRZ.subsc.customActions.manageCarts({!ThisCaseID}, pricelist,  'window.location.href = theurl;'{ });
+                //debugger;
+                CCRZ.subsc.customActions.manageCarts('{!ThisCaseID}', pricelist, ordertype, function(response)
+                {
+                    //debugger;
+                    if(response.data && response.success){
+                        //CCRZ.pagevars.currentCartID = result.data;
+                        CCRZ.pagevars.currentCartID = response.data;
+                        CCRZ.pubSub.trigger('cartChange', CCRZ.pagevars.currentCartID);
+                        //debugger;
+                        window.location.href = theurl;
+                    }
+                });
+
+                //window.location.href = theurl;
+            }
+            
+        };
+    </script>       
+     
+    
+    
+    
+    
+   <!-- <p id="outputWindow"></p> -->
+    
+</apex:page>

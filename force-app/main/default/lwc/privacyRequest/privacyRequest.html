@@ -1,0 +1,271 @@
+<template>
+    <div>
+        <template if:true={formDisabled}>
+            <lightning-spinner
+                alternative-text="Loading..." variant="brand">
+            </lightning-spinner>
+        </template>
+        <!--
+            //Not disabling the form - because if there is an error in the submission it clears out all the values
+            // so they can't fix and resubmit.
+            
+        -->
+        <!--<template if:false={formDisabled}>-->
+            <form id="privacyRequestForm">
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="email-input"><abbr class="slds-required" title="required">* </abbr>Your Email</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="email-input" class="slds-input" onchange={handleEmailIn}/>
+                    </div>
+                    <template if:true={contactEmailBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                    <template if:true={emailWrongFormat}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">Please enter email in the correct format: something@example.com.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="firstName-input"><abbr class="slds-required" title="required">* </abbr>First Name</label>
+                    <div class="slds-form-element__control">
+                        <input required type="text" id="firstName-input" class="slds-input" onchange={handleFirstNameIn}/>
+                    </div>
+                    <template if:true={firstNameBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="lastName-input"><abbr class="slds-required" title="required">* </abbr>Last Name</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="lastName-input" class="slds-input" onchange={handleLastNameIn}/>
+                    </div>
+                    <template if:true={lastNameBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="middleInitial-input">Middle Initial</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="middleInitial-input" class="slds-input" onchange={handleMiddleInitialIn}/>
+                    </div>
+                </div>
+                <!--<div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="phone-input"><abbr class="slds-required" title="required">* </abbr>Telephone</label>
+                    <div class="slds-form-element__control">
+                        <input type="tel" id="phone-input" class="slds-input" onchange={handlePhoneIn} placeholder="(201) 555-0123"/>
+                    </div>
+                    <template if:true={phoneBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>-->
+                <!--<div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="address-input"><abbr class="slds-required" title="required">* </abbr>Address</label>
+                    <div class="slds-form-element__control">
+                        <textarea id="address-input" class="slds-input" onchange={handleAddressIn} style="height:150px;"></textarea>
+                    </div>
+                    <template if:true={addressBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>-->
+                <!-- STREET -->
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="street-input"><abbr class="slds-required" title="required">* </abbr>Street Address</label>
+                    <div class="slds-form-element__control">
+                        <textarea id="street-input" class="slds-input" onchange={handleStreetIn} style="height:50px;"></textarea>
+                    </div>
+                    <template if:true={streetBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <!-- CITY -->
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="city-input"><abbr class="slds-required" title="required">* </abbr>City</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="city-input" class="slds-input" onchange={handleCityIn} />
+                    </div>
+                    <template if:true={cityBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <!-- STATE -->
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="state-input"><abbr class="slds-required" title="required">* </abbr>State</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="state-input" class="slds-input" onchange={handleStateIn} />
+                    </div>
+                    <template if:true={stateBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <!-- POSTAL -->
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="postal-input"><abbr class="slds-required" title="required">* </abbr>Postal Code</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="postal-input" class="slds-input" onchange={handlePostalIn} />
+                    </div>
+                    <template if:true={postalBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+
+
+
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <p class="slds-form-element__label"><abbr class="slds-required" title="required">* </abbr>Select from the following</p>
+                    <form>
+                         <div class="slds-form-element__control">
+                            <input id="own-behalf" value="I am a California resident and am submitting this request on my own behalf." onchange={handleSubjectIn} type="radio" checked={ownBehalfTrue}/>
+                            <label for="own-behalf" style="padding: 3%;">I am a California resident and am submitting this request on my own behalf.</label>
+                            <!--</br>
+                            <input id="household" value="I am a California resident and am submitting this request on behalf of my household, which is located in California." onchange={handleSubjectIn} type="radio" checked={householdTrue}/>
+                            <label for="household" style="padding: 3%;">I am a California resident and am submitting this request on behalf of my household, which is located in California.</label>
+                            --></br>
+                            <input id="authorized" value="I am authorized to submit this request on behalf of another individual who is a California resident." onchange={handleSubjectIn} type="radio" checked={authorizedTrue}/>
+                            <label for="authorized" style="padding: 3%;">I am authorized to submit this request on behalf of another individual who is a California resident.</label>
+                        </div>
+                    </form>
+                    <template if:true={subjectBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <template if:true={householdTrue}>
+                    <div class="slds-form-element slds-form-element_horizontal">
+                        <label class="slds-form-element__label" for="members-input">Other household members
+                            <br/>
+                            Please list the email, names and address of each individual.
+                        </label>
+                        <div class="slds-form-element__control">
+                            <textarea id="members-input" class="slds-input" onchange={handleMembersIn} style="height:150px;"></textarea>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:true={authorizedTrue}>
+                    <div class="slds-form-element slds-form-element_horizontal">
+                        <label class="slds-form-element__label" for="resInfo-input">Resident's Information
+                            <br/>
+                            Please list the email, name and address of the resident.
+                        </label>
+                        <div class="slds-form-element__control">
+                            <textarea id="resInfo-input" class="slds-input" onchange={handleResidentInfoIn} style="height:150px;"></textarea>
+                        </div>
+                    </div>
+                </template>
+                <!--<template if:true={authorizedTrue}>
+                    <div class="slds-form-element slds-form-element_horizontal">
+                        <label class="slds-form-element__label" for="resEmail-input">Resident's Email</label>
+                        <div class="slds-form-element__control">
+                            <input type="text" id="resEmail-input" class="slds-input" onchange={handleResidentEmailIn}/>
+                        </div>
+                    </div>
+                    <div class="slds-form-element slds-form-element_horizontal">
+                        <label class="slds-form-element__label" for="resFirstName-input">Resident's First Name</label>
+                        <div class="slds-form-element__control">
+                            <input type="text" id="resFirstName-input" class="slds-input" onchange={handleResidentFirstNameIn}/>
+                        </div>
+                    </div>
+                    <div class="slds-form-element slds-form-element_horizontal">
+                        <label class="slds-form-element__label" for="resFirstName-input">Resident's Last Name</label>
+                        <div class="slds-form-element__control">
+                            <input type="text" id="resLastName-input" class="slds-input" onchange={handleResidentLastNameIn}/>
+                        </div>
+                    </div>
+                </template>-->
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <p class="slds-form-element__label"><abbr class="slds-required" title="required">* </abbr>Identify relationship with us</p>
+                    <form>
+                        <div class="slds-form-element__control">
+                            <input id="customer-behalf" value="Customer or prospective customer on behalf of a business" onchange={handleRelationshipIn} type="checkbox" checked={businessCustomerTrue}/>
+                            <label for="customer-behalf" style="padding: 3%;">Customer or prospective customer on behalf of a business</label>
+                            </br>
+                            <input id="customer" value="Customer or prospective customer in an individual capacity" onchange={handleRelationshipIn} type="checkbox" checked={individualCustomerTrue}/>
+                            <label for="customer" style="padding: 3%;">Customer or prospective customer in an individual capacity</label>
+                            </br>
+                            <input id="employee" value="Current or former employee, job applicant, or contractor" onchange={handleRelationshipIn} type="checkbox" checked={formerEmployeeTrue}/>
+                            <label for="employee" style="padding: 3%;">Current or former employee, job applicant, or contractor</label>
+                            </br>
+                            <input id="vendor" value="Vendor" onchange={handleRelationshipIn} type="checkbox" checked={vendorTrue}/>
+                            <label for="vendor" style="padding: 3%;">Vendor</label>
+                            </br>
+                            <input id="other" value="Other" onchange={handleRelationshipIn} type="checkbox" checked={otherTrue}/>
+                            <label for="other" style="padding: 3%;">Other</label>
+                        </div>
+                    </form>
+                    <template if:true={relationshipBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required, please select at least one.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="type-input"><abbr class="slds-required" title="required">* </abbr>Select the type of request</label>
+                    <div class="slds-form-element__control">
+                        <select id="type-input" onchange={handleTypeIn} class="slds-input">
+                            <option value=""></option>
+                            <option value="Request to know">Request to know</option>
+                            <option value="Request to correct">Request to correct</option>
+                            <option value="Request to delete">Request to delete</option>
+                        </select>
+                    </div>
+                    <template if:true={typeBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required, please select at least one.</p>
+                    </template>
+                </div>
+                <template if:true={reqToKnowTrue}>
+                    <div class="slds-form-element slds-form-element_horizontal">
+                        <p class="slds-form-element__label"><abbr class="slds-required" title="required">* </abbr>Check all that apply</p>
+                        <form>
+                            <div class="slds-form-element__control">
+                                <input id="personalInfo" value="Categories of personal information that we collected and maintain." onchange={handleSubtypeIn} type="checkbox" checked={personalInfoTrue}/>
+                                <label for="personalInfo" style="padding: 3%;">Categories of personal information that we collected and maintain.</label>
+                                </br>
+                                <input id="sources" value="Categories of sources from which we collected personal information." onchange={handleSubtypeIn} type="checkbox" checked={sourcesTrue}/>
+                                <label for="sources" style="padding: 3%;">Categories of sources from which we collected personal information.</label>
+                                </br>
+                                <input id="disclosed" value="Categories of personal information that we sold, shared, or disclosed for a business purpose, to a third party." onchange={handleSubtypeIn} type="checkbox" checked={disclosedTrue}/>
+                                <label for="disclosed" style="padding: 3%;">Categories of personal information that we sold, shared, or disclosed for a business purpose, to a third party.</label>
+                                </br>
+                                <input id="sold" value="Categories of third parties to whom we sold, shared, or disclosed for a business purpose, personal information." onchange={handleSubtypeIn} type="checkbox" checked={soldTrue}/>
+                                <label for="sold" style="padding: 3%;">Categories of third parties to whom we sold, shared, or disclosed for a business purpose, personal information.</label>
+                                </br>
+                                <input id="purpose" value="Our business or commercial purpose for collecting, selling, or sharing the personal information." onchange={handleSubtypeIn} type="checkbox" checked={purposeTrue}/>
+                                <label for="purpose" style="padding: 3%;">Our business or commercial purpose for collecting, selling, or sharing the personal information.</label>
+                                </br>
+                                <input id="specifics" value="Access to specific pieces of personal information that we collected and maintain." onchange={handleSubtypeIn} type="checkbox" checked={specificsTrue}/>
+                                <label for="specifics" style="padding: 3%;">Access to specific pieces of personal information that we collected and maintain.</label>
+                            </div>
+                        </form>
+                        <template if:true={subTypeBlank}>
+                            <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required, please select at least one.</p>
+                        </template>
+                    </div>
+                    <div class="slds-form-element slds-form-element_horizontal">
+                        <p class="slds-form-element__label"><abbr class="slds-required" title="required">* </abbr>How do you want to receive information?</p>
+                        <form>
+                            <div class="slds-form-element__control">
+                                <input id="postalmail" value="Postal Mail" onchange={handleContactMethodIn} type="checkbox" checked={postalMailTrue}/>
+                                <label for="postalmail" style="padding: 3%;">Postal Mail</label>
+                                </br>
+                                <input id="email" value="Email" onchange={handleContactMethodIn} type="checkbox" checked={emailTrue}/>
+                                <label for="email" style="padding: 3%;">Email</label>
+                            </div>
+                        </form>
+                        <template if:true={contactMethodBlank}>
+                            <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                        </template>
+                    </div>
+                </template>
+                <template if:true={reqToCorrectTrue}>
+                    <div class="slds-form-element slds-form-element_horizontal">
+                        <label class="slds-form-element__label" for="infoToCorrect-input">
+                            Please specify the inaccurate personal information that you wish to have corrected.
+                        </label>
+                        <div class="slds-form-element__control">
+                            <textarea id="infoToCorrect-input" class="slds-input" onchange={handleInfoToCorrectIn} style="height:150px;"></textarea>
+                        </div>
+                    </div>
+                </template>
+                <div style="text-align: center;">
+                    <button type="submit" class="slds-button slds-button_brand" form="privacyRequestForm" onclick={handleSubmit} disabled={buttonDisabled} style="text-align: center;">SUBMIT REQUEST</button>
+                </div>
+            </form>
+        <!--</template>-->
+    </div>
+</template>

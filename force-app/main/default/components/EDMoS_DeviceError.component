@@ -1,0 +1,6 @@
+<apex:component access="global" controller="EDMoS_DeviceErrorController">
+   <apex:attribute name="caseIdValue" type="String" description="This is the Id of the case" assignTo="{!caseId}" access="global" />
+   <apex:repeat value="{!deviceErrorList}" var="pos">
+        {!pos}<br/>
+    </apex:repeat>
+</apex:component>

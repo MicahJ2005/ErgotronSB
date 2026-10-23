@@ -1,0 +1,4 @@
+<design:component >
+    <design:attribute name="displayConfirmation" label="Display Registration Confirmation?" />
+    <design:attribute name="startUrl" label="StartUrl" />
+</design:component>

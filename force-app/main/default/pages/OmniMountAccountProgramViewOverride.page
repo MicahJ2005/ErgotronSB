@@ -1,0 +1,12 @@
+<!-- Visualforce page used for OmniMount_Account_Program__c view override (hides the "Attach File" button on the attachments related list. This was requested because they   
+want some of the attachments for OmniMount Account Programs to be versioned through Chatter.  This forces the users to attach their files via the Chatter feed. -->
+
+<apex:page standardController="OmniMount_Account_Program__c">
+   <chatter:feedWithFollowers entityId="{!OmniMount_Account_Program__c.Id}" />
+   <apex:detail subject="{!OmniMount_Account_Program__c}" inlineEdit="true" />
+   <!-- <apex:relatedList subject="{!OmniMount_Account_Program__c}" list="OpenActivities" />
+   <apex:relatedList subject="{!OmniMount_Account_Program__c}" list="ActivityHistories" /> -->
+   <apex:relatedList subject="{!OmniMount_Account_Program__c}" list="CombinedAttachments">
+      <apex:facet name="header"><table><tr><td class="pbTitle"><h3>Attachments</h3></td></tr></table></apex:facet>
+   </apex:relatedList>
+</apex:page>

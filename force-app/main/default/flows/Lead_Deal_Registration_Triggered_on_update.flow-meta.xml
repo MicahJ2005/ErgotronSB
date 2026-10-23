@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Paths1</name>
+        <label>Paths1</label>
+        <locationX>446</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Update_Preferred_Distributor</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Opp_Partner_ID__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Find_Deal_Reg_Opp_Partner_Name</targetReference>
+            </connector>
+            <label>Update Preferred Distributor</label>
+        </rules>
+    </decisions>
+    <description>Fast field update - Populates preferred distributor text field with the name of the distributor selected on the deal reg submission form.</description>
+    <environments>Default</environments>
+    <interviewLabel>Lead-Deal Registration - Triggered on update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Lead-Deal Registration - Triggered on update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Search Deal Reg Opportunity Partner metadata type to get the name of the preferred distributor selected in the deal registration submission form</description>
+        <name>Find_Deal_Reg_Opp_Partner_Name</name>
+        <label>Find Deal Reg Opp Partner Name</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Preferred_Distributor_Name</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Account_ID__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Opp_Partner_ID__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Deal_Reg_Opportunity_Partner__mdt</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Populates the Preferred_Distributor field with the name from the Deal Reg Opportunity Partner mdt selected in the deal reg submission form.</description>
+        <name>Preferred_Distributor_Name</name>
+        <label>Preferred Distributor Name</label>
+        <locationX>50</locationX>
+        <locationY>503</locationY>
+        <inputAssignments>
+            <field>Preferred_Distributor__c</field>
+            <value>
+                <elementReference>Find_Deal_Reg_Opp_Partner_Name.MasterLabel</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>320</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Paths1</targetReference>
+        </connector>
+        <filterFormula>{!$Record.RecordType.Name} = &quot;Ergotron Deal Registration Lead&quot;</filterFormula>
+        <object>Lead</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

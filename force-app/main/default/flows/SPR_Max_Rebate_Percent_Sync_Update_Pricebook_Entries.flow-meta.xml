@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Add_Log_Entry_for_an_SObject_Record_Action_1</name>
+        <label>Add Log Entry for an SObject Record Action 1</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Nebula__FlowRecordLogEntry</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Save_Log_Action_1</targetReference>
+        </connector>
+        <dataTypeMappings>
+            <typeName>T__record</typeName>
+            <typeValue>SPR_Max_Rebate_Percent__c</typeValue>
+        </dataTypeMappings>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>flowName</name>
+            <value>
+                <stringValue>SPR_Max_Rebate_Percent_Sync_Update_Pricebook_Entries</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>message</name>
+            <value>
+                <elementReference>tmpltLogEntryMessageSourceOrgUnmatched</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>record</name>
+            <value>
+                <elementReference>$Record</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Nebula__FlowRecordLogEntry</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <actionCalls>
+        <name>Save_Log_Action_1</name>
+        <label>Save Log Action 1</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Nebula__Logger</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <nameSegment>Nebula__Logger</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>66.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>Add the PBE in the loop to a collection variable for update in the next element.</description>
+        <name>Add_PBE_to_Collection_for_Update</name>
+        <label>Add PBE to Collection for Update</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>PBE_ToUpdate</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_through_each_PBE</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_through_each_PBE</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Assign the max rebate percentages to the PBE</description>
+        <name>Assign_Max_Rebate_Percentages</name>
+        <label>Assign Max Rebate Percentages</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>Loop_through_each_PBE.Max_Rebate_Percent__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Max_Rebate_Percent__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Add_PBE_to_Collection_for_Update</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_PB_Id</name>
+        <label>Assign PB Id</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>PricebookIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_through_Price_Books.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_through_Price_Books</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set the price book names to be used when updating the price book entries</description>
+        <name>Set_Americas_APAC_Price_Book_Names</name>
+        <label>Set Americas APAC Price Book Names</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>PriceBookNames</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <stringValue>US STANDARD PRICE LIST</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>PriceBookNames</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <stringValue>APAC USD STANDARD PRICE LIST</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Price_Books</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set the price book names to be used when updating the price book entries</description>
+        <name>Set_EMEA_Price_Book_Names</name>
+        <label>Set EMEA Price Book Names</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>PriceBookNames</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <stringValue>EMEA-APAC USD STANDARD PRICE LIST</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Price_Books</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Evaluate the origin Org Id to determine the appropriate price book to use</description>
+        <name>Evaluate_Origin_Org</name>
+        <label>Evaluate Origin Org</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Add_Log_Entry_for_an_SObject_Record_Action_1</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Americas_APAC</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Source_Organization_ID__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>83</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Americas_APAC_Price_Book_Names</targetReference>
+            </connector>
+            <label>Americas/APAC</label>
+        </rules>
+        <rules>
+            <name>EMEA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Source_Organization_ID__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>102</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_EMEA_Price_Book_Names</targetReference>
+            </connector>
+            <label>EMEA</label>
+        </rules>
+    </decisions>
+    <description>Updates the Max Rebate Percent field on Pricebook Entry records based on active SPR Max Rebate Percent records. When an SPR record becomes effective, the flow sets the rebate percent for matching products in selected price books.</description>
+    <environments>Default</environments>
+    <interviewLabel>SPR Max Rebate Percent Sync: Update Pricebook Entries {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SPR Max Rebate Percent Sync: Update Pricebook Entries</label>
+    <loops>
+        <description>Loop through each PBE to assig the max rebate from</description>
+        <name>Loop_through_each_PBE</name>
+        <label>Loop through each PBE</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>Get_PBE</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_Max_Rebate_Percentages</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_PBEs</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <description>Loop through the price books to get the price book id</description>
+        <name>Loop_through_Price_Books</name>
+        <label>Loop through Price Books</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>Price_Books</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_PB_Id</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Get_PBE</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get the corresponding price book entry based on the product code and organization id.</description>
+        <name>Get_PBE</name>
+        <label>Get PBE</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_through_each_PBE</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ProductCode</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Product_Code__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Pricebook2Id</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>PricebookIds</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>PricebookEntry</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Price_Books</name>
+        <label>Price Books</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_through_Price_Books</targetReference>
+        </connector>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>PriceBookNames</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Pricebook2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Update the price book entries with the max rebate percent</description>
+        <name>Update_PBEs</name>
+        <label>Update PBEs</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputReference>PBE_ToUpdate</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Evaluate_Origin_Org</targetReference>
+        </connector>
+        <filterFormula>AND(
+    {!$Record.Effective_Start_Date__c} &lt;= TODAY(),
+    ISBLANK( {!$Record.Effective_End_Date__c} )
+)</filterFormula>
+        <object>SPR_Max_Rebate_Percent__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Message to be logged when the SPR Max Rebate record did not match a source organization id</description>
+        <name>tmpltLogEntryMessageSourceOrgUnmatched</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Source organization in the SPR Max Rebate sequence number {!$Record.Source_Record_Sequence__c} is {!$Record.Source_Organization_ID__c}. There was no match in the flow.</text>
+    </textTemplates>
+    <variables>
+        <description>Collection variable to store PBEs to update</description>
+        <name>PBE_ToUpdate</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>PricebookEntry</objectType>
+    </variables>
+    <variables>
+        <name>PricebookIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Price books to use when updating price book entries</description>
+        <name>PriceBookNames</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

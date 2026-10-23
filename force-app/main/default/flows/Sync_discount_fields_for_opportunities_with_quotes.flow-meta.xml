@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Evaluates whether the user has a custom permission assigned that will allow this flow to proceed or end.</description>
+        <name>Evaluate_User_Permission_to_Proceed_with_this_Flow</name>
+        <label>Evaluate User Permission to Proceed with this Flow</label>
+        <locationX>336</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Proceed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Permission.Sync_Opp_Prod_Discount_Fields</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Evaluate_Which_Discount_Field_Changed</targetReference>
+            </connector>
+            <label>Proceed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Evaluates the state of the discount fields to see which one them was the one changed and determine which discount field to update. This decision element is in place because a change on the discount field of a synced quote will attempt to change the standard discount field on the corresponding opportunity.</description>
+        <name>Evaluate_Which_Discount_Field_Changed</name>
+        <label>Evaluate Which Discount Field Changed</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>New_Product_Added</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>fNewProd</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Discount_Field</targetReference>
+            </connector>
+            <label>New Product Added</label>
+        </rules>
+        <rules>
+            <name>Prod_Discount_custom_field_changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Product_Discount__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product_Discount__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Discount</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Discount_Field</targetReference>
+            </connector>
+            <label>Prod Discount (custom) field changed</label>
+        </rules>
+        <rules>
+            <name>Discount_standard_field_changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Discount</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Discount</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Product_Discount__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Product_Discount_custom_Field</targetReference>
+            </connector>
+            <label>Discount (standard) field changed</label>
+        </rules>
+    </decisions>
+    <description>Sync the Product_Discount value to the Discount field to allow standard calculations to execute and consequently, create quote lines with the appropriate discount value.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Formula to check if the product is being created</description>
+        <name>fNewProd</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <interviewLabel>Sync discount fields for opportunities with quotes {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Sync discount fields for opportunities with quotes</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Assign the value from the Product_Discount field to the Discount field</description>
+        <name>Update_Discount_Field</name>
+        <label>Update Discount Field</label>
+        <locationX>50</locationX>
+        <locationY>803</locationY>
+        <inputAssignments>
+            <field>Discount</field>
+            <value>
+                <elementReference>$Record.Product_Discount__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Assign the value from the Discount (standard) field to the Product_Discount (custom) field.</description>
+        <name>Update_Product_Discount_custom_Field</name>
+        <label>Update Product Discount (custom) Field</label>
+        <locationX>94</locationX>
+        <locationY>503</locationY>
+        <inputAssignments>
+            <field>Product_Discount__c</field>
+            <value>
+                <elementReference>$Record.Discount</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>210</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Evaluate_User_Permission_to_Proceed_with_this_Flow</targetReference>
+        </connector>
+        <object>OpportunityLineItem</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

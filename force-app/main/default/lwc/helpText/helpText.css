@@ -1,0 +1,12 @@
+.helpTextContainer{
+    padding-left: 0.25rem;
+    position:relative;
+    display: inline-block;
+}
+
+.helpTextContent{
+    position:absolute;
+    min-width: 25rem;
+    bottom: 2rem;
+    left: -0.75rem;
+}

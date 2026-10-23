@@ -1,0 +1,3 @@
+<apex:component access="global">
+    <apex:image url="https://ergotron.my.salesforce.com/servlet/servlet.ImageServer?id=0151M00000SRnS6&oid=00Dcb00000AeXh3" />
+</apex:component>

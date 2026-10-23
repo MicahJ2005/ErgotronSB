@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>B2B_Acct_Group</name>
+        <label>B2B Acct Group</label>
+        <locationX>636</locationX>
+        <locationY>50</locationY>
+        <assignmentItems>
+            <assignToReference>Get_account_to_update.ccrz__E_AccountGroup__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_B2B_Account_Group_ID.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_B2B_Acct_Group</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>AcctGroup_Found</name>
+        <label>AcctGroup Found</label>
+        <locationX>326</locationX>
+        <locationY>52</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Found_Group</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_B2B_Account_Group_ID.Id</leftValueReference>
+                <operator>WasSet</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_account_to_update</targetReference>
+            </connector>
+            <label>Found Group</label>
+        </rules>
+    </decisions>
+    <description>Launched by PB Account to assign the predefined CC Account Group to any new site created.</description>
+    <interviewLabel>CC Account Group Assignment {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>CC Account Group Assignment</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_account_to_update</name>
+        <label>Get account to update</label>
+        <locationX>500</locationX>
+        <locationY>50</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>B2B_Acct_Group</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>ccrz__E_AccountGroup__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Obtains the ID for the account group we want to assign to the new site</description>
+        <name>Get_B2B_Account_Group_ID</name>
+        <label>Get B2B Account Group ID</label>
+        <locationX>182</locationX>
+        <locationY>50</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>AcctGroup_Found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Replacement Parts</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ccrz__E_AccountGroup__c</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Assign_B2B_Acct_Group</name>
+        <label>Assign B2B Acct Group</label>
+        <locationX>770</locationX>
+        <locationY>50</locationY>
+        <inputReference>Get_account_to_update</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Get_B2B_Account_Group_ID</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Account Record Id</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

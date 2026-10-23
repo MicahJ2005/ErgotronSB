@@ -1,0 +1,29 @@
+<apex:component controller="Opp_Demand_Input_Approval_Controller" access="global" id="compProductSchedule">
+    <apex:attribute name="opportunityId" type="Id" description="This is the Id of the opportunity" assignTo="{!oppId}" access="global" />
+    
+    <table border="1">
+
+        <caption style="text-align:left width:30%"><b>Product Schedules</b></caption>
+
+            <apex:repeat value="{!lstProductNames}" var="strProductName" id="rptProducts">
+                <tr>
+                    <td>{!strProductName}</td>
+                    <td>
+                        <table border="1">
+         <tr>
+            <th>Scheduled Date</th>
+            <th>Scheduled Quantity</th>
+        </tr>
+                            <apex:repeat value="{!mapProductSchedule[strProductName]}" var="oProductSchedule" id="rptSchedules">
+                                <tr>
+                                    <td><apex:outputText value="{0, date, MM/dd/yy}"><apex:param value="{!oProductSchedule.Scheduled_Date__c}"/></apex:outputText></td>
+                                    <td>{!oProductSchedule.Scheduled_Quantity__c}</td>
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                    </td>
+                </tr>
+            </apex:repeat>
+        </table>
+    
+</apex:component>

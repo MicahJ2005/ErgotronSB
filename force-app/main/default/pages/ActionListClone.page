@@ -1,0 +1,40 @@
+<apex:page showHeader="true" sidebar="true" tabStyle="Action_List__c" standardStylesheets="true" standardController="Action_List__c" extensions="Action_List_Clone_Controller" docType="html-5.0">
+	<style type="text/css">
+		.textAreaClass { 
+			width: 800px;
+			height: 200px; 
+		}
+	</style>
+
+	<apex:form >
+		<apex:pageBlock tabStyle="Action_List__c" mode="maindetail" title="Clone Action List">
+			<!-- Hidden fields used by the controller extension -->
+			<apex:outputField rendered="false" value="{!Action_List__c.Name}" />
+			<apex:outputField rendered="false" value="{!Action_List__c.Assigned_To__c}" />
+			<apex:outputField rendered="false" value="{!Action_List__c.Account__c}" />
+			<apex:outputField rendered="false" value="{!Action_List__c.Action__c}" />
+			<apex:outputField rendered="false" value="{!Action_List__c.Next_Steps__c}" />	
+
+			<apex:pageBlockButtons >
+				<!-- Save/Cancel Buttons -->
+				<apex:commandButton action="{!saveWithActivities}" value="Save" />&nbsp;&nbsp;
+				<apex:commandButton action="{!cancel}" value="Cancel" />
+			</apex:pageBlockButtons>
+
+			<apex:pageBlockSection columns="2" collapsible="false">
+				<apex:inputField required="true" value="{!oActionListClone.Name}" />
+				<apex:inputField required="true" value="{!oActionListClone.Assigned_To__c}" />
+				<apex:inputField value="{!oActionListClone.Account__c}" />
+				<apex:inputField required="true" value="{!oActionListClone.Status__c}" />
+				<apex:inputField required="true" value="{!oActionListClone.Due_Date__c}" />							
+			</apex:pageBlockSection>
+
+			<apex:pageBlockSection columns="1" collapsible="false">
+				<apex:inputField required="true" styleClass="textAreaClass" value="{!oActionListClone.Action__c}" />
+				<apex:inputField styleClass="textAreaClass" value="{!oActionListClone.Next_Steps__c}" />
+			</apex:pageBlockSection>
+
+		</apex:pageblock>
+
+	</apex:form>
+</apex:page>

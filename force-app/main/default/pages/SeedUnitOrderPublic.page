@@ -1,0 +1,434 @@
+<apex:page standardController="Lead" 
+    extensions="SeedUnitOrderDraftController" 
+    showHeader="false" 
+    sidebar="false" 
+    title="Seed Unit Request" 
+    standardStylesheets="false" 
+    doctype="html-5.0" 
+    applyhtmltag="false" 
+    language="{!$CurrentPage.parameters.lang}"
+>
+
+    <head>
+        <title>Seed Unit Request</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+        <apex:stylesheet value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+
+        <apex:includescript value="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js" />
+        <apex:includescript value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" />
+
+        <style>
+            .top-buffer { 
+                margin-top:20px; 
+            }
+            .fullwidth {
+                margin-left:0;
+                margin-right:0;
+                padding-left:0;
+                padding-right:0;
+            }
+            .hidden-toggle {
+                display:none;
+            }
+            .navbar-default {
+                background-color: #fe5000;
+                color: #fff;
+            }
+            .nav.nav-center {
+                margin:auto;
+                float:none;
+                color: #fff;
+            }
+            .nav-logo-small {
+                margin: auto; 
+                display:block; 
+                height:2.5em; 
+                width:2.647em;
+                margin-top: 0.6em;
+            }
+            .nav-logo-large {
+                margin-left: 55%; 
+                display:block; 
+                height:2em; 
+                width:8.823em;
+                margin-top: 0.7em;
+            }
+            .sm-container {
+                margin-top: 0.8em;
+                float:left;
+            }
+            .sm-icon {
+                width:1.75em;
+                height:1.75em;
+                margin-left: 0.5em;
+            }
+
+            .form-group.required .control-label:before {
+                content:"* ";
+                color:red;
+            }
+            
+            @media ( min-width: 48em ) {
+                div.navbar-header {
+                    width:70%;
+                }
+            }
+
+            @media ( min-width: 64em ) {
+                div.navbar-header {
+                    width:85%;
+                }
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <apex:form id="frmMain">
+        <apex:actionStatus id="statusSave" onstart="startSave()" onstop="stopSave()" />
+
+            <div class="container-fluid">
+                <apex:image value="{!$Resource.ErgotronLogo}" rendered="{!OR($CurrentPage.parameters.brand == 'ergotron', $CurrentPage.parameters.brand == '')}"/>
+                <apex:image value="{!$Resource.HaworthLogo}" width="350px" rendered="{!$CurrentPage.parameters.brand == 'haworth'}"/>
+
+                <div class="page-header">
+                    <h2>Submit a Seed Unit Order Request</h2>
+                </div>
+
+                <apex:outputPanel id="opForm" rendered="{!NOT(bolShowResults)}">
+
+                    <div class="form-group required">
+
+                        <div class="well well-sm text-center"><strong>End User Information</strong></div>
+
+                        <label for="Company" class="control-label">{!$Label.Seed_Form_End_User_Company}:</label>
+                        <apex:inputField value="{!soLead.Company}" styleClass="form-control" id="Company" required="required" />
+
+                        <label for="FirstName" class="control-label">{!$Label.Seed_Form_End_User_First_Name}:</label>
+                        <apex:inputField value="{!soLead.FirstName}" styleClass="form-control" id="FirstName" required="required" />
+
+                        <label for="LastName" class="control-label">{!$Label.Seed_Form_End_User_Last_Name}:</label>
+                        <apex:inputField value="{!soLead.LastName}" styleClass="form-control" id="LastName" required="required" />
+
+                        <label for="Title" class="control-label">{!$Label.Seed_Form_End_User_Title}:</label>
+                        <apex:inputField value="{!soLead.Title}" styleClass="form-control" id="Title" />
+
+                        <label for="Phone" class="control-label">{!$Label.Seed_Form_End_User_Phone}:</label>
+                        <apex:inputField value="{!soLead.Phone}" styleClass="form-control" id="Phone" html-placeholder="(xxx) xxx-xxxx" required="required" />
+
+                        <label for="MobilePhone">{!$Label.Seed_Form_End_User_Mobile}:</label>
+                        <apex:inputField value="{!soLead.MobilePhone}" styleClass="form-control" id="MobilePhone" html-placeholder="(xxx) xxx-xxxx" />
+
+                        <label for="Email" class="control-label">{!$Label.Seed_Form_End_User_Email}:</label>
+                        <apex:inputField value="{!soLead.Email}" styleClass="form-control" id="Email" html-placeholder="name@company.com" required="required" />
+                    </div>
+
+                    <div class="form-group required">
+
+                        <div class="well well-sm text-center"><strong>
+                            <apex:outputText value="Billing Address" rendered="{!OR($CurrentPage.parameters.brand == 'ergotron', $CurrentPage.parameters.brand == '')}" />
+                            <apex:outputText value="End User Address" rendered="{!$CurrentPage.parameters.brand == 'haworth'}" />
+                        </strong></div>
+
+                        <label for="BillingStreet" class="control-label">{!$Label.Seed_Form_Billing_Street}:</label>
+                        <apex:inputField value="{!soLead.Street}" styleClass="form-control" id="BillingStreet" required="required" />
+
+                        <label for="BillingCity" class="control-label">{!$Label.Seed_Form_Billing_City}:</label>
+                        <apex:inputField value="{!soLead.City}" styleClass="form-control" id="BillingCity" required="required" />
+
+                        <label for="BillingCountry" class="control-label">{!$Label.Seed_Form_Billing_Country}:</label>
+                        <apex:inputField value="{!soLeadBillingAddress.Ship_To_Country__c}" styleClass="form-control" id="BillingCountry" required="required" />
+
+                        <div id="stateObserverBilling" class="stateObserver">
+                            <label for="BillingState" class="control-label">{!$Label.Seed_Form_Billing_State}:</label>
+                            <apex:inputField value="{!soLeadBillingAddress.Ship_To_State_Province__c}" styleClass="form-control" id="BillingState" required="required" /><br />
+                        </div>
+
+                        <label for="BillingPostalCode" class="control-label">{!$Label.Seed_Form_Billing_Postal_Code}:</label>
+                        <apex:inputField value="{!soLead.PostalCode}" styleClass="form-control" id="BillingPostalCode" required="required" />
+
+                    </div>
+
+                    <div class="form-group required">
+
+                        <div class="well well-sm text-center"><strong>Shipping Address</strong></div>
+
+                        <label for="copyAddress" class="control-label" style="font-weight: bold">{!IF($CurrentPage.parameters.brand == 'haworth', 'Copy End User Address' , $Label.Seed_Form_Copy_Billing_Address)}&nbsp;&nbsp;</label>
+                        <apex:inputCheckbox styleClass="copyAddress" value="{!bolSameAddress}" id="copyAddress"/><br />
+
+                        <label for="ShippingStreet" class="control-label">{!$Label.Seed_Form_Shipping_Street}:</label>
+                        <apex:inputField value="{!soLeadShipping.Street}" styleClass="form-control" id="ShippingStreet" required="required" />
+
+                        <label for="ShippingCity" class="control-label">{!$Label.Seed_Form_Shipping_City}:</label>
+                        <apex:inputField value="{!soLeadShipping.City}" styleClass="form-control" id="ShippingCity" required="required" />
+
+                        <label for="ShippingCountry" class="control-label">{!$Label.Seed_Form_Shipping_Country}:</label>
+                        <apex:inputField value="{!soLeadShippingAddress.Ship_To_Country__c}" styleClass="form-control" id="ShippingCountry" required="required" />
+
+                        <div id="stateObserverShipping" class="stateObserver">
+                            <label for="ShippingState" class="control-label">{!$Label.Seed_Form_Shipping_State}:</label>
+                            <apex:inputField value="{!soLeadShippingAddress.Ship_To_State_Province__c}" styleClass="form-control" id="ShippingState" required="required" /><br />
+                        </div>
+
+                        <label for="ShippingPostalCode" class="control-label">{!$Label.Seed_Form_Shipping_Postal_Code}:</label>
+                        <apex:inputField value="{!soLeadShipping.PostalCode}" styleClass="form-control" id="ShippingPostalCode" required="required" />
+
+                    </div>
+
+                    <div class="form-group required">
+
+                        <div class="well well-sm text-center"><strong>{!IF($CurrentPage.parameters.brand == 'haworth', 'Dealer/', '')}Reseller Information</strong></div>
+
+                        <label for="WebResellerName" class="control-label">{!$Label.Seed_Form_Reseller_Name}:</label>
+                        <apex:inputField value="{!soLead.WebResellerName__c}" styleClass="form-control" id="WebResellerName" required="required" />
+
+                        <label for="WebResellerContact" class="control-label">{!$Label.Seed_Form_Reseller_Contact_Name}:</label>
+                        <apex:inputField value="{!soLead.WebResellerContact__c}" styleClass="form-control" id="WebResellerContact" required="required" />
+
+                        <label for="WebResellerAddress1" class="control-label">{!$Label.Seed_Form_Reseller_Street_Address_1}:</label>
+                        <apex:inputField value="{!soLead.WebResellerAddress1__c}" styleClass="form-control" id="WebResellerAddress1" />
+
+                        <label for="WebResellerAddress2" class="control-label">{!$Label.Seed_Form_Reseller_Street_Address_2}:</label>
+                        <apex:inputField value="{!soLead.WebResellerAddress2__c}" styleClass="form-control" id="WebResellerAddress2" />
+
+                        <label for="WebResellerCity" class="control-label">{!$Label.Seed_Form_Shipping_City}:</label>
+                        <apex:inputField value="{!soLead.WebResellerCity__c}" styleClass="form-control" id="WebResellerCity" required="required" />
+
+                        <label for="WebResellerStateCountry">{!$Label.Seed_Form_Reseller_State_Country}:</label>
+                        <apex:inputField value="{!soLead.WebResellerStateCountry__c}" styleClass="form-control" id="WebResellerStateCountry" required="required"/>
+
+                        <label for="WebResellerPostalCode" class="control-label">{!$Label.Seed_Form_Shipping_Postal_Code}:</label>
+                        <apex:inputField value="{!soLead.WebResellerPostalCode__c}" styleClass="form-control" id="WebResellerPostalCode" required="required" />
+
+                        <label for="WebResellerPhone" class="control-label">{!$Label.Seed_Form_Reseller_Phone}:</label>
+                        <apex:inputField value="{!soLead.WebResellerPhone__c}" styleClass="form-control" id="WebResellerPhone" html-placeholder="(xxx) xxx-xxxx" required="required" />
+
+                        <label for="WebResellerEmail" class="control-label">{!$Label.Seed_Form_Reseller_Email}:</label>
+                        <apex:inputField value="{!soLead.WebResellerEmail__c}" styleClass="form-control" id="WebResellerEmail" html-placeholder="name@company.com" required="required" />
+                    </div>
+
+                    <apex:outputPanel id="opHaworthRep" rendered="{!$CurrentPage.parameters.brand == 'haworth'}">
+                        
+                        <div class="form-group required">
+
+                            <div class="well well-sm text-center"><strong>Haworth Rep Contact Information</strong></div>
+
+                            <label for="HaworthResellerName" class="control-label">Haworth Rep Name:</label>
+                            <apex:inputField value="{!soLead.HaworthRepName__c}" styleClass="form-control" id="HaworthResellerName" required="required" />
+
+                            <label for="HaworthResellerEmail" class="control-label">Haworth Rep Email:</label>
+                            <apex:inputField value="{!soLead.HaworthRepEmail__c}" styleClass="form-control" id="HaworthResellerEmail" html-placeholder="name@company.com" required="required" />
+
+                            <label for="HaworthResellerPhone" class="control-label">Haworth Rep Phone:</label>
+                            <apex:inputField value="{!soLead.HaworthRepPhone__c}" styleClass="form-control" id="HaworthResellerPhone" html-placeholder="(xxx) xxx-xxxx" required="required" />
+
+                        </div>
+
+                    </apex:outputPanel>
+
+                    <div class="form-group required">
+
+                        <div class="well well-sm text-center"><strong>{!$Label.Seed_Form_Product_Requested_to_Seed}</strong></div>
+
+                        <!--<apex:outputPanel id="opAnnouncement" >
+                            <div class="alert alert-warning">
+                                {!$Label.Seed_Form_Annoucement}
+                            </div>
+                        </apex:outputPanel> -->
+                        
+                        <apex:outputPanel id="opHaworthShippingLeadTime" rendered="{!$CurrentPage.parameters.brand == 'haworth'}" >
+                            <div class="alert alert-warning">
+                                Orders are subject to a 7-10 day shipping lead time.  If you need your order expedited, please call Customer Care at 844-429-9678 and provide payment details for expedited shipping.
+                            </div>
+
+                            <label for="HaworthSeedUseCase" class="control-label">How will this Seed Unit be used?</label>
+                            <apex:inputField id="HaworthSeedUseCase"
+                                value="{!soLead.HaworthSeedUseCase__c}"
+                                styleClass="form-control"
+                                required="required"
+                            />
+                        </apex:outputPanel>
+
+                        <label for="Description" class="control-label">{!$Label.Seed_Form_Opportunity_Details}</label>
+                        <apex:inputField id="Description" 
+                            value="{!soLead.Description}" 
+                            styleClass="form-control" 
+                            required="required" 
+                            html-placeholder="Enter the justification for this Seed, including any information about size of the deal or any competitive information."
+                        />
+
+                        <label for="CompanySize" class="control-label">{!$Label.Seed_Form_Company_Size}</label>
+                        <apex:inputField id="CompanySize" 
+                            value="{!soLead.Company_Size__c}" 
+                            styleClass="form-control" 
+                            required="required" 
+                        />
+
+                        <label for="ifVertical" class="control-label">{!$Label.Seed_Form_Choose_your_industry}</label>
+                        <apex:inputField id="ifVertical" styleClass="form-control" value="{!soLead.Ergotron_Vertical_Market__c}" required="required" rendered="{!$CurrentPage.parameters.brand != 'haworth'}">
+                            <apex:actionSupport event="onchange"
+                                                action="{!NULL}"
+                                                rerender="opProduct" 
+                                                status="statusSave"
+                            />
+                        </apex:inputField>
+                        <apex:inputField id="ifVerticalHaworth" styleClass="form-control" value="{!soLead.Industry}" required="required" rendered="{!$CurrentPage.parameters.brand == 'haworth'}">
+                            <apex:actionSupport event="onchange"
+                                                action="{!NULL}"
+                                                rerender="opProduct" 
+                                                status="statusSave"
+                            />
+                        </apex:inputField>
+
+                        <apex:outputPanel id="opProduct">
+                            <label for="ifProduct" class="control-label">{!$Label.Seed_Form_Product_Requested_to_Seed}</label>
+                            <apex:selectList value="{!soLead.WebSeedProductRequested__c}" size="1" styleClass="form-control" required="required">
+                                <apex:selectOptions value="{!lstProducts}" />
+                            </apex:selectList>
+                        </apex:outputPanel>
+
+                        <label for="DisplayConfig" class="control-label">{!$Label.Seed_Form_Display_Configuration}</label>
+                        <apex:inputField id="DisplayConfig" 
+                            value="{!soLead.Display_Configuration__c}" 
+                            styleClass="form-control" 
+                            required="required" 
+                        />
+
+
+                        <label for="DisplaySize" class="control-label">{!$Label.Seed_Form_Display_Size}</label>
+                        <apex:inputField id="DisplaySize" 
+                            value="{!soLead.Screen_Size__c}" 
+                            styleClass="form-control" 
+                            required="required" 
+                        />
+
+
+                        <label for="MakeModel" class="control-label">{!$Label.Seed_Form_Display_MakeModel}</label>
+                        <apex:inputField id="MakeModel" 
+                            value="{!soLead.Display_Make_and_Model__c}" 
+                            styleClass="form-control" 
+                            required="required" 
+							html-placeholder="Enter the make and model of the monitor(s) and/or laptop."
+                        />
+
+                        
+                        
+                    </div>
+
+                    <div class="form-group">
+                        <c:reCaptcha />
+                    </div>
+
+                    <div class="form-group">
+                        <apex:outputPanel id="opMessage">
+                            <apex:pageMessages />
+                        </apex:outputPanel>
+                    </div>
+
+                    <div class="form-group required">
+                        <apex:commandButton id="cmdSave" styleClass="btn btn-primary" action="{!saveLead}" value="Save and Submit" rerender="opMessage" status="statusSave"/>
+                    </div>
+
+                </apex:outputPanel>
+
+            </div>
+
+            <!-- Modal Start here-->
+            <div class="modal fade bs-example-modal-sm" id="myPleaseWait" tabindex="-1"
+                role="dialog" aria-hidden="true" data-backdrop="static">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">
+                                <span class="glyphicon glyphicon-time">
+                                </span>&nbsp;Please Wait
+                             </h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-info
+                                progress-bar-striped active"
+                                style="width: 100%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal ends Here -->
+
+            <apex:outputPanel id="jspanel">
+                <script>
+                    var j$ = jQuery.noConflict();
+                    j$(document).ready(function () { 
+
+                        j$('.copyAddress').change(function(e) {
+                            if(j$(this).is(':checked')) {
+                                j$('textarea[id$=ShippingStreet]').val(j$('textarea[id$=BillingStreet]').val());
+                                j$('input[id$=ShippingCity]').val(j$('input[id$=BillingCity]').val());
+                                j$('select[id$=ShippingCountry]').val(j$('select[id$=BillingCountry]').val());
+                                j$('select[id$=ShippingState]').val(j$('select[id$=BillingState]').val());
+                                j$('input[id$=ShippingPostalCode]').val(j$('input[id$=BillingPostalCode]').val());
+                            }
+                        });
+
+                    });
+
+                    function startSave() {    
+                        j$('#myPleaseWait').modal('show');
+                    }
+
+                    function stopSave() {
+                        j$('#myPleaseWait').modal('hide');
+                    }
+
+                    // Mutation object
+                    var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+
+                    // Defining observer 
+                    var observer = new MutationObserver(function(mutations) { 
+                        // If the myListClass was removed from the list - re-assign it
+                        if(!j$('#stateObserverBilling select').first().hasClass('form-control')){
+                            j$('#stateObserverBilling select').first().addClass('form-control');
+                        }
+
+                        if(!j$('#stateObserverShipping select').first().hasClass('form-control')){
+                            j$('#stateObserverShipping select').first().addClass('form-control');
+                        }
+                    });
+
+                    // A target object fot the observer
+                    var myNodeBilling = document.querySelector('#stateObserverBilling'); 
+                    var myNodeShipping = document.querySelector('#stateObserverShipping'); 
+
+                    // Assigning observer to the dependent picklist
+                    observer.observe(myNodeBilling, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true
+                    });
+
+                    observer.observe(myNodeShipping, {
+                        childList: true,
+                        subtree: true,
+                        attributes: true
+                    });
+
+
+                </script>
+                
+                <script type="text/javascript">
+                    var RecaptchaOptions = {
+                       lang : '{!$CurrentPage.parameters.lang}',
+                    };
+                </script>
+            </apex:outputPanel>
+
+        </apex:form>
+
+    </body>
+
+</apex:page>

@@ -1,0 +1,84 @@
+<apex:page id="ERG_HomeRedirect" docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false" controller="CC_ERG_Home" >
+    
+    <script>
+ 
+
+    /*
+// version 1
+
+        thispage = window.location.href;
+
+     endofserver = thispage.indexOf("ccrz__HomePage");
+     thisserver  = thispage.substr(0, endofserver);
+    
+    // catagory id for sandbox
+    jumphere = thisserver + "ccrz__ProductList?categoryId=a5E4F0000004en0UAA&portalUser=0054F000002KrcRQAS"; 
+    
+    //alert( jumphere );
+    
+        //window.location.href = jumphere;
+    */
+    
+    // version 2
+            thisPage = window.location.href;
+
+            var AllProductsCatID = '{!AllProductsCatID}';
+    //            alert ("productcat = "+AllProductsCatID);
+    
+    
+       endOfURL2Page = thisPage.indexOf("?");
+ 
+        
+        if( endOfURL2Page > 0 ) {    
+        
+            //   alert( "will jump" );    
+            
+            
+          frontOfURLWithPage = thisPage.substr(0, endOfURL2Page);
+        
+                endOfURLPath = frontOfURLWithPage.lastIndexOf("/");
+            frontOfURLNoPage = frontOfURLWithPage.substr(0, endOfURLPath+1);
+        
+            lenOfOriginalURL = thisPage.length;
+        
+             startLocation = endOfURL2Page + 1;
+               endLocation = lenOfOriginalURL - 1;
+          endOfOriginalURL = thisPage.substr(startLocation, endLocation);
+        
+            // AllProductsCatID
+            //            insertString = "ccrz__ProductList?categoryId=a5E4F0000004en0UAA&";
+            insertString = "ccrz__ProductList?categoryId={!AllProductsCatID}&";
+        
+             jumpToURL = frontOfURLNoPage+insertString+endOfOriginalURL;
+            
+            // alert( jumpToURL );
+            //alert(" csr loginpage ");
+            
+            window.location.href = jumpToURL;
+            
+    }
+    else
+    {
+        // alert( "no jump" )  
+        
+        
+        var nonCSRLogin =thisPage.includes("portalUser");
+        if( nonCSRLogin )
+        {
+            //alert(" csr loginpage ");
+        }
+        else
+        {
+            var thisServer = window.location.origin;
+            //              alert(" standard user login " + thisServer );
+            jumpToURL = thisServer+"/ccrz__CCPage?pagekey=LM";
+            window.location.href = jumpToURL;
+        }
+        
+        //        window.location.href = jumpToURL;        
+        
+    }
+    
+    
+    </script>
+ </apex:page>

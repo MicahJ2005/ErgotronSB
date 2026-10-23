@@ -1,0 +1,39 @@
+<!--
+  @File Name          : path.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 12/10/2019, 5:59:28 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    12/10/2019   James Loghry (Demand Chain)     Initial Version
+-->
+<template>
+  <article class="slds-card">
+    <div class="slds-card__body slds-card__body_inner">
+      <div class="slds-path">
+        <div class="slds-grid slds-path__track">
+          <div class="slds-grid slds-path__scroller-container">
+            <div class="slds-path__scroller" role="application">
+              <div class="slds-path__scroller_inner">
+                <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                  <template for:each={steps} for:item="step">
+                    <li class={step.css} key={step.index} role="presentation">
+                      <a aria-selected="false" class="slds-path__link" role="option" data-index={step.index} onclick={handleStepClick}>
+                        <span class="slds-path__stage">
+                          <lightning-icon icon-name="utility:check" size="x-small" variant="inverse"></lightning-icon>
+                        </span>
+                        <span class="slds-path__title">{step.label}</span>
+                      </a>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</template>

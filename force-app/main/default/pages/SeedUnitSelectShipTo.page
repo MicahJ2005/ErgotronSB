@@ -1,0 +1,161 @@
+<!-- This page will be launched from the "Select Ship To Location" button on the Seed Unit Order page and will display the list of ship to locations from Oracle.  Users can either
+select a ship to location from the list or enter a new location address. -->
+
+<apex:page standardController="Seed_Unit_Order__c" extensions="Seed_Unit_Select_Ship_To_Controller" docType="html-5.0">
+	<apex:form rendered="{!bRenderList}">
+		<!-- jQuery script which sets focus to the ship to location list. Without this function, the focus goes to the address fields at the bottom of the page -->
+		<script src="https://code.jquery.com/jquery-2.0.0.min.js" />
+		<script>
+
+			j$ = jQuery.noConflict();
+		    window.onload = function(){
+		        jQuery('input[type=text]').blur();
+		        jQuery('[id$=locList]').focus();
+
+		        jQuery('#btnExistingAddress').click(function() {
+		        	alert('This will copy the contact\'s address information in to the "New Ship To Location" fields below.  Please verify the information before hitting "Save"');
+		        	jQuery('input[id$=ifAddress1]').val(jQuery('span[id$=ofContactStreet]').text());
+		        	jQuery('input[id$=ifCity]').val(jQuery('span[id$=ofContactCity]').text());
+		        	jQuery('input[id$=ifPostalCode]').val(jQuery('span[id$=ofContactPostalCode]').text());
+
+		        	// Iterate through select list for Country
+		        	strCountry = jQuery('span[id$=ofContactCountry]').text();
+		        	jQuery('select[id$=ifCountry] > option').each(function() {
+		        		if(jQuery(this).val().substring(0,strCountry.length) == strCountry && jQuery('select[id$=ifCountry]').val() != jQuery(this).val()) {
+		        			jQuery('select[id$=ifCountry]').val(jQuery(this).val());
+		        		}
+		        	});
+
+		        	afAddressBlock('state');
+
+		        	// Iterate through select list for State
+		        	strState = jQuery('span[id$=ofContactState]').text();
+		        	jQuery('select[id$=ifState] > option').each(function() {
+		        		if(jQuery(this).val().substring(0,strState.length) == strState) {
+		        			// console.log(jQuery(this).val().substring(0,strState.length));
+		        			jQuery('select[id$=ifState]').val(jQuery(this).val());
+		        			// // Call rerender for state list refresh
+		        			afAddressBlock(jQuery(this).val());
+		        		}
+		        	});
+
+		        });
+		    };
+		</script>
+
+		<apex:actionFunction name="afAddressBlock" action="{!doNothing}" rerender="newAddressBlock">
+			<apex:param name="stateprovince" value="" assignTo="{!Seed_Unit_Order__c.Ship_To_State_Province__c}"/>
+		</apex:actionFunction>
+
+		<apex:pageMessage severity="info" strength="3" summary="{!$Label.Seed_Approval_Step_1_With_Ship_To}" rendered="{!bShipToLocations}"/>
+		<apex:pageMessage severity="info" strength="3" summary="{!$Label.Seed_Approval_Step_1_No_Ship_To}" rendered="{!!bShipToLocations}"/><br/>
+		<apex:pageMessages id="pageMessages"/>
+					
+		<!-- Data table with list of ship to addresses (if they exist for this customer). If not, fields for new address listed at the bottom -->			
+		<apex:pageblock id="locList" title="Select from Existing Oracle Sites" rendered="{!bShipToLocations}">	
+			<!-- Hidden fields used by the controller extension -->
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Sold_To_Org__c}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Opportunity__c}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Seed_Unit_Order_Submitted__c}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Seed_Unit_Approval_Status__c}" />
+ 			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Account__r.BillingStreet}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Account__r.BillingCity}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Account__r.BillingState}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Account__r.BillingStateCode}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Account__r.BillingPostalCode}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Account__r.BillingCountry}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Account__r.BillingCountryCode}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Sold_To_Salesforce_Id__c}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Contact_Role_Id__c}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Do_Not_Validate_Address__c}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Salesforce_Id__c}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Customer_Account__c}" />
+			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Contact__c}" />
+
+			<apex:pageblocktable value="{!listShipToSiteUseLookupResponses}" var="shipToLocOracle" id="allShipToLocsOracle">
+				<apex:column headervalue="Select Location">                    
+                	<apex:commandLink value="Select" action="{!shipToSaveSelect}">
+                		<apex:param name="shipLocId" value="{!shipToLocOracle.SiteUseId}" assignTo="{!sSelectedLocationId}" />
+                	</apex:commandLink>
+				</apex:column>
+				
+				<apex:column headervalue="Location">
+					<apex:outputtext value="{!shipToLocOracle.LocationName}" />
+				</apex:column>				
+				
+				<apex:column headervalue="Address">
+					<apex:outputtext value="{!shipToLocOracle.Address1}"/><br/>
+					<apex:outputtext rendered="{!shipToLocOracle.Address2!=NULL}">
+						<apex:outputtext value="{!shipToLocOracle.Address2}" /><br/>
+					</apex:outputtext>
+					<apex:outputtext rendered="{!shipToLocOracle.Address3!=NULL}">
+						<apex:outputtext value="{!shipToLocOracle.Address3}" /><br/>
+					</apex:outputtext>
+					<apex:outputtext rendered="{!shipToLocOracle.Address4!=NULL}">
+						<apex:outputtext value="{!shipToLocOracle.Address4}" /><br/>
+					</apex:outputtext>
+					<apex:outputtext value="{!shipToLocOracle.CityStateZipCountry}" />
+				</apex:column>
+			</apex:pageblocktable>
+		</apex:pageblock>
+
+		<apex:pageBlock title="Use Existing Contact Address" rendered="{!bRenderContactAddress}">
+			<apex:pageBlockButtons location="top">
+				<input type="button" class="btn" value="Use Address" id="btnExistingAddress" />
+			</apex:pageBlockButtons>
+			<div id="existingContactAddress" style="width:700px;">
+				<apex:pageBlockSection columns="2" collapsible="false" id="existingAddressBlock">
+					<apex:outputField id="ofContactStreet" value="{!soSTContact.MailingStreet}" />
+					<apex:outputField id="ofContactCity" value="{!soSTContact.MailingCity}" />
+					<apex:outputField id="ofContactState" value="{!soSTContact.MailingState}" />
+					<apex:outputField id="ofContactPostalCode" value="{!soSTContact.MailingPostalCode}" />
+					<apex:outputField id="ofContactCountry" value="{!soSTContact.MailingCountry}" />
+				</apex:pageBlockSection>
+			</div>
+		</apex:pageBlock>
+		
+		<apex:pageblock title="New Ship To Location">
+			<!-- Save/Cancel Buttons -->
+			<apex:pageBlockButtons location="bottom">
+				<apex:commandButton action="{!shipToSaveSelect}" value="Save" />
+				<apex:commandButton action="{!cancel}" value="Cancel" />
+			</apex:pageBlockButtons>
+			<div id="newShipLocation" style="width:700px;">
+				<apex:pageBlockSection columns="2" collapsible="false" title="{!$Label.Seed_Approval_Step_1_New_Ship_Location}" id="newAddressBlock">
+					<apex:inputField id="ifAddress1" value="{!Seed_Unit_Order__c.Ship_To_Address1__c}" />
+					<apex:inputField value="{!Seed_Unit_Order__c.Ship_To_Address2__c}" />
+					<apex:inputField value="{!Seed_Unit_Order__c.Ship_To_Address3__c}" />
+					<apex:inputField value="{!Seed_Unit_Order__c.Ship_To_Address4__c}" rendered="{!(Seed_Unit_Order__c.Ship_To_Country__c='United States-US' || Seed_Unit_Order__c.Ship_To_Country__c='Canada-CA')}" />
+					<!--Placeholder to keep columns aligned-->
+					<apex:outputText value="" rendered="{!(Seed_Unit_Order__c.Ship_To_Country__c!='United States-US' && Seed_Unit_Order__c.Ship_To_Country__c!='Canada-CA' && Seed_Unit_Order__c.Ship_To_Country__c!='United Kingdom-GB')}" />
+					<apex:inputField value="{!Seed_Unit_Order__c.Ship_To_County__c}" rendered="{!Seed_Unit_Order__c.Ship_To_Country__c='United Kingdom-GB'}" />
+					<apex:inputField id="ifCity" value="{!Seed_Unit_Order__c.Ship_To_City__c}" />
+					<apex:inputField id="ifState" value="{!Seed_Unit_Order__c.Ship_To_State_Province__c}" />
+					<apex:inputField id="ifPostalCode" value="{!Seed_Unit_Order__c.Ship_To_Postal_Code__c}" />
+					<apex:inputField id="ifCountry" value="{!Seed_Unit_Order__c.Ship_To_Country__c}">
+						<apex:actionSupport event="onchange" reRender="newAddressBlock" />
+					</apex:inputField>
+				</apex:pageBlockSection>
+			</div>
+		</apex:pageblock>	
+	</apex:form>
+	
+	<!-- Form rendered when seed unit order is in the approval process or has already been submitted to Oracle -->
+	<apex:form rendered="{!!bRenderList}">
+		<apex:pageBlock >
+			<apex:pageBlockSection collapsible="false" rendered="{!Seed_Unit_Order__c.Seed_Unit_Approval_Required__c && !Seed_Unit_Order__c.Seed_Unit_Order_Submitted__c}" columns="1">
+				<apex:pageMessage severity="info" strength="3" summary="{!$Label.Seed_Unit_Order_In_Approval}" />
+				<apex:outputLink value="{!sOrderRecordURL}" id="returnToSeedUnitOrder">{!$Label.Seed_Summary_Return_To_Order}</apex:outputLink>
+				<apex:outputLink value="{!sOpptyRecordURL}" id="returnToOppty">{!$Label.Seed_Summary_Return_To_Opportunity}</apex:outputLink>			
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	
+		<apex:pageBlock >
+			<apex:pageBlockSection collapsible="false" rendered="{!Seed_Unit_Order__c.Seed_Unit_Order_Submitted__c}" columns="1">
+				<apex:pageMessage severity="info" strength="3" summary="{!$Label.Seed_Unit_Order_Submitted}" />
+				<apex:outputLink value="{!sOrderRecordURL}" id="returnToSeedUnitOrder">{!$Label.Seed_Summary_Return_To_Order}</apex:outputLink>
+				<apex:outputLink value="{!sOpptyRecordURL}" id="returnToOppty">{!$Label.Seed_Summary_Return_To_Opportunity}</apex:outputLink>			
+			</apex:pageBlockSection>
+		</apex:pageBlock>	
+	</apex:form>
+</apex:page>

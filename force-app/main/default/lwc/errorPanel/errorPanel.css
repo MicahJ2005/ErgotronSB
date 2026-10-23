@@ -1,0 +1,18 @@
+host > div {
+    text-align: center;
+}
+
+.errorContainer{
+    border-radius: 0.25rem;
+    border: 1px solid #ccc;
+    padding: 1em;
+    margin: 1em;
+}
+
+.error-message{
+    color:  rgb(194, 57, 52);
+}
+
+.error-heading{
+    font-weight: 600;
+}

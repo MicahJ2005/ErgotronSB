@@ -1,0 +1,224 @@
+<template>
+    <div>
+        <template if:true={formDisabled}>
+            <lightning-spinner
+                alternative-text="Loading..." variant="brand">
+            </lightning-spinner>
+        </template>
+        <!--
+            //Not disabling the form - because if there is an error in the submission it clears out all the values
+            // so they can't fix and resubmit.
+            
+        -->
+        <!--<template if:false={formDisabled}>-->
+            <form id="RecallInformationRequestForm">
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="email-input">First Name</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="firstName-input" class="slds-input" onchange={handleFirstNameIn}/>
+                    </div>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="email-input"><abbr class="slds-required" title="required">* </abbr>Last Name</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="lastName-input" class="slds-input" onchange={handleLastNameIn}/>
+                    </div>
+                    <template if:true={lastNameBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="email-input">Company</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="company-input" class="slds-input" onchange={handleCompanyIn}/>
+                    </div>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="address1-input"><abbr class="slds-required" title="required">* </abbr>Address Line 1</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="address1-input" class="slds-input" onchange={handleAddress1In}/>
+                    </div>
+                    <template if:true={address1Blank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="address2-input">Address Line 2</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="address2-input" class="slds-input" onchange={handleAddress2In}/>
+                    </div>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="city-input"><abbr class="slds-required" title="required">* </abbr>City</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="city-input" class="slds-input" onchange={handleCityIn}/>
+                    </div>
+                    <template if:true={cityBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="state-input">State</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="state-input" class="slds-input" onchange={handleStateIn}/>
+                    </div>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="postalCode-input"><abbr class="slds-required" title="required">* </abbr>Postal Code</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="postalCode-input" class="slds-input" onchange={handlePostalCodeIn}/>
+                    </div>
+                    <template if:true={postalCodeBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="phone-input"><abbr class="slds-required" title="required">* </abbr>Phone</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="phone-input" class="slds-input" onchange={handlePhoneIn}/>
+                    </div>
+                    <template if:true={phoneBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="email-input"><abbr class="slds-required" title="required">* </abbr>Email</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="email-input" class="slds-input" onchange={handleEmailIn}/>
+                    </div>
+                    <template if:true={emailBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                    <template if:true={emailWrongFormat}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">Please enter email in the correct format: something@example.com.</p>
+                    </template>
+                </div>
+                <p style="padding-left: 33%;">Please provide the qualifying product. One product per form submission.</p>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="product-input"><abbr class="slds-required" title="required">* </abbr>Qualifying Product</label>
+                    <div class="slds-form-element__control">
+                        <select id="product-input" onchange={handleProductIn} class="slds-input">
+                            <option value=""></option>
+                            <option value="PLAY40 - 45-284-026">PLAY40 - 45-284-026</option>
+    
+                            <option value="PLAY40 - 45-284-223">PLAY40 - 45-284-223</option>
+    
+                            <option value="PLAY40DS - 45-308-223">PLAY40 - 45-308-223</option>
+    
+                            <option value="PLAY70 - 45-294-026">PLAY70 - 45-294-026</option>
+    
+                            <option value="PLAY70 - 45-294-026">PLAY70 - 45-294-223</option>
+    
+                            <option value="ITV-HD - 45-296-026">ITV-HD - 45-296-026</option>
+    
+                            <option value="ITV-VHD - 45-304-026">ITV-VHD - 45-304-026</option>
+    
+                            <option value="OM80FM - 45-367">OM80FM - 45-367</option>
+    
+                            <option value="OC80FM - 45-305">OM80FM - 45-367</option>
+    
+                            <option value="OBFM120 - 45-303-223">OBFM120 - 45-303-223</option>
+    
+                            <option value="OBFM120 - 45-309-223 (Mexico)">OBFM120 - 45-309-223 (Mexico)</option>
+    
+                            <option value="OBFM60 - 60-644-223">OBFM60 - 60-644-223</option>
+    
+                            <option value="OBFM60 - 45-310-223 (Mexico)">OBFM60 - 45-310-223 (Mexico)</option>
+                        </select>
+                    </div>
+                    <template if:true={productBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="purchaseDate-input"><abbr class="slds-required" title="required">* </abbr>Product Purchase Date</label>
+                    <div class="slds-form-element__control">
+                        <lightning-input type="date" id="code-input" onchange={handlePurchaseDateIn}></lightning-input>
+                    </div>
+                    <template if:true={purchaseDateBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <p style="padding-left: 33%;">Your qualifying product’s Date Code should fall within the range found in <a href="#" onclick={openModal_DateRanges}>this table</a>.</p>
+                <p style="padding-left: 33%;">Use <a href="#" onclick={openModal_Guide}>this guide</a> as a reference to find your product’s UPC/GTIN Code and Date Code.</p>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="ugCode-input"><abbr class="slds-required" title="required">* </abbr>UPC / GTIN Code</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="ugCode-input" class="slds-input" onchange={handleUGCodeIn}/>
+                    </div>
+                    <template if:true={ugCodeBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="dateCode-input"><abbr class="slds-required" title="required">* </abbr>Date Code</label>
+                    <div class="slds-form-element__control">
+                        <input type="text" id="dateCode-input" class="slds-input" onchange={handleDateCodeIn}/>
+                    </div>
+                    <template if:true={dateCodeBlank}>
+                        <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                    </template>
+                </div>
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <label class="slds-form-element__label" for="details-input">Additional Details</label>
+                    <div class="slds-form-element__control">
+                        <textarea style="height: 300px;" id="details-input" class="slds-input" onchange={handleDetailsIn} placeholder="Please provide any additional details, such as where the product was purchased, whether this was a self-installation or if it was installed by a professional installer."></textarea>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="slds-button slds-button_brand" form="RecallInformationRequestForm" onclick={handleSubmit} style="text-align: center;">SUBMIT</button>
+                </div>
+                <template if:true={isModalOpen_Guide}>
+                    <!-- Modal/Popup Box LWC starts here -->
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <!-- Modal/Popup Box LWC header here -->
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal_Guide}>
+                                    <lightning-icon icon-name="utility:close"
+                                        alternative-text="close"
+                                        variant="inverse"
+                                        size="small" ></lightning-icon>
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                            </header>
+                            <!-- Modal/Popup Box LWC body starts here -->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                <div>
+                                    <!-- static resources didn't work; I tried!  Had to resort to externally avail documents
+                                    These links will need to be changed when moved to prod -->
+                                    <img src="https://ergotron--c.na77.content.force.com/servlet/servlet.ImageServer?id=0151M00000Sqc1K&oid=00DG0000000kuoF&lastMod=1608008213000">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+                <template if:true={isModalOpen_DateRanges}>
+                    <!-- Modal/Popup Box LWC starts here -->
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <!-- Modal/Popup Box LWC header here -->
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal_DateRanges}>
+                                    <lightning-icon icon-name="utility:close"
+                                        alternative-text="close"
+                                        variant="inverse"
+                                        size="small" ></lightning-icon>
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                            </header>
+                            <!-- Modal/Popup Box LWC body starts here -->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                                <div>
+                                    <img src="https://ergotron--c.na77.content.force.com/servlet/servlet.ImageServer?id=0151M00000Sqc1J&oid=00DG0000000kuoF&lastMod=1608008213000">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+            </form>
+        <!--</template>-->
+    </div>
+</template>

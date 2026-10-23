@@ -1,0 +1,33 @@
+.right{
+    float: right;
+    margin-left: 1em;
+}
+
+.copyButtonContainer{
+    width: 100%;
+    text-align: center;
+}
+
+.alert-info{
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+  color: #31708f;
+}
+
+.alert-success{
+    background-color: #dff0d8 !important;
+    border-color: #d6e9c6 !important;
+    color: #3c763d !important;
+}
+
+.alert{
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-success-link{
+    color: #3c763d !important;
+    text-decoration: underline;
+}

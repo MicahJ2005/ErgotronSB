@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Evaluate the event to determine appropriate event type.</description>
+        <name>Evaluate_Event</name>
+        <label>Evaluate Event</label>
+        <locationX>314</locationX>
+        <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>Lead</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Location_Contains_Clinical_Showroom</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Location</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Clinical Showroom</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Type_as_Clinical_Showroom_Meeting</targetReference>
+            </connector>
+            <label>Location Contains &quot;Clinical Showroom&quot;</label>
+        </rules>
+        <rules>
+            <name>Assigned_to_On_Site_Demo</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Event_Owner.Username</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>onsite.demo@ergotron.com</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Type_as_On_Site_Demo</targetReference>
+            </connector>
+            <label>Assigned to On-Site Demo</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>If it is a standard lead, proceed. Otherwise, END.</description>
+        <name>Proceed</name>
+        <label>Proceed?</label>
+        <locationX>314</locationX>
+        <locationY>839</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Standard_Lead_carry_on</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Lead.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Ergotron Standard Lead</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>UpdateLeadStatus</targetReference>
+            </connector>
+            <label>Standard Lead - carry on</label>
+        </rules>
+    </decisions>
+    <description>1. Autocategorization of event type. 2. Related Lead status update - find the related lead and set its status to Working if this is the very first activity (task or event) via subFlow-updateLeadStatus.</description>
+    <environments>Default</environments>
+    <interviewLabel>Event Trigger on Create {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Event Trigger on Create</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get the owner of this event to evaluate later.</description>
+        <name>Get_Event_Owner</name>
+        <label>Get Event Owner</label>
+        <locationX>314</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Evaluate_Event</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get the related lead to validate the record type.</description>
+        <name>Lead</name>
+        <label>Lead</label>
+        <locationX>314</locationX>
+        <locationY>731</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Proceed</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.WhoId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Lead</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Set the value of the type field to &quot;Clinical Showroom Meeting&quot;</description>
+        <name>Set_Type_as_Clinical_Showroom_Meeting</name>
+        <label>Set Type as &quot;Clinical Showroom Meeting&quot;</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <connector>
+            <targetReference>Lead</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Type</field>
+            <value>
+                <stringValue>Clinical Showroom Meeting</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Set the event type field to &quot;On Site Demo&quot;</description>
+        <name>Set_Type_as_On_Site_Demo</name>
+        <label>Set Type as &quot;On-Site Demo&quot;</label>
+        <locationX>314</locationX>
+        <locationY>539</locationY>
+        <connector>
+            <targetReference>Lead</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Type</field>
+            <value>
+                <stringValue>On-Site Demo</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Event_Owner</targetReference>
+        </connector>
+        <object>Event</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+    <subflows>
+        <description>The subflow totals activities for the lead and updates the status if the this is the first activity.</description>
+        <name>UpdateLeadStatus</name>
+        <label>UpdateLeadStatus</label>
+        <locationX>182</locationX>
+        <locationY>947</locationY>
+        <flowName>subFlow_updateLeadStatus</flowName>
+        <inputAssignments>
+            <name>LeadId</name>
+            <value>
+                <elementReference>$Record.WhoId</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+</Flow>

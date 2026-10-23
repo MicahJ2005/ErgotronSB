@@ -1,0 +1,238 @@
+<apex:page id="DealRegApproved" docType="html-5.0" standardStylesheets="true" showHeader="true" sidebar="true" standardController="Lead" extensions="Deal_Reg_Approved_Cntrl" >
+	<style>	
+		.outputText {
+			padding-left: 40px;
+			font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;
+		}
+		.outputTextList {
+			font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;
+		}
+		.link {
+			font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;	
+		}
+
+		.form {
+			margin-top: 5px;
+			height: 100%;
+		}
+	</style>	
+	<apex:form id="formMain" styleClass="form">
+		<apex:outputText styleClass="outputText" value="{!$Label.Deal_Registration_No_Approved}" rendered="{!AND(!bDisplayListApprovedPriced,!bDisplayListApprovedPendingPricing)}" />
+		<apex:outputText styleClass="outputTextList" value="{!$Label.Deal_Registration_Approved_Priced}" rendered="{!bDisplayListApprovedPriced}" />
+		<apex:pageBlock id="pageBlockApprovedPriced" rendered="{!iNumberOfPagesApprovedPriced>0}">
+			<apex:panelGrid columns="5">
+				<apex:outputText value="{!$Label.Page_Number_Of}">
+					<apex:param value="{!iPageNumberApprovedPriced}" />
+					<apex:param value="{!iNumberOfPagesApprovedPriced}" />
+				</apex:outputText>
+				<apex:commandLink action="{!firstApprovedPriced}" rendered="{!bDisplayFirstApprovedPriced}">{!$Label.First}</apex:commandlink>
+                <apex:commandLink action="{!previousApprovedPriced}" rendered="{!bHasPreviousApprovedPriced}">{!$Label.Previous}</apex:commandlink>
+                <apex:commandLink action="{!nextApprovedPriced}" rendered="{!bHasNextApprovedPriced}">{!$Label.Next}</apex:commandlink>
+                <apex:commandLink action="{!lastApprovedPriced}" rendered="{!bDisplayLastApprovedPriced}">{!$Label.Last}</apex:commandlink>
+          	</apex:panelGrid>
+
+			<apex:pageBlockTable id="pageBlockTableApprovedPriced" value="{!listLeadsApprovedPriced}" var="leadApprovedPriced">           	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:outputText value=" " />
+					</apex:facet>
+					<apex:outputLink value="/dealregistration/dealregview?id={!leadApprovedPriced.Id}">{!$Label.View}</apex:outputLink>
+				</apex:column>
+                        
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$Label.End_User_Company}" action="{!toggleSortApprovedPriced}" rerender="pageBlockApprovedPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Company" assignTo="{!sSortFieldApprovedPriced}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPriced.Company}" />
+				</apex:column>
+                  	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$Label.Name}" action="{!toggleSortApprovedPriced}" rerender="pageBlockApprovedPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Name" assignTo="{!sSortFieldApprovedPriced}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPriced.Name}" />
+				</apex:column>
+                  	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Phone.Label}" action="{!toggleSortApprovedPriced}" rerender="pageBlockApprovedPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Phone" assignTo="{!sSortFieldApprovedPriced}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPriced.Phone}" />
+				</apex:column>
+                  	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Email.Label}" action="{!toggleSortApprovedPriced}" rerender="pageBlockApprovedPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Email" assignTo="{!sSortFieldApprovedPriced}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPriced.Email}" />
+				</apex:column>
+                  	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.City.Label}" action="{!toggleSortApprovedPriced}" rerender="pageBlockApprovedPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="City" assignTo="{!sSortFieldApprovedPriced}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPriced.City}" />
+				</apex:column>
+                  	
+				<apex:column rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.State.Label}" action="{!toggleSortApprovedPriced}" rerender="pageBlockApprovedPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="State" assignTo="{!sSortFieldApprovedPriced}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPriced.State}" />
+				</apex:column>
+
+				<apex:column rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA',true,false)}">
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Country.Label}" action="{!toggleSortApprovedPriced}" rerender="pageBlockApprovedPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Country" assignTo="{!sSortFieldApprovedPriced}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPriced.Country}" />
+				</apex:column>
+
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Territory_Account_Manager__c.Label}" action="{!toggleSortApprovedPriced}" rerender="pageBlockApprovedPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Territory_Account_Manager__r.Name" assignTo="{!sSortFieldApprovedPriced}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPriced.Territory_Account_Manager__r.Name}" />
+				</apex:column>
+                  	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Rebate__c.Label}" action="{!toggleSortApprovedPriced}" rerender="pageBlockApprovedPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Rebate__c" assignTo="{!sSortFieldApprovedPriced}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPriced.Rebate__c}" />
+				</apex:column>
+
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Expiration_Date__c.Label}" action="{!toggleSortApprovedPriced}" rerender="pageBlockApprovedPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Expiration_Date__c" assignTo="{!sSortFieldApprovedPriced}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPriced.Expiration_Date__c}" />
+				</apex:column>
+			</apex:pageBlockTable>
+		</apex:pageBlock> 
+
+		<apex:outputText styleClass="outputTextList" value="{!$Label.Deal_Registration_Approved_Not_Priced}" rendered="{!bDisplayListApprovedPendingPricing}" />
+		<apex:pageBlock id="pageBlockApprovedNotPriced" rendered="{!iNumberOfPagesApprovedPendingPricing>0}">
+			<apex:panelGrid columns="5">
+				<apex:outputText value="{!$Label.Page_Number_Of}">
+					<apex:param value="{!iPageNumberApprovedPendingPricing}" />
+					<apex:param value="{!iNumberOfPagesApprovedPendingPricing}" />
+				</apex:outputText>
+				<apex:commandLink action="{!firstApprovedPendingPricing}" rendered="{!bDisplayFirstApprovedPendingPricing}">{!$Label.First}</apex:commandlink>
+                <apex:commandLink action="{!previousApprovedPendingPricing}" rendered="{!bHasPreviousApprovedPendingPricing}">{!$Label.Previous}</apex:commandlink>
+                <apex:commandLink action="{!nextApprovedPendingPricing}" rendered="{!bHasNextApprovedPendingPricing}">{!$Label.Next}</apex:commandlink>
+                <apex:commandLink action="{!lastApprovedPendingPricing}" rendered="{!bDisplayLastApprovedPendingPricing}">{!$Label.Last}</apex:commandlink>
+          	</apex:panelGrid>
+
+			<apex:pageBlockTable id="pageBlockTableApprovedNotPriced" value="{!listLeadsApprovedPendingPricing}" var="leadApprovedPendingPricing">           	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:outputText value=" " />
+					</apex:facet>
+					<apex:outputLink value="/dealregistration/dealregnew?id={!leadApprovedPendingPricing.Id}">{!$Label.Edit}</apex:outputLink>
+				</apex:column>
+                        
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$Label.End_User_Company}" action="{!toggleSortApprovedPendingPricing}" rerender="pageBlockApprovedNotPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Company" assignTo="{!sSortFieldApprovedPendingPricing}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPendingPricing.Company}" />
+				</apex:column>
+                  	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$Label.Name}" action="{!toggleSortApprovedPendingPricing}" rerender="pageBlockApprovedNotPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Name" assignTo="{!sSortFieldApprovedPendingPricing}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPendingPricing.Name}" />
+				</apex:column>
+                  	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Phone.Label}" action="{!toggleSortApprovedPendingPricing}" rerender="pageBlockApprovedNotPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Phone" assignTo="{!sSortFieldApprovedPendingPricing}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPendingPricing.Phone}" />
+				</apex:column>
+                  	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Email.Label}" action="{!toggleSortApprovedPendingPricing}" rerender="pageBlockApprovedNotPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Email" assignTo="{!sSortFieldApprovedPendingPricing}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPendingPricing.Email}" />
+				</apex:column>
+                  	
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.City.Label}" action="{!toggleSortApprovedPendingPricing}" rerender="pageBlockApprovedNotPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="City" assignTo="{!sSortFieldApprovedPendingPricing}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPendingPricing.City}" />
+				</apex:column>
+                  	
+				<apex:column rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.State.Label}" action="{!toggleSortApprovedPendingPricing}" rerender="pageBlockApprovedNotPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="State" assignTo="{!sSortFieldApprovedPendingPricing}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPendingPricing.State}" />
+				</apex:column>
+
+				<apex:column rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA',true,false)}">
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Country.Label}" action="{!toggleSortApprovedPendingPricing}" rerender="pageBlockApprovedNotPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Country" assignTo="{!sSortFieldApprovedPendingPricing}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPendingPricing.Country}" />
+				</apex:column>
+
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Territory_Account_Manager__c.Label}" action="{!toggleSortApprovedPendingPricing}" rerender="pageBlockApprovedNotPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Territory_Account_Manager__r.Name" assignTo="{!sSortFieldApprovedPendingPricing}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPendingPricing.Territory_Account_Manager__r.Name}" />
+				</apex:column>
+
+				<apex:column >
+					<apex:facet name="header">
+						<apex:commandLink value="{!$ObjectType.Lead.Fields.Expiration_Date__c.Label}" action="{!toggleSortApprovedPendingPricing}" rerender="pageBlockApprovedNotPriced" style="text-decoration:underline;">
+							<apex:param name="sortField" value="Expiration_Date__c" assignTo="{!sSortFieldApprovedPendingPricing}" />
+						</apex:commandLink>
+					</apex:facet>
+					<apex:outputField value="{!leadApprovedPendingPricing.Expiration_Date__c}" />
+				</apex:column>
+			</apex:pageBlockTable>
+		</apex:pageBlock>
+	</apex:form>  
+</apex:page>

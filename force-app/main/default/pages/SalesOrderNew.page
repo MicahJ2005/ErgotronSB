@@ -1,0 +1,118 @@
+<apex:page showHeader="true" sidebar="true" standardController="Sales_Order__c" extensions="Sales_Order_New_Controller" docType="html-5.0">
+<!--    <apex:includeScript value="{!$Resource.jQuery211}" />
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+
+        function disableButtons()
+        {    
+            j$("#divLoading").show();
+            j$("input[type='button']").prop({disabled: true});
+            j$("input[type='submit']").prop({disabled: true});
+        }
+
+        function enableButtons()
+        {
+            j$("#divLoading").hide();
+            j$("input[type='button']").prop({disabled: false});
+            j$("input[type='submit']").prop({disabled: false});           
+        }
+
+        function showLoader(){
+            var txt = document.getElementById("loading");
+            txt.style.display = "inline";
+        }   
+    
+        function ppiAjaxComplete(){
+            var txt = document.getElementById("loading");
+            txt.style.display = "none";
+        }
+
+        function noenter(ev){
+            if(window.event && window.event.keycode==13 || ev.which==13) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }     
+    </script>
+
+    <apex:form >
+        <apex:pageMessages />
+        
+        <apex:pageBlock id="blockmain" rendered="{!IF(Sales_Order__c.Order_Submitted__c,false,true)}">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveSalesOrder}" />
+                <apex:commandButton value="Cancel" action="{!Cancel}" immediate="true" html-formnovalidate="formnovalidate"/>
+            </apex:pageBlockButtons>
+            
+            <apex:outputField value="{!Sales_Order__c.Order_Type_Id__c}" rendered="false"/>
+            <apex:outputField value="{!Sales_Order__c.Order_Type__c}" rendered="false"/>
+
+            <apex:pageBlockSection title="Order Information" columns="1" collapsible="false">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel for="ordertypes" value="Order Type"/>
+                    <apex:actionRegion >
+                        <apex:selectList id="ordertypes" label="Order Type" value="{!sOrderTypeId}" multiselect="false" size="1" style="width: 290px;" >
+                            <apex:selectOptions value="{!listOrderTypeOptions}"/>
+                            <apex:actionSupport event="onchange" action="{!setOrderType}" reRender="salesOrderLines" />
+                        </apex:selectList>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!Sales_Order__c.Order_Sub_Type__c}" style="width: 282px;" required="true"/>
+                <apex:inputField value="{!Sales_Order__c.Customer_PO_Number__c}" style="width: 282px;" required="true"/>
+                <apex:inputField value="{!Sales_Order__c.Notes__c}" style="width: 282px;"/>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Customer Details" columns="2" collapsible="false">
+                <apex:inputField value="{!Sales_Order__c.Ship_To_Customer__c}" style="width: 282px;" required="true"/>
+                <apex:inputField value="{!Sales_Order__c.Bill_To_Customer__c}" style="width: 282px;" required="true"/>
+                <apex:inputField value="{!Sales_Order__c.Ship_To_Contact__c}" style="width: 282px;" required="true"/>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Sales Order Lines" columns="1" id="salesOrderLines" collapsible="false">
+                <apex:variable var="rowNum" value="{!ZERO}" />
+                <apex:pageBlockTable value="{!listSalesOrderLines}" var="soline" id="productList" >
+                    <apex:column headerValue=" " style="width: 5%">
+                        <apex:variable var="rowNum" value="{!rowNum + 1}" />
+                        <apex:commandButton onclick="if(!confirm('Delete sales order line?'))return false;showLoader()" 
+                                            oncomplete="ppiAjaxComplete();" action="{!removeNewSalesOrderLine}" value="{!$Label.Remove}" rerender="salesOrderLines" >
+                            <apex:param id="selectedProduct" name="selectedProduct" assignTo="{!sSelectedLineItem}" value="{!rowNum}" />
+                        </apex:commandButton>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Sales_Order_Line__c.fields.Part_Number__c.Label}" >
+                        <apex:inputField value="{!soline.Part_Number__c}" style="width: 80%;"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Sales_Order_Line__c.fields.Quantity__c.Label}" >
+                        <apex:inputField value="{!soline.Quantity__c}" style="width: 80%;"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Sales_Order_Line__c.fields.Return_Reason__c.Label}" rendered="{!IF(sOrderType='RETURN',true,false)}">
+                        <apex:selectList value="{!soline.Return_Reason_Code__c}" multiselect="false" size="1" style="width: 80%;" >
+                            <apex:selectOptions value="{!listReturnReasonOptions}" />
+                        </apex:selectList>
+                    </apex:column>
+                    <apex:column headerValue="{!$ObjectType.Sales_Order_Line__c.fields.Scheduled_Ship_Date__c.Label}" rendered="{!IF(sOrderType='MAINTENANCE',true,false)}">
+                        <apex:inputField value="{!soline.Scheduled_Ship_Date__c}" style="width: 80%;"/>
+                    </apex:column>              
+                </apex:pageBlockTable>
+                <apex:commandLink style="font-weight:bold;" onclick="showLoader()" action="{!addNewSalesOrderLine}" value="Add Line" rerender="salesOrderLines" oncomplete="ppiAjaxComplete();" immediate="true"/>
+                <img id="loading" src="{!URLFOR($Resource.DealRegResources, 'images/loadingimg.gif')}" style="display: none" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+
+        <apex:pageBlock id="blocksubmitted" rendered="{!IF(Sales_Order__c.Order_Submitted__c,true,false)}">
+            <apex:pageMessage severity="error" strength="3" summary="{!$Label.Sales_Order_Submitted_No_Edit}" />    
+            <apex:pageBlockButtons location="Top">
+                <apex:commandButton value="Return" action="{!Cancel}" immediate="true" html-formnovalidate="formnovalidate"/>
+            </apex:pageBlockButtons>
+
+            <apex:pageBlockSection title="Order Details" columns="1" collapsible="false">
+                <apex:outputField value="{!Sales_Order__c.Date_Time_Submitted__c}"/>
+                <apex:outputField value="{!Sales_Order__c.Oracle_Sales_Order_Number__c}"/>
+                <apex:outputField value="{!Sales_Order__c.Oracle_Order_Status__c}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+-->
+</apex:page>

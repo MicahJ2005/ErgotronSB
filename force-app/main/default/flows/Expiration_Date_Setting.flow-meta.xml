@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Set the expiration date to 60 from the time of creation.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Calculate the day 60 days from now</description>
+        <name>SixtyDaysFromNow</name>
+        <dataType>Date</dataType>
+        <expression>{!$Flow.CurrentDate} + 60</expression>
+    </formulas>
+    <interviewLabel>Quote Trigger {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Expiration Date Setting</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Set the expiration date to 60 days from the time of creation.</description>
+        <name>Expiration_Date_60_days</name>
+        <label>Expiration Date 60 days</label>
+        <locationX>176</locationX>
+        <locationY>287</locationY>
+        <inputAssignments>
+            <field>ExpirationDate</field>
+            <value>
+                <elementReference>SixtyDaysFromNow</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Expiration_Date_60_days</targetReference>
+        </connector>
+        <object>Quote</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <apiVersion>58.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <choices>
+        <name>Change_Account</name>
+        <choiceText>Change Account</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Change Account</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Merge_Account</name>
+        <choiceText>Merge Account</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Merge Account</stringValue>
+        </value>
+    </choices>
+    <description>This is a sub-flow that will create a Sales Ops Case.  This is part of the Sales OPs Request Flow.</description>
+    <dynamicChoiceSets>
+        <description>Pick list values from Account: Customer type</description>
+        <name>pcsAcctCustType</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Type</picklistField>
+        <picklistObject>Account</picklistObject>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <description>Case sub type picklist</description>
+        <name>pcsCaseSubType</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Sub_Type__c</picklistField>
+        <picklistObject>Case</picklistObject>
+    </dynamicChoiceSets>
+    <environments>Default</environments>
+    <formulas>
+        <description>This flag is true if the country is US, MX, CA and the state code is null.</description>
+        <name>frmlBolStateRequired</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+ISBLANK( {!varAcctAddressProvince} ),
+OR(
+{!varAcctAddressCountry} = &apos;United States&apos;,
+{!varAcctAddressCountry} = &apos;Canada&apos;,
+{!varAcctAddressCountry} = &apos;Mexico&apos;
+)
+)</expression>
+    </formulas>
+    <formulas>
+        <description>Displays the region of the user submitting the request. Region is sourced from the user record.</description>
+        <name>frmlRegionOfCreator</name>
+        <dataType>String</dataType>
+        <expression>TEXT({!$User.User_Region__c})</expression>
+    </formulas>
+    <formulas>
+        <description>Retrieve the key prefix from the ID of the record related to this sales ops request.</description>
+        <name>frmlRelatedRecKeyPrefix</name>
+        <dataType>String</dataType>
+        <expression>LEFT( {!recordId}, 3 )</expression>
+    </formulas>
+    <formulas>
+        <description>Link to the record from which this flow is invoked.</description>
+        <name>LinkToRecord</name>
+        <dataType>String</dataType>
+        <expression>LEFT({!$Api.Enterprise_Server_URL_560}, FIND(&apos;/services&apos;, {!$Api.Enterprise_Server_URL_560}))&amp;{!recordId}</expression>
+    </formulas>
+    <interviewLabel>Create {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Create a Case Sales Ops</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordCreates>
+        <description>Create a case of Sales Operations type</description>
+        <name>Sales_Ops_Request</name>
+        <label>Sales Ops Request</label>
+        <locationX>176</locationX>
+        <locationY>350</locationY>
+        <assignRecordIdToReference>varTxtSalesOpsCaseId</assignRecordIdToReference>
+        <connector>
+            <targetReference>scrnFileUpld</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <elementReference>Description_Flow</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RecordTypeId</field>
+            <value>
+                <elementReference>Sales_Ops_Case_Record_Type_Id.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Region__c</field>
+            <value>
+                <elementReference>$User.User_Region__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>CaseSubject</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Case</object>
+    </recordCreates>
+    <recordLookups>
+        <description>Get the Id of the sales operations case record type</description>
+        <name>Sales_Ops_Case_Record_Type_Id</name>
+        <label>Sales Ops Case Record Type Id</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>casedescription</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Sales Operations</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RecordType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <screens>
+        <description>Entry screen when the flow is invoked by global action</description>
+        <name>casedescription</name>
+        <label>Case Description</label>
+        <locationX>176</locationX>
+        <locationY>242</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Sales_Ops_Request</targetReference>
+        </connector>
+        <fields>
+            <name>dispTxtSalesforceIssueHeader</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;{!CaseSubject}&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>Contact_Merge_Instructions</name>
+            <fieldText>&lt;p&gt;Please provide the contacts to be merged. Indicate which contact should still exist after merger.&amp;nbsp;Include links to each of the contacts.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>CaseSubject</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Contact Merge</stringValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Description_Flow</name>
+            <fieldText>Description</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Submit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <description>Final screen including an opportunity to upload required files to complete the request.</description>
+        <name>scrnFileUpld</name>
+        <label>scrnFileUpld</label>
+        <locationX>176</locationX>
+        <locationY>458</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>dspTxtFileUpldReminder</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;Thank you!&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;✅ Your request has been submitted.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>dspTxtFileUpldInstructions</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;You may upload any files required to complete your request&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;or close this screen.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>varBolFileUpldRequired</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>fileUpldSalesOpsReq</name>
+            <extensionName>forceContent:fileUpload</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>varTxtSalesOpsCaseId</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>label</name>
+                <value>
+                    <stringValue>Files to complete the request</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>multiple</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>fileNames</name>
+                <value>
+                    <elementReference>varTxtColUpldFileNames</elementReference>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>varBolFileUpldRequired</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Sales_Ops_Case_Record_Type_Id</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Construction of the subject for the sales ops request case to be created.</description>
+        <name>tmpltSubject</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>{!varSbjtObjectName} - {!varSbjtReqType} - {!varSbjtDesc}</text>
+    </textTemplates>
+    <variables>
+        <description>Case Subject</description>
+        <name>CaseSubject</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Stores the id of the record invoking this flow</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>This is the sales ops request Case to be created</description>
+        <name>recVarSalesOpsReq</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Case</objectType>
+    </variables>
+    <variables>
+        <name>varAcctAddressCity</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varAcctAddressCountry</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varAcctAddressPostalCode</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varAcctAddressProvince</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varAcctAddressStreet</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Flag to be used to display an error message on the scrnGlobalActn1 screen.</description>
+        <name>varBolFieldsMissing</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <description>Controller used to condition the visibility of the file upload component on the final screen.</description>
+        <name>varBolFileUpldRequired</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>true</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>varRelatedRecordName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Store the ID of the Sales Operations case record type</description>
+        <name>varSalesOpsRecTypeId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Stores a short description of the request to be used in the subject template.</description>
+        <name>varSbjtDesc</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Store the name of the object related to the request</description>
+        <name>varSbjtObjectName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Stores the request type to be used in the subject template</description>
+        <name>varSbjtReqType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varTxtColUpldFileNames</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>This is the ID of the Sales Operations case created by this flow.  It is store in this variable so we can use it with a File Upload component in the next screen element.</description>
+        <name>varTxtSalesOpsCaseId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

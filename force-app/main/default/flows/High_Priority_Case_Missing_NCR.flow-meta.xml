@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Email alert for North America</description>
+        <name>High_Priority_Case_Missing_NCR</name>
+        <label>High Priority Case Missing NCR</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Case.High_Priority_Case_Missing_NCR</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Case.High_Priority_Case_Missing_NCR</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>High_Priority_Case_Missing_NCR_APAC</name>
+        <label>High Priority Case Missing NCR-APAC</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Case.High_Priority_Case_Missing_NCR_APAC</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Case.High_Priority_Case_Missing_NCR_APAC</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>High_Priority_Case_Missing_NCR_EMEA</name>
+        <label>High Priority Case Missing NCR-EMEA</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Case.High_Priority_Case_Missing_NCR_EMEA</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Case.High_Priority_Case_Missing_NCR_EMEA</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>64.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Decide which email alert to send depending on the region of the account on the case.</description>
+        <name>AccountRegion</name>
+        <label>Account Region</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>North_America</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account.Region__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Americas</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>High_Priority_Case_Missing_NCR</targetReference>
+            </connector>
+            <label>North America</label>
+        </rules>
+        <rules>
+            <name>APAC</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account.Region__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>APAC</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>High_Priority_Case_Missing_NCR_APAC</targetReference>
+            </connector>
+            <label>APAC</label>
+        </rules>
+        <rules>
+            <name>EMEA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account.Region__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>EMEA</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>High_Priority_Case_Missing_NCR_EMEA</targetReference>
+            </connector>
+            <label>EMEA</label>
+        </rules>
+    </decisions>
+    <description>This flow triggers an email alert when a high priority product case for a product with Oracle Inventory Item Id has been missing an NCR number for 24hrs since creation date.</description>
+    <environments>Default</environments>
+    <interviewLabel>High Priority Case Missing NCR {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>High Priority Case Missing NCR</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterFormula>AND (
+ISPICKVAL( {!$Record.Priority}, &apos;High&apos;),
+{!$Record.RecordType.Name} = &apos;Product&apos;,
+NOT(ISBLANK({!$Record.ProductId})),
+ISBLANK({!$Record.NCR__c}),
+{!$Record.Product.Enovate_Fields_Null__c},
+NOT(ISBLANK({!$Record.Product.Inventory_Item_Id__c}))
+)</filterFormula>
+        <object>Case</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <scheduledPaths>
+            <name>Email_Notification_after_24hrs</name>
+            <connector>
+                <targetReference>AccountRegion</targetReference>
+            </connector>
+            <label>Email Notification after 24hrs</label>
+            <offsetNumber>0</offsetNumber>
+            <offsetUnit>Hours</offsetUnit>
+            <recordField>Post_Creation_Alert_Date__c</recordField>
+            <timeSource>RecordField</timeSource>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

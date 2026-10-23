@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <availableInTouch>true</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <description>DemandChain Marketing App Extension Solution October 2026. Brandon Walton. Solution README v1.6: Sandbox CRM-first mapping, original-ID New/Existing logic, queue Tasks, enhanced Note relationships, and active V7 unmatched capture. Historical production evidence is labeled. No Apex controller.</description>
+    <label>Marketing Submission Guide</label>
+</ApexPage>

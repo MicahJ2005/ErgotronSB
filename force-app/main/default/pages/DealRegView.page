@@ -1,0 +1,63 @@
+<apex:page id="DealRegView" docType="html-5.0" standardStylesheets="true" showHeader="true" sidebar="true" standardController="Lead" extensions="Deal_Reg_Cntrl" >
+    <apex:form id="mainForm">
+        <apex:pageBlock mode="detail" >
+            <apex:pageBlockSection title="{!$Label.End_User_Details}" columns="2" collapsible="false">
+                <apex:outputField value="{!Lead.Company}" label="{!$Label.End_User_Company}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.FirstName}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.Department_Division__c}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.LastName}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.Street}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.Title}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.City}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.Email}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.StateCode}" label="{!$ObjectType.Lead.fields.State.Label}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.Phone}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.PostalCode}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.Fax}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.CountryCode}" label="{!$ObjectType.Lead.fields.Country.Label}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.Website}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.Status}" label="{!$Label.Deal_Status}" style="width: 290px;"/>
+                <apex:outputField value="{!Lead.Expected_Ship_Date__c}" style="width: 290px;"/>
+                <apex:outputField label="{!$Label.End_User_Vertical_Market}" value="{!Lead.Ergotron_Vertical_Market__c}" style="width: 290px;" />
+                <apex:outputField label="{!$ObjectType.Lead.fields.Program_Type__c.Label}" value="{!Lead.Program_Type__c}" style="width: 290px;" rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA' && TEXT($User.CountryCode)!='AU',true,false)}"/>
+                <apex:outputText value="{!Lead.Opp_Partner_ID__c}" rendered="false"/>
+                
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="{!$Label.Deal_Registration_Deal_Information}" columns="1" collapsible="false">
+                <apex:outputField value="{!Lead.Description}" label=""/>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="{!$Label.Deal_Registration_Approved_Details}" collapsible="false" columns="2" rendered="{!IF(OR(Lead.Status='Registration Approved - Priced',Lead.Status='Registration Approved - Pending Pricing'),true,false)}" >
+                <apex:pageBlockSectionItem helpText="{!$Label.Deal_Registration_Rebate_Number_Help}" >
+                    <apex:outputLabel value="{!$ObjectType.Lead.fields.Rebate__c.Label}" />
+                    <apex:outputField value="{!Lead.Rebate__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:outputField value="{!Lead.Territory_Account_Manager__r.Name}" label="{!$ObjectType.Lead.Fields.Territory_Account_Manager__c.Label}" />
+                <apex:outputField value="{!Lead.Date_Approved__c}" />
+                <apex:outputField value="{!Lead.Territory_Account_Manager__r.MobilePhone}" label="{!$ObjectType.Lead.Fields.Phone.Label}" />
+                <apex:outputField value="{!Lead.Expiration_Date__c}" />
+                <apex:outputField value="{!Lead.Territory_Account_Manager__r.User_Key__c}" label="{!$ObjectType.Lead.Fields.Email.Label}" />
+            </apex:pageBlockSection>
+
+            <apex:outputPanel id="productPanel" >
+                <apex:pageBlockSection title="{!$Label.Product_Details}" columns="1" id="productSection" collapsible="false">
+                    <apex:pageBlockTable value="{!listLeadProducts}" var="product" id="productList">
+                        <apex:column headerValue="{!$ObjectType.Lead_Product__c.fields.Product__c.Label}" style="width: 40%">
+                            <apex:outputField value="{!product.Product__r.Name}" style="width: 90%;"/>
+                        </apex:column>
+                        <apex:column headerValue="{!$ObjectType.Lead_Product__c.fields.Quantity__c.Label}" style="width: 10%">
+                            <apex:outputField value="{!product.Quantity__c}" style="width: 90%;"/>
+                        </apex:column>
+                        <apex:column headerValue="{!$ObjectType.Lead_Product__c.fields.Notes__c.Label}" style="width: 25%">
+                            <apex:outputField value="{!product.Notes__c}" style="width: 90%;"/>
+                        </apex:column>
+                        <apex:column headerValue="{!$ObjectType.Lead_Product__c.fields.Competitive_Make_Model__c.Label}" style="width: 25%">
+                            <apex:outputField value="{!product.Competitive_Make_Model__c}" style="width: 90%;"/>
+                        </apex:column>      
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

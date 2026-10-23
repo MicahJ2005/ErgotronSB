@@ -1,0 +1,50 @@
+<!--
+  @File Name          : dealRegLoginAura.cmp
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : Bill Reinhardt (Ergotron)
+  @Last Modified On   : 04/06/2021, 11:00:00 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    11/27/2019   James Loghry (Demand Chain)     Initial Version
+  2.0    03/30/2021   Bill Reinhardt (Ergotron)       Modified Login Page Links (and css padding)
+-->
+<aura:component  controller="DealRegRegistrationCtrl" implements="lightning:isUrlAddressable,forceCommunity:availableForAllPageTypes">
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="displayConfirmation" type="boolean" />
+    <aura:attribute name="startUrl" type="String" />
+    <aura:attribute name="username" type="String" />
+    <aura:attribute name="password" type="String" />
+    <aura:attribute name="error" type="String" />
+    <lightning:layout multipleRows="true" verticalAlign="stretch">
+        <aura:if isTrue="{!v.displayConfirmation}">
+            <lightning:layoutItem size="12" padding="around-small">{!$label.c.Self_Registration_Confirmation}</lightning:layoutItem>
+        </aura:if>
+        <lightning:layoutItem size="12" padding="around-small">
+            <label class="slds-form-element__label loginlabel">Username / Corporate Email Address</label>
+            <lightning:input variant="label-hidden" type="text" name="uname" label="Username / Corporate Email Address" onchange="{!c.handleUsernameUpdate}" />
+        </lightning:layoutItem>
+        <lightning:layoutItem size="12" padding="around-small">
+            <label class="slds-form-element__label loginlabel">Password</label>
+            <lightning:input variant="label-hidden" type="password" name="pass" label="Password" onchange="{!c.handlePasswordUpdate}" />
+        </lightning:layoutItem>
+        <lightning:layoutItem size="4" padding="around-small">
+            <!-- <button class="login" onclick="{!c.handleLogin}">Login</button>-->
+            <p class="btn-blue-wrapper"><button class="btn-blue login" href="#" onclick="{!c.handleLogin}">Login</button></p>
+        </lightning:layoutItem>
+        <lightning:layoutItem size="8" padding="around-small">
+            <aura:if isTrue="{!not(empty(v.error))}"><div class="error">{!v.error}</div></aura:if>
+            <!-- <p class="slds-p-around_small slds-text-align_left">Don’t have an account?<br /><a class="bold" href="./SelfRegister">{!$Label.c.Register_New_Authorized_User}</a>&nbsp; or <a class="bold" href="../reseller-auth-form">{!$Label.c.Authorized_Reseller_Application}</a></p>-->
+            <p class="slds-p-around_small slds-text-align_left">Having trouble signing in?<br /><a class="bold" href="./ForgotPassword">{!$Label.c.Reset_Password}</a></p>
+        </lightning:layoutItem>
+        <!-- <lightning:layoutItem size="12" padding="around-small">
+            <a class="slds-float_left" href="./ForgotPassword">{!$Label.c.Forgot_Password}</a>
+            <p class="slds-text-align_center">Having trouble signing in? &nbsp; <a class="bold" href="./ForgotPassword">{!$Label.c.Reset_Password}</a></p>
+            <p class="slds-text-align_center" style="transform: translateY(-1.5em);"><em>&nbsp;Previously registered a deal with Ergotron? Please use that password.</em></p>
+        </lightning:layoutItem> -->
+        <!-- <lightning:layoutItem size="6" padding="around-small">
+            <a class="slds-float_right" href="./SelfRegister">{!$Label.c.Register_New_User}</a>
+        </lightning:layoutItem> -->
+    </lightning:layout>
+</aura:component>

@@ -1,0 +1,105 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="Flow_ATP_Controller">
+	<aura:handler name="change" value="{!v.PartNumber}" action="{!c.partNumberAdded}"/>
+	<aura:attribute name="ATPData" type="HelperATPData[]"/>
+	<aura:attribute name="PartNumber" type="String"/>
+	<aura:attribute name="lstParts" type="Product2[]"/>
+	<aura:attribute name="selectedPart" type="String"/>
+	<aura:attribute name="PartName" type="String"/>
+	<aura:attribute name="partQty" type="String"/>
+	<aura:attribute name="partWarehouse" type="String"/>
+	<aura:attribute name="olines" type="HelperATPData[]"/>
+	<aura:attribute name="oline" type="HelperATPData"/>
+	<aura:attribute name="allowAdd" type="Boolean" default="true"/>
+	<aura:attribute name="recordId" type="String"/>
+	<aura:attribute name="lstretReason" type="Oracle_Return_Reason__c[]"/>
+	<aura:attribute name="retReason" type="String"/>
+	<aura:attribute name="bolRestrictSeed" type="Boolean"/>
+
+
+	<div style="background-color: white;">
+		<div>
+			<div aura:id="mySpinner" class="slds-hide">
+				<div class="slds-spinner_container">
+					<div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+						<span class="slds-assistive-text">Loading</span>
+						<div class="slds-spinner__dot-a"></div>
+						<div class="slds-spinner__dot-b"></div>
+					</div>
+				</div>
+			</div>
+			<div class="slds-p-top_medium slds-p-left_medium">
+				<ui:inputText label="Part Number" value="{!v.PartNumber}" required="true"/>
+			</div>
+			<div class="slds-p-top_medium slds-p-left_medium">
+				<ui:inputText label="Part Name: " value="{!v.PartName}" placeholder="(Optional) Type name, search by Catalog"/>
+				<div class="slds-p-top_medium">
+					<ui:button label="Search Part From Catalog" press="{!c.getPartList}" class="slds-button_brand"/>
+                    <!-- esanchez Jan 2020 - Removing Search Part from BOM button only; functionality still remains  -->
+                  <!--  <ui:button label="Search Part From BOM" press="{!c.getBOMPartList}" class="slds-button_brand"/> -->
+				</div>
+				<div class="slds-p-top_medium">
+					
+				</div>
+			</div>
+			<div class="slds-p-top_medium slds-p-left_medium slds-hide" aura:id="partlist">
+				<ui:inputSelect label="Select the correct Part: " value="{!v.selectedPart}" change="{!c.setPartNumber}">
+					<ui:inputSelectOption text="" label="--- Please Select Product ---"/>
+					<aura:iteration items="{!v.lstParts}" var="p">
+						<ui:inputSelectOption text="{!p.ProductCode}" label="{!p.Name}"/>
+					</aura:iteration>
+				</ui:inputSelect>
+			</div>
+			<div class="slds-p-top_medium slds-p-left_medium" aura:id="QTYWarehouse">
+				<div class="slds-clearfix slds-form-element">
+					<div class="slds-float_left" style="width:46%">
+						<ui:inputNumber label="Quantity:" value="{!v.partQty}" change="{!c.displayRetReason}" aura:id="inputQuantity" placeholder="+ for order, - for return" disabled="{!v.allowAdd}"/>
+					</div>
+					<div class="slds-float_left" style="width:2%"><br /></div>
+					<div class="slds-float_left" style="width:46%">
+						<ui:inputText label="Warehouse: " value="{!v.partWarehouse}" aura:id="inputWarehouse" focus="{!c.getPartNumberATP}" disabled="{!v.allowAdd}"/>
+					</div>
+				</div>
+                <div class="slds-p-top_medium slds-p-left_medium slds-hide" aura:id="returnList">
+                    <ui:inputSelect aura:id="inputReturnReason" label="Select the Return Reason: " value="{!v.retReason}" >
+                        <ui:inputSelectOption text="" label="--- Please Select Return Reason ---"/>
+                        <aura:iteration items="{!v.lstretReason}" var="ret">
+                            <ui:inputSelectOption text="{!ret.Lookup_Code__c}" label="{!ret.Lookup_Code__c}"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    <br />
+                </div>
+				
+			</div>
+
+			<div class="slds-p-top_medium slds-p-left_medium">
+				<ui:button label="Get Part Availability" press="{!c.getPartNumberATP}" class="slds-button_brand"/>
+				<ui:button label="Add Part To Order" press="{!c.addOrderLine}" class="slds-button_brand" disabled="{!v.allowAdd}"/>
+			</div>
+
+			<div class="slds-p-top_medium slds-p-left_medium"><br /></div>
+
+		</div>
+	</div>
+
+	<div class="slds-hide" aura:id="atpList">
+		<lightning:card iconName="standard:shipment" title="Available Parts in Warehouses">
+			<aura:iteration items="{!v.ATPData}" var="atp">
+				<aura:if isTrue="{!atp.bolHasQty}">
+					<lightning:card title="{!atp.orgCode}">
+						<aura:set attribute="actions">
+							<lightning:button name="{!atp.orgCode}" label="{!'Choose ' + atp.orgCode}" onclick="{!c.chooseWarehouse}"/>
+						</aura:set>
+						<p class="slds-p-horizontal_small">
+							<b> Available QTY: </b> {!atp.netOH}<br/>
+							<!-- removing lines below as per SR-16125 -->
+<!-- 							
+							<b> Available Date: </b> {!atp.supplyQtyDate}<br/>
+							<b> Sales Qty: </b> {!atp.salesQty}<br/>
+							<b> Available Qty within a week: </b> {!atp.supplyQty}<br/>
+ -->						</p>
+					</lightning:card>
+				</aura:if>
+			</aura:iteration>
+		</lightning:card>
+	</div>
+</aura:component>

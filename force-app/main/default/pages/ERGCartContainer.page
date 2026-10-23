@@ -1,0 +1,334 @@
+<apex:page docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false">
+<script id="ERGCartContainer" type="text/template"> 
+
+
+            {{#with this.attributes}}
+            {{#ifEquals itemStatus 'Invalid'}}
+            <div class="row">
+                
+  
+                
+                <div class="col-md-12">
+                    <div class="cc_invalid cc_invalid_item">
+                        <p class="item_title cc_item_title">
+                            {{#if displayProduct}}
+                                {{#ifEquals pricingType 'external'}}
+                                    {{#if extName}}
+                                        {{productLink displayProduct 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName extName)}}
+                                    {{else}}
+                                        {{#if itemLabel}}
+                                            {{productLink displayProduct 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName itemLabel)}}
+                                        {{else}}
+                                            {{productLink displayProduct 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName this.product.sfdcName)}}
+                                        {{/if}}
+                                    {{/if}}
+                                {{else}}
+                                    {{#if itemLabel}}
+                                        {{productLink displayProduct 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName itemLabel)}}
+                                    {{else}}
+                                        {{productLink displayProduct 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName this.product.sfdcName)}}
+                                    {{/if}}
+                                {{/ifEquals}}
+                            {{else}}
+                                {{#ifEquals pricingType 'external'}}
+                                    {{#if extName}}
+                                        {{productLink product 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName extName)}}
+                                    {{else}}
+                                        {{#if itemLabel}}
+                                            {{productLink product 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName itemLabel)}}
+                                        {{else}}
+                                            {{productLink product 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName this.product.sfdcName)}}
+                                        {{/if}}
+                                    {{/if}}
+                                {{else}}
+                                    {{#if itemLabel}}
+                                        {{productLink product 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName itemLabel)}}
+                                    {{else}}
+                                        {{productLink product 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName this.product.sfdcName)}}
+                                    {{/if}}
+                                {{/ifEquals}}
+                            {{/if}}
+                        </p>
+                        {{#ifEquals pricingType 'external'}}
+                            {{#if extSKU}}
+                                <div class="sku cc_sku">
+                                    <span class="cc_label_sku">{{pageLabelMap 'SKU'}}</span>
+                                    <span class="cc_value_sku">{{extSKU}}</span>
+                                </div>
+                            {{else}}
+                                <div class="sku cc_sku">
+                                    <span class="cc_label_sku">{{pageLabelMap 'SKU'}}</span>
+                                    <span class="cc_value_sku">{{product.SKU}}</span>
+                                </div>
+                            {{/if}}
+                        {{else}}
+                            <div class="sku cc_sku">
+                                <span class="cc_label_sku">{{pageLabelMap 'SKU'}}</span>
+                                <span class="cc_value_sku">{{product.SKU}}</span>
+                            </div>
+                        {{/ifEquals}}
+                        {{#if sptMap}}
+                            <p class="subscriptionSummary cc_subscription_summary">
+                                {{insertTokens sptMap.cartDisplayName sptMap.displayName (price price) (price subAmount) (price recurringPrice) (price recurringPriceSubAmt) (pageLabelPrefixMap 'Subscriptions_Frequency_' sptMap.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' sptMap.installmentFrequencyUOM) sptMap.orderFrequency sptMap.installmentFrequency sptMap.installmentCount sptMap.orderCount sptMap.recurringPricePercentage sptMap.upfrontPricePercentage}}
+                            </p>
+                        {{/if}}
+                        <button type="button" class="btn btn-default btn-sm removeItemButton cc_remove_item_button" data-dismiss="modal" aria-hidden="true" data-id="{{this.sfid}}" >{{pageLabelMap 'Action_Delete'}}</button>
+                    </div>
+                </div>
+            </div>
+            {{else}}
+            <div class="row">
+                {{#ifEquals this.cartItemType 'Coupon'}}
+                    <div class="col-md-8">
+                        <p class="item_title coupon_title cc_coupon_title">
+                            <span class="cc_label">{{pageLabelMap 'CartInc_AppliedCoupon'}}</span>
+                            <span class="cc_value">{{this.product.sfdcName}}</span>
+                        </p>
+                {{else}}
+                 <!--
+                    <div class="col-md-2">
+                        <div class="row">
+                            
+                            is this here
+                            
+                            <div class="col-xs-12">
+                                <div class="cc_cart_product_image">
+                                    {{#if product.EProductMediasS.[0]}}
+                                        {{productLink product 'cc_product_name_img' image=(displayImage this 'img-responsive center-block img-thumbnail' src=(displayEProductMedia this.product.EProductMediasS.[0]) alt=this.product.sfdcName dataId=this.product.SKU)}}
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                    <div class="col-md-6">
+                        <p class="item_title cc_item_title">
+                            {{#if displayProduct}}
+                                {{#ifEquals pricingType 'external'}}
+                                    {{#if extName}}
+                                        {{productLink displayProduct 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName extName)}}
+                                    {{else}}
+                                        {{#if itemLabel}}
+                                            {{productLink displayProduct 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName itemLabel)}}
+                                        {{else}}
+                                            {{productLink displayProduct 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName this.product.sfdcName)}}
+                                        {{/if}}
+                                    {{/if}}
+                                {{else}}
+                                    {{#if itemLabel}}
+                                        {{productLink displayProduct 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName itemLabel)}}
+                                    {{else}}
+                                        {{productLink displayProduct 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName this.product.sfdcName)}}
+                                    {{/if}}
+                                {{/ifEquals}}
+                            {{else}}
+                                {{#ifEquals pricingType 'external'}}
+                                    {{#if extName}}
+                                        {{productLink product 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName extName)}}
+                                    {{else}}
+                                        {{#if itemLabel}}
+                                            {{productLink product 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName itemLabel)}}
+                                        {{else}}
+                                            {{productLink product 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName this.product.sfdcName)}}
+                                        {{/if}}
+                                    {{/if}}
+                                {{else}}
+                                    {{#if itemLabel}}
+                                        {{productLink product 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName itemLabel)}}
+                                    {{else}}
+                                        {{productLink product 'cc_prod_link' text=(displayProductName 'Aggregate_Display' displayProduct.sfdcName this.product.sfdcName)}}
+                                    {{/if}}
+                                {{/ifEquals}}
+                            {{/if}}
+                        </p>
+                        {{#ifEquals pricingType 'external'}}
+                            {{#if extSKU}}
+                            <div class="sku cc_sku">
+                                <span class="cc_label_sku">{{pageLabelMap 'SKU'}}</span>
+                                <span class="cc_value_sku">{{extSKU}}</span>
+                            </div>
+                            {{else}}
+                            <div class="sku cc_sku">
+                                <span class="cc_label_sku">{{pageLabelMap 'SKU'}}</span>
+                                <span class="cc_value_sku">{{product.SKU}}</span>
+                            </div>
+                            {{/if}}
+                        {{else}}
+                            <div class="sku cc_sku">
+                                <span class="cc_label_sku">{{pageLabelMap 'SKU'}}</span>
+                                <span class="cc_value_sku">{{this.product.SKU}}</span>
+                            </div>
+                        {{/ifEquals}}
+                        {{#if sellerName}}
+                            <p class="cc_sold_by">
+                                <span class="soldbylabel cc_sold_by_label">{{pageLabelMap 'Prod_SoldBy'}}</span>
+                                <span class="soldbyname cc_sold_by_name">{{sellerName}}</span>
+                            </p>
+                        {{/if}}
+                        {{#if sptMap}}
+                            <p class="subscriptionSummary cc_subscription_summary">
+                                {{insertTokens sptMap.cartDisplayName sptMap.displayName (price price) (price subAmount) (price recurringPrice) (price recurringPriceSubAmt) (pageLabelPrefixMap 'Subscriptions_Frequency_' sptMap.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' sptMap.installmentFrequencyUOM) sptMap.orderFrequency sptMap.installmentFrequency sptMap.installmentCount sptMap.orderCount sptMap.recurringPricePercentage sptMap.upfrontPricePercentage}}
+                            </p>
+                        {{else}}
+                            {{#if this.isSubscription}}
+                            <p class="subscriptionSummary cc_subscription_summary">
+                                {{subscriptionSummary 'Cart_Subscription_' this.subscriptionFrequency product.SKU itemTotal}}
+                            </p>
+                            {{/if}}
+                        {{/if}}
+                        <div class="cart-links">
+                            {{#if showIncludedItems }}
+                                {{#ifNotEquals pricingType "attrGroup" }}
+                                    <a href="#included_items{{sfid}}" class="includedItemsLink cc_included_items_link" id="includedItemsLink{{sfid}}" data-desktop="true" data-toggle="modal" data-id="{{sfid}}">{{pageLabelMap 'CartInc_IncludedItems'}}</a>
+                                    {{#ifDisplay 'C.DsplAddtInfo'}} &#160;|&#160;{{/ifDisplay}}
+                                    <div id="included_items{{this.sfid}}" class="modal fade cc_modal cc_cart_included_items_modal" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content cc_modal_content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close cc_close" data-dismiss="modal" aria-label="{{pageLabelMap 'Modal_Aria_Close'}}"><span aria-hidden="true">&#215;</span></button>
+                                                    {{#ifEquals this.pricingType 'external'}}
+                                                        {{#if extName}}
+                                                            <h3 id="myModalLabel">{{this.extName}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                                        {{else}}
+                                                            {{#if this.itemLabel}}
+                                                                <h3 id="myModalLabel">{{this.itemLabel}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                                            {{else}}
+                                                                <h3 id="myModalLabel">{{this.product.sfdcName}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                                            {{/if}}
+                                                        {{/if}}
+                                                    {{else}}
+                                                        {{#if this.itemLabel}}
+                                                            <h3 id="myModalLabel">{{this.itemLabel}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                                        {{else}}
+                                                            <h3 id="myModalLabel">{{this.product.sfdcName}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                                        {{/if}}
+                                                    {{/ifEquals}}
+                                                </div>
+                                                <div class="modal-body cc_modal-body modal-body_included_items{{this.sfid}}" id="included_items_body{{sfid}}">
+                                                    <i class="fa fa-spinner fa-pulse fa-lg slds-m-top--medium"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {{/ifNotEquals}}
+                            {{/if}}
+                            {{#ifEquals pricingType "attrGroup" }}
+                                <a href="#included_items{{sfid}}" class="attributeItemsLink cc_included_items_link gp_attribute_items_link" id="includedItemsLink{{sfid}}" data-desktop="true" data-toggle="modal" data-id="{{sfid}}">{{pageLabelMap 'Cart_AttributeItems'}}</a>
+                                {{#ifDisplay 'C.DsplAddtInfo'}} &#160;|&#160;{{/ifDisplay}}
+                                <div id="included_items{{this.sfid}}" class="modal fade cc_modal cc_cart_attribute_items_modal gp_cart_attribute_items_modal" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content cc_modal_content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close cc_close" data-dismiss="modal" aria-label="{{pageLabelMap 'Modal_Aria_Close'}}"><span aria-hidden="true">&#215;</span></button>
+                                                {{#ifEquals this.pricingType 'external'}}
+                                                {{#if extName}}
+                                                <h3 id="myModalLabel">{{this.extName}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                                {{else}}
+                                                <h3 id="myModalLabel">{{this.product.sfdcName}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                                {{/if}}
+                                                {{else}}
+                                                <h3 id="myModalLabel">{{this.product.sfdcName}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                                {{/ifEquals}}
+                                            </div>
+                                            <div class="modal-body cc_modal-body modal-attribute_items{{this.sfid}}" id="modal-attribute_items{{sfid}}">
+                                                <i class="fa fa-spinner fa-pulse fa-lg slds-m-top--medium"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {{/ifEquals}}
+                            {{#ifDisplay 'C.DsplAddtInfo'}}
+                                <a class="included_items cc_included_items" href="#additional_info{{sfid}}" id="additionalInfoLink" data-toggle="modal">{{pageLabelMap 'AdditionalInfo'}}</a>
+                                {{#ifDisplay 'C.DsplComments'}} &#160;|&#160;{{/ifDisplay}}
+                                {{> cartItemAdditional}}
+                            {{/ifDisplay}}
+                            {{#ifDisplay 'C.DsplComments'}}
+                                <a href="#comments_{{sfid}}" id="commentsLink cc_comments_link" data-toggle="modal">{{pageLabelMap 'CartLineCommentLabel'}}</a>
+                                {{> cartItemComment}}
+                            {{/ifDisplay}}
+                        </div>
+                        {{#each minorLines}}
+                        {{#if sptMap}}
+                            <p class="subscriptionSummary cc_subscription_summary">
+                                {{insertTokens sptMap.cartDisplayName sptMap.displayName (price price) (price subAmount) (price recurringPrice) (price recurringPriceSubAmt) (pageLabelPrefixMap 'Subscriptions_Frequency_' sptMap.orderFrequencyUOM) (pageLabelPrefixMap 'Subscriptions_Frequency_' sptMap.installmentFrequencyUOM) sptMap.orderFrequency sptMap.installmentFrequency sptMap.installmentCount sptMap.orderCount sptMap.recurringPricePercentage sptMap.upfrontPricePercentage}}
+                            </p>
+                        {{/if}}
+                        {{/each}}
+                        <div class="messagingSection-{{sfid}}-Error" style="display: none"></div>
+                        <div class="messagingSection-{{sfid}}-Info alert-dismissible" style="display: none"><button type="button" class="close cc_close" data-dismiss="alert" aria-label="{{pageLabelMap 'Modal_Aria_Close'}}"><span aria-hidden="true">&#215;</span></button></div>
+                    {{/ifEquals}}
+                        {{#ifNotEquals pricingType "attrGroup" }}
+                            {{#ifNotEquals cartItemType "Coupon" }}
+                                <div class="form-group wishFinder cc_wish_finder" data-sku="{{product.SKU}}">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <button type="button" class="btn btn-default btn-sm deleteItem removeItemButton cc_remove_item_button" data-dismiss="modal" aria-hidden="true" data-id="{{sfid}}" >{{pageLabelMap 'Action_Delete'}}</button>
+                                            <button type="button" class="btn btn-default btn-sm deleteItem removeItemButton cc_remove_item_button" data-dismiss="modal" aria-hidden="true" data-id="{{sfid}}" >Availability</button>
+                                            
+                                            {{#unless sptMap}}
+                                            <div class="wishButtons cc_wish_buttons"></div>
+                                            {{/unless}}
+                                        </div>
+                                    </div>
+                                </div>
+                            {{/ifNotEquals}}
+                        {{/ifNotEquals}}
+                    </div>
+                    <div class="col-md-4">
+                        <div class="quantity cc_quantity" data-id="{{sfid}}">
+                            {{#ifNotEquals cartItemType 'Coupon'}}
+                            <div class="plus_minus cc_plus-minus gp_quantity_block" data-id="{{sfid}}">
+                                {{> cartItemsQty}}
+                            </div>
+                            {{/ifNotEquals}}
+                        </div>
+                        <div class="price_block cc_price_block pull-right">
+                            {{#if price}}
+                            <p class="price cc_price">
+                                <span class="cc_label">{{pageLabelMap 'CartInc_Price'}}</span>
+                                <span class="cc_value">{{{price price}}}</span>
+                            </p>
+                            {{/if}}
+                            {{#if absoluteDiscount}}
+                            <p class="savings cc_savings youSave">
+                                <span class="cc_label">{{pageLabelMap 'Checkout_YouSave'}}</span>
+                                <span class="cc_value">{{price absoluteDiscount}}</span>
+                            </p>
+                            {{/if}}
+                            {{#ifContains this.pricingModifierTypes 'tiered'}}
+                            <p class="cc_prt_button_div cc_prt_button_div_cart">
+                                <button type="button" class="btn btn-default btn-sm cc_prt_button cc_prt_cart_button cc_collapse_button" data-id="{{sfid}}" data-toggle="collapse" data-target="#cc_prt_overflow_collapse_{{sfid}}" aria-expanded="false"><span class='text-collapsed'>{{pageLabelMap 'ProductPricingTiers_ShowMoreBtn'}}</span><span class='text-expanded'>{{pageLabelMap 'ProductPricingTiers_HideBtn'}}</span></button>
+                            </p>
+                            {{/ifContains}}
+                            <p class="price cc_price">
+                                <span class="cc_label">{{pageLabelMap 'CartInc_Total'}}</span>
+                                <span class="cc_value">{{price itemTotal}}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {{#ifContains this.pricingModifierTypes 'tiered'}}
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-2">
+                        <div id="cc_prt_overflow_collapse_{{sfid}}" class="collapse cc_prt_div_outer cc_prt_div_cart_collapse_{{sfid}}"></div>
+                    </div>
+                </div>
+                {{/ifContains}}
+                <hr>
+                {{/ifEquals}}
+            {{/with}}
+</script>        
+    
+   
+     
+    
+    
+    <script type="text/javascript">
+    //   		debugger;    
+    CCRZ.uiProperties.CartDetailView.partials.cartItemsDesktop = '#ERGCartContainer'; 
+    
+    </script>    
+    
+    
+    
+</apex:page>

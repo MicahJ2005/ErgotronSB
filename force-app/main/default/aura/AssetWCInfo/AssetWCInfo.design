@@ -1,0 +1,4 @@
+<design:component >
+    <design:attribute name="AssetId" required="false"/>
+    <design:attribute name="input_WONumber" required="false"/>
+</design:component>

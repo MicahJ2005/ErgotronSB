@@ -1,0 +1,85 @@
+<!--
+  @File Name          : seedUnitOrderForm.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 1/16/2020, 12:43:03 PM
+  @Modification Log   : 
+  Ver       Date            Author                  Modification
+  1.0    12/17/2019   James Loghry (Demand Chain)     Initial Version
+
+   Sophia Murphy: copied from resellerForm to make resellerVendorForm
+-->
+<template>
+    <template if:true={loadingForm}>
+        <lightning-spinner variant="brand" size="large"></lightning-spinner>
+    </template>
+
+    <template if:true={submitting}>
+        <lightning-spinner variant="brand" size="large"></lightning-spinner>
+    </template>
+
+    <lightning-card class="slds-p-around_small">
+
+        <lightning-messages></lightning-messages>
+        <lightning-record-edit-form object-api-name="Lead" onload={handleOnLoad} onsubmit={handleSubmit} onerror={handleError} onsuccess={handleSuccess}>
+            <lightning-card title={stepLabel}>
+
+
+                <c-error-panel friendly-message="An error occurred" errors={errors}></c-error-panel>
+
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-stretch slds-wrap">
+                        <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+                            <div class="alert alert-info" role="alert">
+                            Please identify the primary vendor management point-of-contact for your company, if other than yourself:<br />
+                            This would be the person that would determine Web pricing and/or facilitate channel pricing programs.
+                            </div>
+                        </div>
+                    </div>
+
+                <c-record-input-form record={lead} fields={fields} onrecordchange={handleRecordChange}></c-record-input-form>
+
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-stretch slds-wrap">
+                        <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+                            <div class="alert alert-success" role="alert">
+                                Ergotron enforces a Minimum Advertised Price (MAP) Policy on a number of products. You can review the policy as well as a list of the affected products and their associated MAP prices on the Ergotron web site here: <a href="http://partner.ergotron.com/en-us/company/legal" class="alert-success-link" target="_blank">http://partner.ergotron.com/en-us/company/legal</a>. Adherence to Ergotron's MAP Policy is required to remain an authorized Ergotron reseller partner. By checking the box below, you acknowledge that you have read and understand the MAP Policy and agree to abide by its terms.
+                                <br><br><strong>By submitting this form, you agree to the Ergotron MAP Policy and to abide by its terms and conditions.</strong>
+                            </div>
+                        </div>
+                    
+                    <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+                        <template if:true={displaySave}>
+                            <button class="right slds-button slds-button_brand" type="submit">
+                                Submit
+                            </button>
+                        </template>
+                        <template if:true={hasNext}>
+                            <button class="right slds-button slds-button_brand" onclick={next}>
+                                Next
+                                <lightning-icon
+                                    icon-name="utility:chevronright"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                            </button>
+                        </template>
+                        <template if:true={hasPrev}>
+                            <button class="right slds-button slds-button_brand" onclick={prev}>
+                                <lightning-icon
+                                    icon-name="utility:chevronleft"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                                Previous
+                            </button>
+                        </template>
+                        <template if:true={displaySave}>
+                            <iframe src="/partner/apex/Recaptcha" name="captchaFrame" width="325" height="600" class="right" style="border:0px solid #f9f9f9"></iframe>
+                        </template>
+                    </div>
+                </div>
+            </lightning-card>
+        </lightning-record-edit-form>
+    </lightning-card>
+</template>

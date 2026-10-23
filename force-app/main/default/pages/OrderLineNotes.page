@@ -1,0 +1,42 @@
+<apex:page showHeader="true" sidebar="true" standardController="Order__c" extensions="Order_Line_Notes_Cntrl" docType="html-5.0" >
+	<apex:form id="formMain">
+		<apex:pageBlock title="Order Details" id="pbDetails">
+			<apex:pageBlockSection columns="2" collapsible="false">
+				<apex:outputField value="{!Order__c.Name}" />
+				<apex:outputField value="{!Order__c.Order_Type__c}" />
+				<apex:outputField value="{!Order__c.Bill_To_Customer__c}" />
+				<apex:outputField value="{!Order__c.Booked_Date__c}" />
+				<apex:outputField value="{!Order__c.Ship_To_Customer__c}" />
+				<apex:outputField value="{!Order__c.Status__c}" />
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+
+		<apex:pageblock id="pbNotes">
+			<apex:pageBlockButtons >
+				<apex:commandButton value="Save" action="{!saveUpdates}"/>
+				<apex:commandButton value="Cancel" action="{!cancelUpdates}"/>
+			</apex:pageBlockButtons>
+
+			<apex:pageBlockTable value="{!listOLI}" var="line" id="listLines" >
+				<apex:column headervalue="Notes" style="width: 510px;" >
+					<apex:inputTextarea value="{!line.Notes__c}" style="width: 500px; height: 50px;" />
+				</apex:column>
+				<apex:column headervalue="Estimated Completion Date" >
+					<apex:inputField value="{!line.Estimated_Completion_Date__c}" />
+				</apex:column>
+				<apex:column headervalue="Line Number">
+					<apex:outputField value="{!line.Name}" />
+				</apex:column>	
+				<apex:column headervalue="Product Name">
+					<apex:outputField value="{!line.Product_Name__c}" />
+				</apex:column>
+				<apex:column headervalue="Quantity">
+					<apex:outputField value="{!line.Quantity__c}" />
+				</apex:column>
+				<apex:column headervalue="Line Status">
+					<apex:outputField value="{!line.Status__c}" />
+				</apex:column>
+			</apex:pageBlockTable>
+		</apex:pageblock>
+	</apex:form>
+</apex:page>

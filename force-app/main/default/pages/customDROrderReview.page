@@ -1,0 +1,412 @@
+<apex:page id="DROrderReview" controller="digitalriverb2b.DROrderReviewController">
+    <style>
+        .checkoutLoader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite; /* Safari */
+            animation: spin 2s linear infinite;
+        }
+        /* Safari */
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #overlayDivNew{
+            position: fixed; 
+            display: none; 
+            width: 100%; 
+            height: 100%; 
+            top: 0; 
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5); 
+            z-index: 2; 
+            cursor: pointer; 
+        }
+        
+    </style>
+    <table width="100%" style="border:0px none;"  >
+        <tr style="border:0px none;"  >
+            <td width="40%" style="border:0px none;">
+            </td>
+            <td width="60%" style="border:0px none;">
+                <div class="checkoutLoader" style="display:none"></div>
+            </td>
+        </tr>
+        <div id="overlayDivNew" >
+            <div class="loading-msg-wrapper"><div class="loading-msg">Processing your order.<span> Thanks for your patience.</span></div></div>
+        </div>
+    </table>
+    <script id="TotalSection" type="text/template">
+        <div class="total cc_total">
+            <p class="cc_subTotal">
+                <span class="cc_subTotal_label">{{pageLabelMap 'CartInc_Subtotal'}}&#58;&#160;</span>
+                <span class="cc_subTotal">{{price this.subTotal this.currencyCode}}</span>
+            </p>
+            {{#ifStoreSetting 'Skip_Tax_Calculation__c'}}
+                &#160;
+            {{else}}
+                {{#if this.tax }}
+                    <p class="cc_taxes">
+                    <span class="cc_tax_label">{{pageLabelMap 'CheckOut_EstimatedTax'}}&#58;&#160;</span>
+                    <span class="cc_tax" id="taxValueSpan">{{price this.tax this.currencyCode}}</span>
+                    </p>
+                {{/if}}
+            {{/ifStoreSetting}}
+            {{#ifStoreSetting 'Skip_Shipping_Calculation__c'}}
+                &#160;
+            {{else}}
+                <p class="cc_shipping">
+                    <span class="cc_shipping_label">{{pageLabelMap 'CartInc_Shipping'}}&#58;&#160;</span>
+                    {{#if this.shippingCharge }}
+                        <span class="cc_shipping_charge">{{price this.shippingCharge this.currencyCode}}</span>
+                    {{else}}
+                        <span class="cc_shipping_charge">Free</span>
+                    {{/if}}
+                </p>
+            {{/ifStoreSetting}}
+            {{#ifDisplay 'OR.ShowTotalSurcharge' }}
+                {{#if this.surchargeAmount }}
+                    <p class="cc_surcharge">
+                        <span class="cc_surcharge_label">{{pageLabelMap 'CartInc_Surcharge'}}&#58;&#160;</span>
+                        <span class="cc_surcharge_amount">{{price this.surchargeAmount this.currencyCode}}</span>
+                    </p>
+                {{/if}}
+            {{/ifDisplay}}
+            {{checkErrorVisiblity  this}}
+            <p class="cc_grand_total">
+                <span class="cc_total_label">{{pageLabelMap 'CartInc_GrandTotal'}}&#58;&#160;</span>
+                <span class="cc_total_amount" id="grandTotalAmount">{{sum this.subTotal this.tax this.shippingCharge this.adjustment this.surchargeAmount this.currencyCode}}</span>
+            </p>
+        </div>
+    </script>
+    <script id="Review-Desktop" type="text/template">
+        <div class="panel panel-default cc_panel cc_checkout_review">
+            <div class="panel-heading cc_heading">
+                <h3 class="panel-title cc_title">{{pageLabelMap 'CheckOut_GeneralInformation'}}</h3>
+            </div>
+            <div class="panel-body cc_body">
+                <form enctype="multipart/form-data" class="margin_form cc_OrderReview_new">
+                    <div class="messagingSection-Error" style="display: none"></div>
+                    <div class="messagingSection-Info" style="display: none"></div>
+                    <div class="messagingSection-Warning" style="display: none"></div>
+                    <div class="well cc_well cc_order_review">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-4">
+                                <h5 class="cc_buyer_information">{{pageLabelMap 'CheckOut_BuyerInformation'}}</h5>
+                                <p class="cc_buyer">
+                                    <a id="edit_UserInfo" href="#edit_UserInfo" class="editAddressInfo cc_edit_address_info">{{pageLabelMap 'CheckOut_edit'}}</a><br>
+                                    <span class="cc_buyer_firstname">{{this.buyerFirstName}} {{this.buyerLastName}}</span>
+                                    <span class="cc_buyer_phone">{{this.buyerPhone}}</span>
+                                    <span class="cc_buyer_email">{{this.buyerEmail}}</span>
+                                </p>
+                                <h5 class="cc_shipping_information">{{pageLabelMap 'CheckOut_ShipmentInformation'}}</h5>
+                                <p class="cc_shipping">
+                                    <a id="edit_Shipping" href="#edit_Shipping" class="editShippingInfo cc_edit_shipping_info">{{pageLabelMap 'CheckOut_edit'}}</a><br>
+                                    {{#if this.shippingMethod}}
+                                        <p class="cc_shipping_method_section">
+                                            <span class="cc_shipping_method_label">{{pageLabelMap 'CheckOut_ShippingMethod'}}&#58;&#160;</span>
+                                            <span class="cc_shipping_method">{{this.shippingMethod}}</span>
+                                        </p>
+                                    {{/if}}
+                                    {{#if this.shippingInst}}
+                                        <p class="cc_shipping_notes_section">
+                                            <span class="cc_shipping_notes_label">{{pageLabelMap 'CheckOut_ShippingNotes'}}&#58;&#160;</span>
+                                            <span class="cc_shipping_notes">{{this.shippingInst}}</span>
+                                        </p>
+                                    {{/if}}
+                                    {{#if this.requestedDateStr}}
+                                        <p class="cc_shipping_delivery_section">
+                                            <span class="cc_shipping_delivery_date_label">{{pageLabelMap 'Checkout_RequestedDeliveryDt'}}&#58;&#160;</span>
+                                            <span class="cc_shipping_delivery_date">{{this.requestedDateStr}}</span>
+                                        </p>
+                                    {{/if}}
+                                </p>
+                            </div>
+                            <div class="col-xs-12 col-md-4">
+                                <h5 class="cc_billing_address_label">{{pageLabelMap 'CheckOut_BillingAddress'}}</h5>
+                                <a id="edit_UserInfo" href="#edit_UserInfo" class="editAddressInfo cc_edit_address_info">{{pageLabelMap 'CheckOut_edit'}}</a><br>
+                                <span class="cc_billing_address">{{> addressDisplay this.billingAddress}}</span>
+                            </div>
+                            <div class="col-xs-12 col-md-4">
+                                {{#if this.hasCoupon}}
+                                    <h5 class="cc_coupon_label">{{pageLabelMap 'CartInc_AppliedCoupon'}}</h5>
+                                    <p class="cc_coupon_section">
+                                        <span class="cc_coupon">{{this.couponName}}</span>
+                                    </p>
+                                {{/if}}
+                            </div>
+                            <div class="col-xs-12 col-md-4">
+                                <h5 class="cc_shipping_address_label">{{pageLabelMap 'CheckOut_OrderReviewShippingAddress'}}</h5>
+                                <a id="edit_UserInfo" href="#edit_UserInfo" class="editAddressInfo cc_edit_address_info">{{pageLabelMap 'CheckOut_edit'}}</a><br>
+                                <p class="cc_shipping">
+                                    <span class="cc_shipping_address">{{> addressDisplay this.shippingAddress}}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reviewCartSection"></div>
+                    <div class="reviewPaymentSection"></div>
+                    <div class="link_button cc_link_button">
+                        <div class="checkbox" style="text-align:left">
+                            <label for="termsConditions" class="poLabel SavePayment fieldLabel cc_po_label_save_payment">
+                                <input  type="checkbox" name="termsConditions" id="nonSubscriptionTerms" onClick="acceptTermsAndConditions()" value="true" />
+                                <div style="margin-bottom:3px;">
+                                    <span>Prices and offers in the cart are subject to change until the order is submitted.</span>
+                                </div>
+                                <span id="termsAndCon">{{termsAndConditions  this}} </span>
+                            </label>
+                        </div> 
+                        {{#showProceedPaymentBtn this}} {{/showProceedPaymentBtn}}
+                        {{#if {!showTerms}}}
+                            <div class="checkbox" style="text-align:left" id="subscriptionTermsDiv">
+                                <label for="saveAsStoredPayment" class="poLabel SavePayment fieldLabel cc_po_label_save_payment">
+                                    <input type="checkbox" name="saveAsStoredPayment" id="acceptTerms" onClick="acceptTermsAndConditions()" value="true" />
+                                    <div  style="color: #333;" class="autoToggleWrpr">
+                                        <span id="term_toggle_wrapper">Auto-Renewal Plan Terms</span>
+                                        <p>
+                                            By checking the box completing your purchase, you expressly authorize and permit Digital River to automatically renew your purchased license or subscription for successive renewal terms each equal in length to the initial term specified above, at the purchase price for your initial term (plus taxes and fees, less any applicable discounts) using the payment information you provided for your initial purchase, until you cancel.
+                                                At least one email will be sent to you to remind you of each upcoming renewal. We may change the renewal price as of the next renewal date if we provide you with prior notice of the change by email (you can elect to cancel automatic renewal as described below if you do not agree to the change). 
+                                                The Digital River <a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRTermsAndConditionsPage/eCommerceProvider.Digital+River%2C+Inc." target="_blank" rel="noopener noreferrer" data-auth="NotApplicable"><span style="color:#337AB7;">Terms of Sale</span></a> 
+                                                and
+                                                <a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRPrivacyPolicyPage/eCommerceProvider.Digital+River%2C+Inc." target="_blank" rel="noopener noreferrer" data-auth="NotApplicable"><span style="color:#337AB7;">Privacy Policy</span></a> 
+                                                will apply to each renewal transaction. You may cancel your auto-renewal plan at any time by logging into the account interface (access information will be included in your order confirmation email or on the Customer Service Help page), selecting your product, and selecting the option to disable automatic renewal.
+                                        </p>
+                                        <p>I agree that Digital River may store my payment information for future purchases including the processing of any subsequent subscription renewals which may occur following the date of this order.</p>
+                                        <p>I have read and agree to the terms and charges above.</p>
+                                    </div>
+                                </label>
+                            </div>
+                        {{/if}}
+                    </div>
+                    <div id="errorMessageId" style="color:red;padding-left:10px;padding-right:10px;padding-bottom: 10px;">  
+                    </div>
+                    <p class="link_button cc_link_button">
+                        <input class="btn btn-default btn-sm processBack cc_process_back" type="button" value="{{pageLabelMap 'Back'}}" alt="{{pageLabelMap 'Back'}}" />
+                        {{#if this.showProceedPayment}}             
+                            <input id="acceptTermsButton"  disabled="true" class="btn btn-default btn-sm processReview proceed cc_process_review" type="button" value="{{pageLabelMap 'CheckOut_MobileGotoPayment'}}" alt="{{pageLabelMap 'CheckOut_AcceptAndProceed'}}" />
+                        {{/if}}
+                        {{#if this.isShown}}
+                            <input id="processPayments" disabled="true"  class="btn btn-default btn-sm " type="button" value="Place Order" alt="Place Order" onClick="proceedToPayments()" />
+                        {{/if}}
+                    </p>
+                </form>
+            </div>
+        </div>
+    </script>
+    <script>
+        var cartEncryptedId ='{!HTMLENCODE(cartEncryptedId)}'; 
+        var taxCalculationError = {!taxCalculationError};
+        var errorMessage = '{!messageFromController}';
+
+        window.testVar=0;
+        window.productTaxValue=0;
+        Handlebars.registerHelper("checkErrorVisiblity", function(currentObj) { 
+            CCRZ.subsc ={};
+            $("#nonSubscriptionTerms").attr('disabled', true);
+            startTaxErrorRemoting();
+            CCRZ.subsc.checkErrorLogFunction.checkErrorLog(); 
+            
+        });
+        Handlebars.registerHelper("termsAndConditions", function(currentObj) { 
+            CCRZ.subsc ={};
+            $("#nonSubscriptionTerms").attr('disabled', true);
+            checkTermsAndConditions();
+            CCRZ.subsc.checkTermsAndContrionsFunction.checkTermsAndConditions(); 
+            
+        });
+        Handlebars.registerHelper("showProceedPaymentBtn", function(currentObj,options) { 
+            //debugger;
+            CCRZ.subsc ={};            
+            var totalAmount  = CCRZ.cartCheckoutModel.attributes.subTotal + (CCRZ.cartCheckoutModel.attributes.tax ==  undefined ? 0 :CCRZ.cartCheckoutModel.attributes.tax) + CCRZ.cartCheckoutModel.attributes.shippingCharge + (CCRZ.cartCheckoutModel.attributes.surchargeAmount ==  undefined ? 0 :CCRZ.cartCheckoutModel.attributes.surchargeAmount);                                
+            var isSubscriptionProductPresent =false;
+            for(i=0;i<CCRZ.cartCheckoutModel.attributes.cartItems.length;i++){
+                if('installmentFrequency' in CCRZ.cartCheckoutModel.attributes.cartItems[i] || 'orderFrequency' in CCRZ.cartCheckoutModel.attributes.cartItems[i] || 'ignoreInstallmentFrequencyFields' in CCRZ.cartCheckoutModel.attributes.cartItems[i]){
+                    isSubscriptionProductPresent = true;
+                }
+            }
+            if(totalAmount > 0 || isSubscriptionProductPresent){
+                //this.isShown = false;
+                this.showProceedPayment = true;
+                return options.fn(this);  
+            }else{
+                //this.isShown = true;  
+                try{
+                    if(typeof {!displayProceedPaymentButton} !== 'undefined' && {!displayProceedPaymentButton} !== null &&  !{!displayProceedPaymentButton}){
+                        this.showProceedPayment = false;
+                    }else{
+                        this.showProceedPayment = true;
+                    }
+                }catch(e){
+                    this.showProceedPayment = true;
+                }
+                return options.fn(this); 
+            }
+            return options.inverse(this);
+        });
+        function startTaxErrorRemoting(){
+            //debugger;            
+            CCRZ.subsc.checkErrorLogFunction= _.extend(CCRZ.RemoteInvocation,{  
+                className : 'digitalriverb2b.DROrderReviewController',
+                checkErrorLog: function(){
+                    this.invokeCtx('checkErrorLog',CCRZ.cartCheckoutModel.attributes.sfid,                                   
+                                function(result, event) {                                    
+                                    if(event.status) {
+                                        if(result.data.isErrorPresent){
+                                                $("#errorMessageId").html('<b>Cannot Proceed to payment.</b><br/><b>Error Type is :-</b> '+result.data.errorType+'</br/><b> Error Message:- </b>'+result.data.errorMessage);
+                                                $('#acceptTermsButton').attr('disabled','true');
+                                                $('#nonSubscriptionTerms').prop('checked', false);
+                                                $("#nonSubscriptionTerms").attr('disabled', true);
+                                            } 
+                                    }else {
+                                        console.log('in else block');
+                                    }
+                                },
+                                {
+                                    buffer:false, //this call will be executed by itself
+                                    nmsp : false, //defines that this is a call to a subscriber class
+                                    timeout: 120000
+                                }
+                    );//end invokeCtx call
+                }
+            });
+        }
+        function checkTermsAndConditions() {
+            $(".checkoutLoader").attr("style", "display:block;");
+            CCRZ.subsc.checkTermsAndContrionsFunction= _.extend(CCRZ.RemoteInvocation,{
+                className : 'digitalriverb2b.DROrderReviewController',
+                checkTermsAndConditions: function(){
+                    this.invokeCtx('checkTermsAndConditions',cartEncryptedId,                                   
+                        function(result, event) {
+                            if(event.status) {
+                                if(!result.data.isErrorPresent){
+                                    //var termsData1 = unescapedHtml(result.data.termsAndConditions);
+                                    $('#termsAndCon').html($("<div/>").html(result.data.termsAndConditions).text());
+                                    $(".checkoutLoader").attr("style", "display:none;");
+                                    $("#nonSubscriptionTerms").attr('disabled', false);
+                                }else {
+                                    if(result.data.isPermissionSet){
+                                        var termsData1 = unescapedHtml(result.data.msg);
+                                        $('#errorMessageId').html(result.data.msg);
+                                        $('#acceptTermsButton').attr('disabled','true');
+                                        $('#nonSubscriptionTerms').prop('checked', false);
+                                        $("#nonSubscriptionTerms").attr('disabled', true);
+                                        $(".checkoutLoader").attr("style", "display:none;");
+                                    }
+                                }
+                            }else{
+                                console.log('in else block');
+                            }
+                        },
+                        {
+                            buffer:false, //this call will be executed by itself
+                            nmsp : false, //defines that this is a call to a subscriber class
+                            timeout: 120000
+                        }
+                        );//end invokeCtx call
+                }
+            });
+
+        }
+        function unescapedHtml(){
+            return $("<span />", { html: arguments[0] }).text();
+        }
+        var isShowTerms = {!showTerms};
+        if(isShowTerms){
+            $('#subscriptionTermsDiv').show();
+        }else{
+            $('#subscriptionTermsDiv').hide();
+        }         
+        function acceptTermsAndConditions() {
+            if($("#taxValueSpan").length > 0){
+                var taxHTML=$("#taxValueSpan").html();
+                taxHTML=taxHTML.replace("$", "");
+                productTaxValue =parseFloat(taxHTML);
+            }
+            
+            if($("#nonSubscriptionTerms").is(':checked')) {
+                if(isShowTerms){
+                    if(!taxCalculationError) {
+                        if($("#acceptTerms").is(':checked')) {
+                            $('#acceptTermsButton').removeAttr("disabled");
+                           // $('#processPayments').removeAttr("disabled");
+                        }
+                        else {
+                            $('#acceptTermsButton').attr('disabled','true');
+                           // $('#processPayments').attr('disabled','true');
+                        }
+                    }
+                    else {
+                        $('#acceptTermsButton').attr('disabled','true');
+                        //$('#processPayments').attr('disabled','true');
+                        checkTaxCalculationMsg();
+                    }
+                }else {
+                    if(!taxCalculationError) {
+                        $('#acceptTermsButton').removeAttr("disabled");
+                       // $('#processPayments').removeAttr("disabled");
+                    }
+                    else {
+                        checkTaxCalculationMsg();
+                        $('#acceptTermsButton').attr('disabled','true');
+                       // $('#processPayments').attr('disabled','true');
+                    }
+                }
+            }else {
+                $('#acceptTermsButton').attr('disabled','true');
+               // $('#processPayments').attr('disabled','true');
+            }
+        }
+
+    </script>
+    <script>         
+        function proceedToPayments(){
+            $("#overlayDivNew").css("display", "block");
+            var cartId = CCRZ.cartCheckoutModel.attributes.sfid;
+            intilizeProcessPaymentRemoting();
+            CCRZ.subsc.processProcessPayments.proceedToPayment(cartId);
+        }
+        function intilizeProcessPaymentRemoting(){
+            CCRZ.subsc = _.extend(CCRZ.subsc||{});
+            CCRZ.subsc.processProcessPayments = _.extend(CCRZ.RemoteInvocation,{
+                className : 'digitalriverb2b.DROrderReviewController',
+                proceedToPayment: function(cartId) {
+                    var data = {ccCartId : cartId,sourceId : '',saveCardToWallet : false,savedCardOptionName : '',isDefaultPayment : false,paymentType : ''};
+                    this.invokeCtx('proceedToPayments',JSON.stringify(data),                                   
+                        function(result, event) {
+                            if(event.status){
+                                $("#overlayDivNew").css("display", "none");
+                                $("#overlayDivNew").css("display", "none");
+                                if(result.error || !result.data) {
+                                    showMessageToast('fail', 'Failed to submit payment data to DR Server.Check Error Log Object in your org.');
+                                }else if(!result.success || typeof  result.data.ERROR != 'undefined' && result.data.ERROR.length > 0) {
+                                    showMessageToast('fail', 'Got error while submitting payment');
+                                }else {
+                                    setTimeout(function(){ CCRZ.pubSub.trigger('action:processPayment', result.data['txObject']); }, 3000);
+                                }
+                            }else{
+                                if(event.type == 'exception'){
+                                    showMessageToast('fail', 'Got error while submitting payment');
+                                }
+                            }
+                        },
+                        {
+                            buffer:false, //this call will be executed by itself
+                            nmsp : false, //defines that this is a call to a subscriber class
+                            timeout: 120000
+                        }
+                    );//end invokeCtx call
+                }
+            });
+        }
+    </script>
+</apex:page>

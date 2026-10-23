@@ -1,0 +1,218 @@
+<template>
+    <div class="pqe-container" >
+
+        <!-- HEADER -->
+        <div class="slds-grid slds-page-header forceRelatedListCardHeader"  data-aura-class="forceRelatedListCardHeader">
+            <header class="slds-media slds-media--center slds-has-flexi-truncate" >
+                
+                <!-- ICON -->
+                <div class="slds-media__figure stencil slds-avatar slds-avatar_small" aria-hidden="true" >
+                    <lightning-icon icon-name="custom:custom63" alternative-text="Parts" size="medium"   title="Parts"></lightning-icon>
+                </div>
+
+                <!-- TEXT -->
+                <div class="slds-media__body" >
+                    <h2 class="slds-card__header-title" id="header_1079:0" >
+                        <a class="slds-card__header-link baseCard__header-title-container" href="/lightning/r/ProductConsumed/0WO5e000000nQNGGA2/related/ProductsConsumed/view" >
+                            <span class="slds-truncate slds-m-right--xx-small" title="Products Consumed" >Parts</span>
+                            <span class="slds-shrink-none slds-m-right--xx-small" title="Count" >({partcount})</span>
+                        </a>
+                    </h2>                    
+                </div>
+                <lightning-combobox                                                                                                 
+                        name="templatecombo"                        
+                        placeholder="Select Template..."
+                        options={templateOptions} 
+                        label="Template Name"                        
+                        class="slds-p-right_xx-small"
+                        variant="label-hidden"
+                        onchange={handleTemplateSelection}>
+                </lightning-combobox>
+
+                <lightning-button label="Apply Template" title="Brand action" onclick={handleTemplateOnClick}></lightning-button>
+            </header>
+            
+            <!-- ACTIONS -->
+            <div class="slds-no-flex" style="display:none;" >
+                <div class="actionsContainer">
+                    <lightning-button label="Add" title="Add a Part" onclick={addrow}  class="slds-m-top_small"></lightning-button>
+                </div>
+            </div>
+        </div>
+ 
+
+        <!--TABLE-->
+        <div >
+
+            <table>
+                <tr>
+                    <th>Part</th> <th>SRO#</th> <th>Tracking#</th> <th>RMA Tracking#</th> <th>Observation</th> <th>Critical Part</th> <th class="borderleft">New Serial Num</th> <th class="borderleft">Old Serial Num</th> <th class="borderleft">Source</th> <th>Status</th> <th>Artik RMA Item Status</th>   <th class="borderleft"></th>
+                </tr>
+
+                <template if:true={haveParts}>
+                    
+                    <template for:each={parts} for:item="part">
+        
+                        <template if:false={part.deleted}>
+                           
+                            <tr key={part.partId} style={part.bgColor}>
+                            
+                                <td style="width: 15%;">                                     
+                                    <c-combobox-autocomplete  
+                                        value={part.productName}
+                                        placeholder="Select Part..."
+                                        options={pbeoptions}
+                                        data-partid={part.partId}
+                                        onselectoption={handlePartChange}                                            
+                                    >
+                                    </c-combobox-autocomplete>                                    
+                                </td>
+                                
+                                <td style="width: 10%;">
+                                    <lightning-input type="text" name="sronumber" value={part.sroNumber} onchange={handleSROChange} variant="label-hidden" placeholder="Enter SRO#..." data-partid={part.partId} >
+                                    </lightning-input>
+                                </td>
+
+                                <td style="width: 10%;">
+                                    <lightning-input 
+                                        type="text"  
+                                        value={part.trackingNumber} 
+                                        onchange={handleTrackingChange} 
+                                        variant="label-hidden" 
+                                        placeholder="Enter Tracking#..." 
+                                        data-partid={part.partId} >
+                                    </lightning-input>
+                                </td>
+
+                                <td style="width: 10%;">
+                                    <lightning-input type="text" name="rmanumber" required={part.ArtikReplacement}  value={part.rmaTrackingNumber} onchange={handleRMATrackingChange} variant="label-hidden" placeholder="Enter RMA Tracking#..." data-partid={part.partId} >
+                                    </lightning-input>
+                                </td>
+                                
+                                <td style="width: 10%;"> 
+                                    <lightning-combobox                                                                         
+                                        required
+                                        name="observationcombo"
+                                        value={part.observation}
+                                        placeholder="Select Observation..."
+                                        options={obOptions} 
+                                        variant="label-hidden"
+                                        data-partid={part.partId}
+                                        onchange={handleObservationChange}>
+                                    </lightning-combobox>
+                                </td>
+
+                                <td style="width: 10%;"> 
+                                    <lightning-combobox                                                                         
+                                        required
+                                        name="criticalpartcombo"
+                                        value={part.criticalPart}
+                                        placeholder="Select Critical Part..."
+                                        options={cpOptions} 
+                                        variant="label-hidden"
+                                        data-partid={part.partId}
+                                        onchange={handleCriticalPartChange}>
+                                    </lightning-combobox>
+                                </td>
+
+                                <td class="borderleft" style="width: 8%;">
+                                    <lightning-input type="text" name="snNew" required={part.ArtikReplacement}  value={part.newSerialNumber} variant="label-hidden" placeholder="Enter SN..." data-partid={part.partId} onchange={handleNewSNChange}>
+                                    </lightning-input>
+                                </td>
+
+                                <td class="borderleft" style="width: 8%;">
+                                    <lightning-input type="text" name="snOld" required={part.ArtikReplacement}  value={part.oldSerialNumber} variant="label-hidden" placeholder="Enter SN..." data-partid={part.partId} onchange={handleOldSNChange}>
+                                    </lightning-input>
+                                </td>  
+                                
+                                <td class="borderleft" style="width: 8%;"> 
+                                    <lightning-combobox
+                                        required
+                                        name="sourcecombo"
+                                        value={part.source}
+                                        placeholder="Select Source..."
+                                        options={sourceOptions} 
+                                        variant="label-hidden"
+                                        data-partid={part.partId}
+                                        
+                                        onchange={handleSourceChange}>
+                                    </lightning-combobox>
+                                </td>
+
+                                <td style="width: 10%;"> 
+                                    <lightning-combobox
+                                        required
+                                        class="partstatus"
+                                        name="statuscombo"
+                                        value={part.status}
+                                        placeholder="Select Status..."
+                                        options={statusOptions} 
+                                        variant="label-hidden"
+                                        data-partid={part.partId}
+                                        data-cp={part.criticalPart}
+                                        data-serialized={part.serialized}
+                                        onchange={handleStatusChange}
+                                        >
+                                    </lightning-combobox>
+                                </td>
+                                
+                                <td style="width: 10%;"> 
+                                    <lightning-combobox
+                                        class="partstatus"
+                                        name="rmaitemstatuscombo"
+                                        value={part.rmaItemStatus}
+                                        placeholder="Select RMA Item Status..."
+                                        options={rmaItemStatusOptions} 
+                                        variant="label-hidden"
+                                        data-partid={part.partId}
+                                        data-cp={part.criticalPart}
+                                        data-serialized={part.serialized}
+                                        onchange={handleRMAItemStatusChange}
+                                        required={part.ArtikReplacement}>
+                                    </lightning-combobox>
+                                </td>                                           
+
+                                <td style="text-align:center;width: 1%;" class="borderleft">
+                                    <lightning-button-icon  icon-name="utility:delete" alternative-text="Delete" title="Delete" onclick={dodelete} data-partid={part.partId}></lightning-button-icon>
+                                </td>
+                            </tr>
+                        </template>
+                    </template>
+                </template>
+
+                <template if:false={haveParts}>
+                    <tr>
+                        <td colspan="11">
+                            <p class="slds-m-around_small">No Parts have been added yet...</p>
+                        </td>
+                    </tr>
+                </template>
+
+            </table>
+
+        </div>
+
+        <div class="slds-clearfix slds-m-around_small">
+            <div class="slds-align_absolute-center">
+                <lightning-icon icon-name="action:new" alternative-text="Add" size="x-small"  title="Add" onclick={addrow}></lightning-icon>
+            </div>
+        </div>  
+
+    </div>
+
+    <template if:true={ismodified}> 
+        <div class="slds-clearfix slds-m-around_small">
+            <div class="slds-align_absolute-center">
+                <lightning-button label="Save" title="Save" onclick={dosave} variant="brand" class="slds-m-around_small"></lightning-button>
+                <lightning-button label="Cancel" title="Cancel" onclick={docancel}  class="slds-m-around_small"></lightning-button>
+            </div>
+        </div>  
+    </template>
+
+    <template if:true={waiting}>
+        <div class="spinnerHolder">
+            <lightning-spinner alternative-text="Please Wait..."></lightning-spinner>
+        </div>
+    </template>
+
+</template>

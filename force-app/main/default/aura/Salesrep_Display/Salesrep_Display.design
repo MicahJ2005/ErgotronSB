@@ -1,0 +1,6 @@
+<design:component >
+    <design:attribute name="StateCode" required="true" />
+    <design:attribute name="PostalCode" required="true" />
+    <design:attribute name="CountryCode" required="true" />
+    <design:attribute name="RepCaseComment" required="false" />
+</design:component>

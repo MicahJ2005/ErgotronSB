@@ -1,0 +1,44 @@
+<apex:page id="ERG_HomeBIB" docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false" controller="CC_ERG_Home" >
+    <script>
+
+    // version 2
+            thisPage = window.location.href;
+ 
+       endOfURL2Page = thisPage.indexOf("?");
+ 
+                var AllProductsCatID = '{!AllProductsCatID}';
+    //            alert ("productcat = "+AllProductsCatID);
+    
+
+    
+        
+        if( endOfURL2Page > 0 ) {    
+            
+          frontOfURLWithPage = thisPage.substr(0, endOfURL2Page);
+        
+                endOfURLPath = frontOfURLWithPage.lastIndexOf("/");
+            frontOfURLNoPage = frontOfURLWithPage.substr(0, endOfURLPath+1);
+        
+            lenOfOriginalURL = thisPage.length;
+        
+             startLocation = endOfURL2Page + 1;
+               endLocation = lenOfOriginalURL - 1;
+          endOfOriginalURL = thisPage.substr(startLocation, endLocation);
+
+            // AllProductsCatID
+            //            insertString = "ccrz__ProductList?categoryId=a5E4F0000004en0UAA&";
+            insertString = "ccrz__ProductList?categoryId={!AllProductsCatID}&";
+        
+             jumpToURL = frontOfURLNoPage+insertString+endOfOriginalURL;
+        
+            window.location.href = jumpToURL;
+            
+    }
+    else
+    {
+        // alert( "no jump" )  
+    }
+    
+    
+    </script>
+ </apex:page>

@@ -1,0 +1,155 @@
+<!--
+  @File Name          : seedUnitOrderForm.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 1/16/2020, 9:38:21 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    12/17/2019   James Loghry (Demand Chain)     Initial Version
+-->
+<template>
+    <template if:true={loadingForm}>
+        <lightning-spinner variant="brand" size="large"></lightning-spinner>
+    </template>
+
+    <template if:true={loadingProducts}>
+        <lightning-spinner variant="brand" size="large"></lightning-spinner>
+    </template>
+
+    <template if:true={submitting}>
+        <lightning-spinner variant="brand" size="large"></lightning-spinner>
+    </template>
+
+    <lightning-card class="slds-p-around_small">
+
+        <div class="logoContainer"><img src={logoUrl}></div>
+        <c-path default-steps={steps} onstepchange={handleStepChange}></c-path>
+        <lightning-messages></lightning-messages>
+        <lightning-record-edit-form object-api-name="Lead" onload={handleOnLoad} onsubmit={handleSubmit} onerror={handleError} onsuccess={handleSuccess}>
+            <lightning-card title={stepLabel}>
+
+
+                <c-error-panel friendly-message="An error occurred" errors={errors}></c-error-panel>
+
+                <template if:true={displayCopyAddress}>
+                    <div class="slds-p-around_small">
+                        <button class="slds-button slds-button_brand" onclick={copyAddress}>
+                            <lightning-icon
+                                icon-name="utility:copy"
+                                variant="inverse"
+                                size="small"
+                                class="slds-p-horizontal_x-small"
+                            ></lightning-icon>
+                            <template if:true={isHaworth}>
+                                Copy End User Address
+                            </template>
+                            <template if:false={isHaworth}>
+                                Copy Billing Address
+                            </template>
+                        </button>
+                    </div>
+                </template>
+
+                <template if:false={displayProductScreen}>
+                    <c-record-input-form record={lead} fields={fields} onrecordchange={handleRecordChange}></c-record-input-form>
+                </template>
+
+                <template if:true={displayProductScreen}>
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-stretch slds-wrap">
+                        <template if:true={isHaworth}>
+                            <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_12-of-12 slds-large-size_12-of-12 slds-p-around_small">
+                                <div class="alert alert-warning">
+                                    Orders are subject to a 7-10 day shipping lead time.  If you need your order expedited, please call Customer Care at 844-429-9678 and provide payment details for expedited shipping.
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                                <lightning-input-field data-field='HaworthSeedUseCase__c' field-name='HaworthSeedUseCase__c' variant="label-stacked" onchange={handleFieldChange} required></lightning-input-field>
+                            </div>
+
+                            <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            </div>
+                        </template>
+
+                        <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            <label class="slds-form-element_stacked slds-form-element"><abbr title="required" class="slds-required">*</abbr>Opportunity Details</label>
+                            <lightning-input-field data-field='Description' field-name='Description' variant='label-hidden' onchange={handleFieldChange} required></lightning-input-field>
+                        </div>
+
+                        <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            <lightning-input-field data-field='Company_Size__c' field-name='Company_Size__c' variant="label-stacked" onchange={handleFieldChange} required></lightning-input-field>
+                        </div>
+
+                        <template if:true={isHaworth}>
+                            <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                                <label class="slds-form-element_stacked slds-form-element"><abbr title="required" class="slds-required">*</abbr>Choose your Industry</label>
+                                <lightning-combobox variant="label-hidden" value={lead.Ergotron_Vertical_Market__c} placeholder="Select a Market" options={markets.data} data-field="Ergotron_Vertical_Market__c" onchange={handleMarketChange} required></lightning-combobox>
+                            </div>
+                        </template>
+
+                        <template if:false={isHaworth}>
+                            <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                                <label class="slds-form-element_stacked slds-form-element"><abbr title="required" class="slds-required">*</abbr>Choose your Industry</label>
+                                <lightning-combobox variant="label-hidden" value={lead.Industry} placeholder="Select a Market" options={markets.data} data-field="Industry" onchange={handleMarketChange} required></lightning-combobox>
+                            </div>
+                        </template>
+
+                        <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            <label class="slds-form-element_stacked slds-form-element"><abbr title="required" class="slds-required">*</abbr>Product Requested to Seed</label>
+                            <lightning-combobox variant="label-hidden" value={lead.WebSeedProductRequested__c} placeholder="Select a product" data-field="WebSeedProductRequested__c" options={productOptions.data} onchange={handleFieldChange} required></lightning-combobox>
+                        </div>
+
+                        <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            <lightning-input-field data-field='Display_Configuration__c' field-name='Display_Configuration__c' onchange={handleFieldChange} variant="label-stacked" required></lightning-input-field>
+                        </div>
+
+                        <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            <lightning-input-field data-field='Screen_Size__c' field-name='Screen_Size__c' onchange={handleFieldChange} variant="label-stacked" required></lightning-input-field>
+                        </div>
+
+                        <div class="slds-col slds-size_12-of-12 slds-small-size_12-of-12 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-around_small">
+                            <label class="fieldLabel slds-form-element_stacked slds-form-element">
+                                <abbr title="required" class="slds-required">*</abbr>
+                                Make and Model
+                                <c-help-text content="Enter the make and model of the monitor(s) and/or laptop."></c-help-text>
+                            </label>
+                            <lightning-input-field data-field='Display_Make_and_Model__c' field-name='Display_Make_and_Model__c' onchange={handleFieldChange} variant="label-hidden" required></lightning-input-field>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+                        <template if:true={displaySave}>
+                            <button class="right slds-button slds-button_brand" type="submit">
+                                Submit
+                            </button>
+                        </template>
+                        <template if:true={hasNext}>
+                            <button class="right slds-button slds-button_brand" onclick={next}>
+                                Next
+                                <lightning-icon
+                                    icon-name="utility:chevronright"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                            </button>
+                        </template>
+                        <template if:true={hasPrev}>
+                            <button class="right slds-button slds-button_brand" onclick={prev}>
+                                <lightning-icon
+                                    icon-name="utility:chevronleft"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                                Previous
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </lightning-card>
+        </lightning-record-edit-form>
+    </lightning-card>
+</template>

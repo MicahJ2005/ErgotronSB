@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Demand_Input_Product_Schedule_Creation"
+    finishLocation="/{!$CurrentPage.parameters.InOppId}"/>
+</apex:page>

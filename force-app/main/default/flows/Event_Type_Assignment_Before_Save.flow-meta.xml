@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Evaluate the event to determine appropriate event type.</description>
+        <name>Evaluate_Event</name>
+        <label>Evaluate Event</label>
+        <locationX>182</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Location_Contains_Clinical_Showroom</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Location</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Clinical Showroom</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CreatedById</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Type_as_Clinical_Showroom_Meeting</targetReference>
+            </connector>
+            <label>Location Contains &quot;Clinical Showroom&quot;</label>
+        </rules>
+    </decisions>
+    <description>Auto-classifies Event records before save by setting the Event Type field based on event owner and location. If the location contains &quot;Clinical Showroom&quot;, it assigns &quot;Clinical Showroom Meeting&quot;; if the owner username is onsite.demo@ergotron.com, it assigns &quot;On-Site Demo&quot;.</description>
+    <environments>Default</environments>
+    <interviewLabel>Event Type Assignment (Before Save) {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Event Type Assignment (Before Save)</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Set the value of the type field to &quot;Clinical Showroom Meeting&quot;</description>
+        <name>Set_Type_as_Clinical_Showroom_Meeting</name>
+        <label>Set Type as &quot;Clinical Showroom Meeting&quot;</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <inputAssignments>
+            <field>Type</field>
+            <value>
+                <stringValue>Clinical Showroom Meeting</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Evaluate_Event</targetReference>
+        </connector>
+        <object>Event</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

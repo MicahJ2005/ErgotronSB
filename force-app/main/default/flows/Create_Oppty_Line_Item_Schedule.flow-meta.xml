@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>assign data from product to schedule</description>
+        <name>Set_schedule_data</name>
+        <label>Set schedule data</label>
+        <locationX>584</locationX>
+        <locationY>50</locationY>
+        <assignmentItems>
+            <assignToReference>schedule.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Quantity</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>schedule.ScheduleDate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>expectedCloseDate</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>schedule.OpportunityLineItemId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>schedule.Quantity</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>scheduleQty</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_Schedule</targetReference>
+        </connector>
+    </assignments>
+    <description>Creates a schedule for opportunity products cloned with super clone</description>
+    <interviewLabel>Create Oppty Line Item Schedule {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Create Oppty Line Item Schedule</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Create_Schedule</name>
+        <label>Create Schedule</label>
+        <locationX>766</locationX>
+        <locationY>50</locationY>
+        <inputReference>schedule</inputReference>
+    </recordCreates>
+    <recordLookups>
+        <name>Get_Oppty_Expected_Close_Date</name>
+        <label>Get Oppty Expected Close Date</label>
+        <locationX>199</locationX>
+        <locationY>50</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Oppty_Product_Quantity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>opportunityId</elementReference>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <outputAssignments>
+            <assignToReference>expectedCloseDate</assignToReference>
+            <field>CloseDate</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Oppty_Product_Quantity</name>
+        <label>Get Oppty Product Quantity</label>
+        <locationX>390</locationX>
+        <locationY>50</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Set_schedule_data</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <object>OpportunityLineItem</object>
+        <outputAssignments>
+            <assignToReference>scheduleQty</assignToReference>
+            <field>Quantity</field>
+        </outputAssignments>
+    </recordLookups>
+    <startElementReference>Get_Oppty_Expected_Close_Date</startElementReference>
+    <status>Obsolete</status>
+    <variables>
+        <description>Expected close date from opportunity that will be used to set the date in the schedule</description>
+        <name>expectedCloseDate</name>
+        <dataType>Date</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>to capture the id of the opportunity (not the line item but its parent)</description>
+        <name>opportunityId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Opportunity Line Item Schedule</description>
+        <name>schedule</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>OpportunityLineItemSchedule</objectType>
+    </variables>
+    <variables>
+        <description>to store the quantity from the opportunity product</description>
+        <name>scheduleQty</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+</Flow>

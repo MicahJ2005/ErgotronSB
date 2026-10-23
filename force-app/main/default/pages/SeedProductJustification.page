@@ -1,0 +1,11 @@
+<!-- Page displayed to the user when they attempt to submit a seed unit order with ineligible products and they have not entered an justification text  -->
+
+<apex:page standardController="Seed_Unit_Order__c" docType="html-5.0">
+	<apex:form id="theForm">		
+		<apex:pageMessage severity="info" strength="3" summary="{!$Label.Seed_Approval_Step_3}" /><br/>	
+		<apex:inputTextArea value="{!Seed_Unit_Order__c.Ineligible_Product_Justification_Long__c}" cols="200" rows="10"/><br/><br/>
+		
+		<apex:commandButton action="{!save}" value="Save" />
+		<apex:commandButton action="{!cancel}" value="Cancel" />
+	</apex:form>
+</apex:page>

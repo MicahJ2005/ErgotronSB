@@ -1,0 +1,10 @@
+<apex:page standardController="Custom_Product__c">
+
+        <apex:pageMessage summary="{!SUBSTITUTE(JSENCODE(' - Custom Product POs are non-cancellable \n - Custom SKUs are non-returnable.'), '\\\n', '<br/>')}"
+            title="Reminder"
+            severity="info" 
+            strength="1"
+            escape="false" />
+        <apex:pageMessages />  
+  
+</apex:page>

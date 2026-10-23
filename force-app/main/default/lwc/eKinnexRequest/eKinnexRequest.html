@@ -1,0 +1,208 @@
+<!-- https://ergotron--full.sandbox.my.site.com/public/s/ekinnex-support-request -->
+<template>
+    <div>
+        <template if:true={formDisabled}>
+            <lightning-spinner
+                alternative-text="Loading..." variant="brand">
+            </lightning-spinner>
+        </template>
+        <!--
+            //Not disabling the form - because if there is an error in the submission it clears out all the values
+            // so they can't fix and resubmit.
+            
+        -->
+        <!--<template if:false={formDisabled}>-->
+            <form id="eKinnexRequestForm">
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="email-input"><abbr class="slds-required" title="required">* </abbr>First Name</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="firstName-input" class="slds-input" onchange={handleFirstNameIn}/>
+                </div>
+                <template if:true={firstNameBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="email-input"><abbr class="slds-required" title="required">* </abbr>Last Name</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="lastName-input" class="slds-input" onchange={handleLastNameIn}/>
+                </div>
+                <template if:true={lastNameBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="email-input"><abbr class="slds-required" title="required">* </abbr>Organization Name</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="company-input" class="slds-input" onchange={handleCompanyIn}/>
+                </div>
+                <template if:true={companyBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="email-input">Job Title</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="title-input" class="slds-input" onchange={handleTitleIn}/>
+                </div>
+            </div>
+
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="email-input"><abbr class="slds-required" title="required">* </abbr>Role</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="role-input" class="slds-input" onchange={handleRoleIn}/>
+                </div>
+                <template if:true={roleBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="email-input"><abbr class="slds-required" title="required">* </abbr>Email</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="email-input" class="slds-input" onchange={handleEmailIn}/>
+                </div>
+                <template if:true={emailBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+                <template if:true={emailWrongFormat}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">Please enter email in the correct format: something@example.com.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="phone-input"><abbr class="slds-required" title="required">* </abbr>Phone</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="phone-input" class="slds-input" onchange={handlePhoneIn}/>
+                </div>
+                <template if:true={phoneBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="address1-input"><abbr class="slds-required" title="required">* </abbr>Address Line 1</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="address1-input" class="slds-input" onchange={handleAddress1In}/>
+                </div>
+                <template if:true={addressBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="address2-input">Address Line 2</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="address2-input" class="slds-input" onchange={handleAddress2In}/>
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="city-input"><abbr class="slds-required" title="required">* </abbr>City</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="city-input" class="slds-input" onchange={handleCityIn}/>
+                </div>
+                <template if:true={cityBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="state-input">State</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="state-input" class="slds-input" onchange={handleStateIn}/>
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="country-input"><abbr class="slds-required" title="required">* </abbr>Country</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="country-input" class="slds-input" onchange={handleCountryIn}/>
+                </div>
+                <template if:true={countryBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <label class="slds-form-element__label" for="postalCode-input"><abbr class="slds-required" title="required">* </abbr>Postal Code</label>
+                <div class="slds-form-element__control">
+                    <input type="text" id="postalCode-input" class="slds-input" onchange={handlePostalCodeIn}/>
+                </div>
+                <template if:true={postalCodeBlank}>
+                    <p style="color:#a94442; padding-left:33%; font-weight:bold;">This field is required.</p>
+                </template>
+            </div>
+
+            <div>
+                <!-- _stacked puts the items UNDER the header; -horizontal makes the text green/bold -->
+                <div class="slds-form-element slds-form-element_stacked">
+                    <label class="slds-form-element__label" for="requestType-input"><abbr class="slds-required" title="required">* </abbr>Select the type of request</label>
+                </div>
+                <template if:true={requestTypeBlank}>
+                    <p style="color:#a94442; font-weight:bold;">This field is required.</p>
+                </template>
+                <lightning-radio-group
+                    options={requestTypes}
+                    value={requestType}
+                    onchange={handleReqType}
+                    id="requestType-input"
+                    >
+                </lightning-radio-group>
+            </div>
+            
+            <div>
+                <div class="slds-form-element slds-form-element_stacked" >
+                    <label class="slds-form-element__label">
+                        <abbr class="slds-required" title="required">* </abbr>
+                        Select your product platform(s)
+                    </label>
+                </div>
+                <template if:true={platformsBlank}>
+                    <p style="color:#a94442; font-weight:bold;">This field is required.</p>
+                </template>
+                <lightning-checkbox-group
+                    name="platforms"
+                    options={platformOptions}
+                    value={platforms}
+                    onchange={handlePlatform}
+                    >
+                </lightning-checkbox-group>
+            </div>
+
+            <div>
+                <div class="slds-form-element slds-form-element_stacked" >
+                    <label class="slds-form-element__label">
+                        <abbr class="slds-required" title="required">* </abbr>
+                        Do you have carts deployed with or without drawers?
+                    </label>
+                </div>
+                <template if:true={drawersBlank}>
+                    <p style="color:#a94442; font-weight:bold;">This field is required.</p>
+                </template>
+                <lightning-checkbox-group
+                    name="drawers"
+                    options={drawerOptions}
+                    value={drawerValues}
+                    onchange={handleDrawer}
+                    >
+                </lightning-checkbox-group>
+            </div>
+
+            <div>
+                <div class="slds-form-element slds-form-element_stacked" >
+                    <label class="slds-form-element__label">
+                        <abbr class="slds-required" title="required">* </abbr>
+                        Question, comment or concern
+                    </label>
+                </div>
+                <template if:true={commentBlank}>
+                    <p style="color:#a94442; font-weight:bold;">This field is required.</p>
+                </template>          
+                 <lightning-textarea 
+                    name="comment" 
+                    onchange={handleCommentIn}
+                    variant="label-hidden">
+                </lightning-textarea>                
+            </div>
+
+            <div style="text-align: center;">
+                <button type="submit" class="slds-button slds-button_brand" form="eKinnexRequestForm" onclick={handleSubmit} style="text-align: center;">SUBMIT REQUEST</button>
+            </div>
+        </form>
+    <!--</template>-->
+    </div>
+</template>

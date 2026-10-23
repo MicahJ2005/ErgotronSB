@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Invoked by PB: Relate WO Staging to TD. Finds TD matching the PO Number in the WO and relates the WO record to that TD record.</description>
+    <interviewLabel>Relate WO Staging to TD Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Relate WO Staging to TD Flow</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Find_TD_with_PO_number</name>
+        <label>Find TD with PO number</label>
+        <locationX>235</locationX>
+        <locationY>81</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Relate_WO_to_TD</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Ergotron_PO__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varPONumber</elementReference>
+            </value>
+        </filters>
+        <object>Integration_Project__c</object>
+        <outputReference>varTechDeploymentID</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+    <recordUpdates>
+        <name>Relate_WO_to_TD</name>
+        <label>Relate WO to TD</label>
+        <locationX>236</locationX>
+        <locationY>172</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>PO_Number__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varPONumber</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Tech_Deployment__c</field>
+            <value>
+                <elementReference>varTechDeploymentID.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Work_Order_Staging__c</object>
+    </recordUpdates>
+    <startElementReference>Find_TD_with_PO_number</startElementReference>
+    <status>Active</status>
+    <variables>
+        <name>varPONumber</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varTechDeploymentID</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Integration_Project__c</objectType>
+    </variables>
+</Flow>

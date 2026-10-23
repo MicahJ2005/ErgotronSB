@@ -1,0 +1,156 @@
+<!--
+  @File Name          : seedUnitOrderForm.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 1/16/2020, 12:43:03 PM
+  @Modification Log   : 
+
+  https://full-ergotron.cs195.force.com/partner/s/reseller-auth-form
+
+  Ver       Date            Author      		    Modification
+  1.0    12/17/2019   James Loghry (Demand Chain)     Initial Version
+         11/23/2020   Esau Sanchez - Ergotron         M.A.P. language update
+         02/27/2023   Esau Sanchez - Ergotron         Added ecommToggle
+-->
+<template>
+    <template if:true={loadingForm}>
+        <lightning-spinner variant="brand" size="large"></lightning-spinner>
+    </template>
+
+    <template if:true={loadingProducts}>
+        <lightning-spinner variant="brand" size="large"></lightning-spinner>
+    </template>
+
+    <template if:true={submitting}>
+        <lightning-spinner variant="brand" size="large"></lightning-spinner>
+    </template>
+
+    <lightning-card class="slds-p-around_small">
+
+        <!--<div class="logoContainer"><img src={logoUrl}></div>-->
+        <c-path default-steps={steps} onstepchange={handleStepChange}></c-path>
+        <lightning-messages></lightning-messages>
+        <lightning-record-edit-form object-api-name="Lead" onload={handleOnLoad} onsubmit={handleSubmit} onerror={handleError} onsuccess={handleSuccess}>
+            <lightning-card title={stepLabel}>
+
+
+                <c-error-panel friendly-message="An error occurred" errors={errors}></c-error-panel>
+
+                <template if:true={displayPrimaryVendorMgmt}>
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-stretch slds-wrap">
+                        <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+                            <div class="alert alert-info" role="alert">
+                            Please identify the primary vendor management point-of-contact for your company, if other than yourself.<br />
+                            This would be the person that would determine Web pricing and/or facilitate channel pricing programs.
+                            </div>
+                        </div>
+                        
+                        <!-- Removing the Copy Address button per request SR-25448 -->
+                        <!-- 
+                        <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+                            <button class="slds-button slds-button_brand" onclick={copyAddress}>
+                                <lightning-icon
+                                    icon-name="utility:copy"
+                                    variant="inverse"
+                                    size="small"
+                                    class="slds-p-horizontal_x-small"
+                                ></lightning-icon>
+                                Copy Address
+                            </button>
+                        </div>
+                        -->
+                    </div>
+                </template>
+
+                <c-record-input-form record={lead} fields={fields} onrecordchange={handleRecordChange}></c-record-input-form>
+
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-stretch slds-wrap">
+                    <template if:true={displayPrimaryVendorMgmt}>
+                        <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+                            <div class="alert alert-success" role="alert">
+                                <!-- 260318 ES - commenting toggles. Requested by Tavis Wong Asana https://app.asana.com/1/5060709177155/project/1206130088964423/task/1213726222611743?focus=true  -->
+                                <!-- 
+                                Ergotron, Inc. enforces a Minimum Advertised Price Policy (MAP) on a number of products.  You can review the MAP as well as a list of the affected products and their associated MAP prices on Ergotron website here: <a href="http://partner.ergotron.com/en-us/company/legal" class="alert-success-link" target="_blank">http://partner.ergotron.com/en-us/company/legal</a>.
+                                <br><br>
+                                Access to marketing funds is contingent upon adherence to the MAP.  By clicking “Yes” below, you acknowledge that you have read and understand the MAP.
+                                <lightning-input type="toggle" onchange={handleMapToggle} label=" " required name="mapToggle" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input>
+                                <br>
+                                -->
+                                By clicking "Yes" below, you certify that the information provided in this Authorized Partner Request form on behalf of the prospective partner is true and accurate. 
+                                <lightning-input type="toggle" onchange={handleAccurateInfoToggle} label=" " required name="accurateInfoToggle" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input>
+
+                                By clicking "Yes" below, you acknowledge and understand that authorization to sell Ergotron products is granted only if Ergotron affirmatively provides you approval following submission of this form.  Please note any authorization provided by Ergotron is limited to the company identified in this form. Authorization does not extend to any affiliate, subsidiary, or other entity related to or associated with the prospective partner unless otherwise indicated by Ergotron in writing.
+                                <lightning-input type="toggle" onchange={handleAuthTermsToggle} label=" " required name="authTermsToggle" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input>
+
+                                By clicking "Yes" below, you acknowledge that you have read and agree to the <a href="https://partner.ergotron.com/portals/0/literature/other/reseller-agreement-supplemental-policy-20260304.pdf" class="alert-success-link" target="_blank">Ergotron, Inc. Authorized Reseller Policy and Exhibits A and B</a> should Ergotron approve you to be an Authorized Reseller following submission of this form. 
+                                <lightning-input type="toggle" onchange={handleExhibitABToggle} label=" " required name="exhibitABToggle" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input>
+
+                                By clicking “Yes” below, you agree not to sell Ergotron products on any ecommerce platforms not owned by you or approved by Ergotron. For example, you are not permitted to sell Ergotron products as a third-party seller on any online marketplace, including, but not limited to, Amazon, eBay, Newegg, and Walmart Marketplace.
+                                <lightning-input type="toggle" onchange={handleEcommToggle} label=" " required name="ecommToggle" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input>
+                                
+                                <br>
+
+                                <!-- Ergotron reserves the right under its Unilateral price Policy (UPP) to stop selling to authorized resellers.  You can review the UPP on the Ergotron web site here: <a href="http://partner.ergotron.com/en-us/company/legal" class="alert-success-link" target="_blank">http://partner.ergotron.com/en-us/company/legal</a>.  By clicking "Yes", you acknowledge that you have read and understand the UPP.
+                                <lightning-input type="toggle" onchange={handleUppToggle} label=" " required name="uppToggle" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input>
+                                
+                                <br> -->
+
+                                By clicking “Yes” below, you agree to participate in Ergotron's Rapid Response remote Customer Care process to assist us to investigate customer issues, determine root cause and to resolve such issues more quickly.
+                                <lightning-input type="toggle" onchange={handleToggle3} label=" " required name="toggle3" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input>
+                                
+                                <br>
+                                By clicking “Yes” below, you agree to ensure via written agreements with your customers that with respect to configuration work (i) Ergotron products are used only for the purposes and in the manner for which they were designed and supplied, (ii) all persons likely to use or come into contact with such products receive appropriate training and copies of applicable instructions and documentation supplied by Ergotron, (iii) all known third parties who use or may be affected by or rely upon Ergotron products are given full and clear warning of any hazards associated with them or limitations of their effectiveness and that safe working practices are adopted and complied with, (iv) any warning notices displayed on such products are not removed or obscured, and (v) any third party to whom products are supplied agrees not to remove or obscure such warning notices.
+                                <lightning-input type="toggle" onchange={handleToggle4} label=" " required name="toggle4" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input>
+                                
+                                <br>
+                                By clicking “Yes” below, you agree to indemnify, defend and hold harmless Ergotron and its affiliates, and their respective directors, officers, suppliers, agents, and employees, from and against any third-party claims, demands, investigations, suits, or causes of action relating to or arising out of (i) negligence or any wrongful or willful act or omission or misrepresentation by you, (ii) your failure to comply with applicable laws or to follow the specifications, instructions, warnings, documentation, guidance, or recommendations furnished by Ergotron, (iii) misuse or mishandling of Ergotron's products by you or your customers, (iv) with respect to configuration work only, use of Ergotron products by you or your customers in an application or environment for which they were not designed or claims related to equipment or software added to the products by you or your customer, (v) modifications of Ergotron products by you or anyone acting at your direction without Ergotron's prior written approval, (vi) any wrongful statements, claims, representations or warranties made by you relating to Ergotron's products, other than as authorized or made by Ergotron in writing, (vii) breach of confidentiality obligations, and (viii) any claim of infringement of third party intellectual property rights that is attributable to modifications or reconfiguration work made by you or your customers.
+                                <lightning-input type="toggle" onchange={handleToggle5} label=" " required name="toggle5" message-toggle-active="Yes" message-toggle-inactive="No"></lightning-input> 
+
+                            </div>
+                        </div>
+                    </template>
+
+                    <div class="slds-col slds-size_12-of-12 slds-p-around_small">
+                        <template if:true={displaySave}>
+                            <button class="right slds-button slds-button_brand" type="submit">
+                                Submit
+                            </button>
+                        </template>
+                        <template if:false={hasNext}>
+                            <template if:true={displayDisabledSave}>
+                                <button class="right slds-button slds-button_brand" disabled type="submit">
+                                    Submit
+                                </button>
+                            </template>
+                        </template>
+                        <template if:true={hasNext}>
+                            <button class="right slds-button slds-button_brand" onclick={next}>
+                                Next
+                                <lightning-icon
+                                    icon-name="utility:chevronright"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                            </button>
+                        </template>
+                        <template if:true={hasPrev}>
+                            <button class="right slds-button slds-button_brand" onclick={prev}>
+                                <lightning-icon
+                                    icon-name="utility:chevronleft"
+                                    variant="inverse"
+                                    size="small"
+                                ></lightning-icon>
+                                Previous
+                            </button>
+                        </template>
+                        <template if:true={displaySave}>
+                            <iframe src="/partner/apex/Recaptcha" name="captchaFrame" width="325" height="600" class="right" style="border:0px solid #f9f9f9"></iframe>
+                        </template>
+                    </div>
+                </div>
+            </lightning-card>
+        </lightning-record-edit-form>
+    </lightning-card>
+</template>

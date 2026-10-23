@@ -1,0 +1,44 @@
+<apex:page id="cc_Footer" docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false">
+
+  <!-- <div class="container-fluid navbar-inverse cc_navbar-inverse">
+    <footer class="footer cc_footer">
+      <div class="footerBrowser cc_footer_browser"> -->
+        <!-- <span id="Cart:cc_tmpl_OneColRD:cc_tmpl_Storefront:j_id183"> -->
+         <!--<section class="dr-links">
+            <p><a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRAboutDigitalRiverPage/eCommerceProvider.Digital%20River%20Inc." target="_blank">DR globalTech Inc.</a> is the authorized reseller and merchant of the products and services offered within this store.</p>
+            <p>When submitting your order, you agree to the <a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRTermsAndConditionsPage/eCommerceProvider.Digital%20River%20Inc." target="_blank">Terms of Sale</a> and the <a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRPrivacyPolicyPage/eCommerceProvider.Digital%20River%20Inc." target="_blank">Privacy Policy</a> of Digital River Inc. If you are a resident of California, see the <a href="https://gc.digitalriver.com/store/defaults/en_US/DisplayCCPAPage" target="_blank">Digital River Inc. CCPA Privacy Policy</a>.</p> 
+          </section>-->
+        <!-- </span> -->
+      <!-- </div> -->
+      <div class="footer-bottom">
+        <div class="container-fluid">
+          <div class="copyright"><a class="ergo-mark" href="{!$Label.ERG_B2B_Continue_Shopping_Link}/en-us/"><img alt="Ergotron" src="https://www.ergotron.com/portals/0-system/skins/ergotron/img/ergotron-e-mark-white.png"></img></a> <span>© <script>
+                new Date().getFullYear() > 2010 && document.write(new Date().getFullYear());
+              </script> </span></div>
+          <ul class="h-list social">
+            <li><a href="https://twitter.com/Ergotron" target="_blank"><i class="fa fa-twitter"></i><span class="sr-only">Twitter</span></a></li>
+            <li><a href="https://www.facebook.com/ErgotronInc" target="_blank"><i class="fa fa-facebook"></i><span class="sr-only">Facebook</span></a></li>
+            <li><a href="https://www.linkedin.com/company/ergotron/" target="_blank"><i class="fa fa-linkedin"></i><span class="sr-only">LinkedIn</span></a></li>
+            <li><a href="https://www.youtube.com/user/ErgotronGuy" target="_blank"><i class="fa fa-youtube-play"></i><span class="sr-only">YouTube</span></a></li>
+          </ul>
+          <ul class="legal-links">
+            <li><a href="{!$Label.ERG_B2B_Continue_Shopping_Link}/en-us/company/legal"><span>Legal</span></a></li>
+            <li><a href="{!$Label.ERG_B2B_Continue_Shopping_Link}/en-us/company/legal/privacy-policy"><span>Privacy</span></a></li>
+            <li><a href="{!$Label.ERG_B2B_Continue_Shopping_Link}/en-us/company/legal/privacy-policy#Collection_of_Personal_Information"><span>California Collection Notice</span></a></li>
+            <li><a href="{!$Label.ERG_B2B_Continue_Shopping_Link}/en-us/company/legal/cookies"><span>Cookie Notice</span></a></li>
+           <!-- <li><a href="{!$Label.ERG_B2B_Continue_Shopping_Link}/en-us/company/terms-and-conditions"><span>Terms and Conditions of Sale</span></a></li> -->
+          </ul>
+        </div>
+      </div>
+    <!-- </footer> -->
+    <!-- <ul class="nav pull-right scroll-top cc_scroll-top">
+      <li><a href="#" id="chevronUpLink"><i aria-hidden="true" class="fa fa-chevron-up"></i><span class="sr-only" id="chevronUpText"></span></a></li>
+    </ul> -->
+  <!-- </div> -->
+<script>
+  document.body.classList.add("ergomods");
+  
+
+
+</script>
+</apex:page>

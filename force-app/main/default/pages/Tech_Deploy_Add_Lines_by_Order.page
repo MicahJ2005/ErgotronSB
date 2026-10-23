@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Tech_Deploy_Add_Lines_by_Order" 
+    finishLocation="/{!$CurrentPage.parameters.IntProjID}"/>
+</apex:page>

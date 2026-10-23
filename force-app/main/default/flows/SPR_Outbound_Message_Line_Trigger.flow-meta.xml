@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>SPR_Products_Outbound_Message</name>
+        <label>SPR Products Outbound Message</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>OpportunityLineItem.SPR_Products_OpptyLines</actionName>
+        <actionType>outboundMessage</actionType>
+        <connector>
+            <targetReference>Date_Time_Stamp_on_Product</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <nameSegment>OpportunityLineItem.SPR_Products_OpptyLines</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>66.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Record-triggered flow that sends the SPR (Special Pricing Request) lines outbound message to Informatica when the ‘Trigger SPR Outbound Line’ checkbox is set to TRUE by the  Opportunity &quot;SPR Outbound Message Trigger&quot; flow on Opportunity Product records. This flow packages the appropriate data and initiates the integration to Informatica, which then creates the Oracle SPR. This flow should only be invoked by automation—never manually</description>
+    <environments>Default</environments>
+    <interviewLabel>SPR Outbound Message Line Trigger {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>SPR Outbound Message Line Trigger</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Set the &quot;SPR Outbound Sent Date&quot; field with today&apos;s date and time</description>
+        <name>Date_Time_Stamp_on_Product</name>
+        <label>Date Time Stamp on Product</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>SPR_Outbound_Sent_Date__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>SPR_Products_Outbound_Message</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Trigger_SPR_Outbound_Line__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>OpportunityLineItem</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

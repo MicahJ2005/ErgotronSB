@@ -1,0 +1,2969 @@
+<!--
+@description       : Clone of ERGReviewCartDesktop with changes - Tax exempt removal/payment
+  @author            : Unknown
+  @group             : 
+  @last modified on  : 28-04-2025
+  @last modified by  : Gaurang Arora(R1)
+  Modifications Log 
+  Ver   Date         Author         Modification
+  1.0   08-26-2020   Unknown   Initial Version
+-->
+<apex:page docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" applyHtmlTag="false" 
+    controller="CC_ERG_ctrl_ReviewCart" extensions="CC_ERG_ValidateAddress_ext">
+    <head>
+        <!--Below is replaced with DR static resource for JQuery-->
+        <apex:includeScript value="{!$Resource.CCJQuery}"/>
+    </head>
+    <style>
+        .sendOrderToCustomer {
+            display: none;
+        }
+        span.alert-danger{
+            padding: unset;
+            background-color: unset;
+            border-color: unset;
+        }
+        .editOriginal{
+            font-family: 'proxima-nova', helvetica, arial, sans-serif !important;
+            display: inline-block;
+            position: relative;
+            padding: .556em 1.222em;
+            font-size: 18px;
+            line-height: 1.2;
+            font-weight: normal;
+            text-align: center;
+            white-space: normal;
+            text-transform: none;
+            border: 0;
+            border-radius: 50px;
+            z-index: 1;
+            cursor: pointer;
+            width: auto;
+            margin-top: 30px;
+        }
+
+        .enterNewAddress{
+            font-family: 'proxima-nova', helvetica, arial, sans-serif !important;
+            display: inline-block;
+            position: relative;
+            padding: .556em 1.222em;
+            font-size: 18px;
+            line-height: 1.2;
+            font-weight: normal;
+            text-align: center;
+            white-space: normal;
+            text-transform: none;
+            border: 0;
+            border-radius: 50px;
+            z-index: 1;
+            cursor: pointer;
+            width: auto;
+            margin-top: 30px;
+        }
+
+        .fa.fa-print {
+          display: inline-block;
+          padding-right: 26px;
+          color: rgb(65, 90, 168);
+        }
+
+        @media print {
+          .home_slider.cc_home_slider, .deskLayout .header.cc_header, .footer.cc_footer {
+            display: none !important;
+          }
+        }
+    </style>
+<script id="Ergo-Shipping-Desktop" type="text/template"> 
+
+   <div class="panel panel-default cc_panel cc_checkout_user_info">
+    <div class="panel-heading cc_heading">
+     <h3 class="panel-title cc_title">{{pageLabelMap 'CheckOut_ShipmentInformation'}}</h3>
+    </div>
+    <div class="panel-body cc_body">
+     <form id="shipForm" class="shipForm cc_ship_form">
+      <div class="messagingSection-Error" style="display: none"></div>
+      <div class="messagingSection-Info" style="display: none"></div>
+      <div class="messagingSection-Warning" style="display: none"></div>
+      <div class="shipping_payment cc_shipping_payment">
+       <p class="coso_ship_guide_text cc_ship_guide_text">
+        {{pageLabelMap 'CheckOut_ShippingGuidingText'}}
+       </p>
+       <!-- {{#isErgotronStoreCart}} -->
+       <!-- {{{json this}}} -->
+       {{#ifDisplay 'SO.DsplShipOptions'}}
+        {{#if this.shippingMethods}}
+         <div class="coso_ship_method cc_coso_ship_method">
+          <div class="form-group">
+           <label for="shippingMethod" class="cc_shipping_method_label">{{pageLabelMap 'CheckOut_ShippingMethod'}}</label>
+           <select id="shippingMethod" class="form-control shippingOptions cc_shipping_method" name="shippingMethod">
+            {{#each this.shippingMethods}}
+             <option value="{{this.uniqueId}}" {{#ifEquals ../shippingMethod this.uniqueId}} selected {{/ifEquals}}>
+              {{this.provider}} - {{pageLabelMap this.serviceName}} ({{price this.price}})
+             </option>
+            {{/each}}
+           </select>
+          </div>
+         </div>
+         <div class="coso_est_shipping form-group cc_coso_est_shipping">
+          <label for="estShipping" class="cc_est_shipping_label">{{pageLabelMap 'CheckOut_EstimatedShipping'}}</label>
+          <span id="estShipping" class="shippingCost cc_est_shipping"></span>
+         </div>
+        {{/if}}
+       {{/ifDisplay}}
+         <!-- {{/isErgotronStoreCart}} -->
+        <!-- add field here -->
+<!--
+        <label>Freight Carrier Account Number </label><input id="FreightCarrierActNbr" type="text" name="FreightCarrierActNbr" size="50" value="{!FreightCarrierActNbr}" onchange="updateFreightAccount('FreightCarrierActNbr')" >  
+        <label>Freight Carrier Account Number </label><input id="FreightCarrierActNbr" type="text" name="FreightCarrierActNbr" size="50" value="{!FreightCarrierActNbr}" onfocusout="updateFreightAccount('FreightCarrierActNbr')" >  
+        <label>Freight Carrier Account Number: </label> <input id="FreightCarrierActNbrDisp" type="text" name="FreightCarrierActNbrDisp" size="50" value="{!FreightCarrierActNbr}" onfocusout="updateFreightAccount('FreightCarrierActNbr')" READONLY>{!FreightCarrierActNbr}  
+        <label>Freight Carrier Account Number: </label> <div id="FreightCarrierActNbrDisp" > {!FreightCarrierActNbr}</div>
+-->               
+        {{#isCSRMode}}
+        <label>Freight Carrier Account Number: </label> <input id="FreightCarrierActNbrDisp" type="text" class="form-control-plaintext" style="border: 0px;"  name="FreightCarrierActNbrDisp" value="{!FreightCarrierActNbr}" READONLY>  
+               <div style="width:100px;"> 
+               <a  href="#FCANUpdate"  onclick="displayFCAN('{!FreightCarrierActNbr}')" style="text-decoration: none; padding-top: 0px;  padding-bottom: 0px; margin-top:0px; margin-bottom: 0px;"  id="additionalInfoLink" data-toggle="modal"><button class="btn btn-default btn-block btn-sm " role="button" >Add FCAN</button></a> 
+               <br\>
+               </div>    
+              
+       {{#ifDisplay 'SO.DsplShipComplete'}}
+        <div class="coso_ship_complete cc_coso_ship_complete form-group">
+         <div class="checkbox">
+          <label for="estShipping" class="cc_est_shipping_label">
+           <input id="estShipping" type="checkbox" name="shipComplete" class="boxes cc_ship_complete" value="true" {{#if this.shipComplete}} checked {{/if}} />
+           {{pageLabelMap 'CheckOut_ShipComplete'}}
+          </label>
+         </div>
+        </div>
+       {{/ifDisplay}}
+       {{#ifDisplay 'SO.DsplShipNotes'}}
+        <div class="coso_ship_notes form-group cc_coso_ship_notes">
+         <label for="shippingNotes" class="cc_shipnotes_label">{{pageLabelMap 'CheckOut_ShippingNotes'}}</label>
+         <textarea id="shippingNotes" name="shippingInst" rows="6" maxlength="1000" class="shipnotes form-control cc_shipnotes">{{this.shippingInst}}</textarea>
+        </div>
+       {{/ifDisplay}}
+       {{#ifDisplay 'SO.ShowReqDate'}}
+        <p class="deliveryDateMessages cc_delivery_date_messages" id="deliveryDateMessages"></p>
+        {{#unless this.requestedDateData.ApiError}}
+         <div class="coso_ship_delivery_date cc_coso_ship_delivery_date from-group">
+          <label for="requestedDateStr" class="cc_requested_date_label">{{pageLabelMap 'Checkout_RequestedDeliveryDt'}}</label>
+          <div class="input-group date">
+           <input id="requestedDateStr" name="requestedDateStr" value="{{this.requestedDateStr}}" class="requestedDate cc_requested_date form-control" readonly="true">
+           <div class="input-group-addon">
+            <span class="glyphicon glyphicon-th"></span>
+           </div>
+          </div>
+         </div>
+        {{/unless}}
+       {{/ifDisplay}}
+       <p class="cc_shipping_conditions">{{pageLabelMap 'Checkout_Shipping_Conditions' }}</p>
+      </div>
+      {{#if this.terms}}
+       <h4 class="coso_footer_tc cc_coso_footer_tc">{{pageLabelMap 'Footer_TermsAndConditions'}}</h4>
+       <div class="shipping_payment cc_shipping_payment">
+        {{#each this.terms}}
+         <div class="checkbox shiping_payment_term">
+          <label for="terms cc_ship_terms_label">
+           <input id="terms" type="checkbox" name="#" class="boxes terms cc_ship_terms">
+           <span class="cc_terms_title">{{this.title}}&#58;&#160;</span>
+           <p class="cc_terms_description">{{unescape this.description}}</p>
+          </label>
+         </div>
+        {{/each}}
+       </div>
+      {{/if}}
+      {{/isCSRMode}} 
+      <p class="link_button cc_link_button coso_proceed shippingDetails cc_shipping_details hidden-print">
+       <input class="btn btn-default btn-sm btn-base btn-gray processBack cc_process_back" type="button" value="{{pageLabelMap 'Back'}}" alt="{{pageLabelMap 'Back'}}" />
+       <input class="btn btn-default btn-sm btn-base btn-blue proceed processShippingInfo hide disabled cc_proceed" type="button" disabled value="{{pageLabelMap 'CheckOut_AcceptAndProceed_Cont'}}" alt="{{pageLabelMap 'CheckOut_AcceptAndProceed_Cont'}}" />
+       <button class="btn btn-default btn-sm btn-base btn-blue  cc_proceed" onclick="ProceedToOrderReview(event);">{{pageLabelMap 'CheckOut_AcceptAndProceed_Cont'}}</button>
+      </p>
+     </form>
+    </div>
+   </div>
+    
+
+<!--  start of button modal div   aria-hidden="true" --> 
+       <div id="FCANUpdate" class="modal fade cc_modal" tabindex="-1" role="dialog" aria-labelledby="FCANUpdate" aria-hidden="true">
+          
+         <div class="modal-dialog cc_modal-dialog" role="document">
+          <div class="modal-content cc_modal-content">
+
+           <div class="modal-header cc_modal-header">
+                <button type="button" class="close cc_close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">X</span></button>
+                <h3 class="cc_prod_list_item_label" id="displaywarehouselocation"> Update Freight Carrier Account Number </h3>
+           </div>
+
+           <div class="modal-body cc_body">
+ 
+               <center>
+               
+                   <div id="dynamicContent"> 
+                       <br/><br/><br/><br/><br/>
+                       <span style="display: inline-block; padding: 10px 0px;">Getting FCAN value...</span>
+                       
+                        <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                            <div style="display: inline-block; padding: 2px; background-color: #fff;   text-align: center">
+                                <img src="/auraFW/resources/aura/images/spinner.gif" style="float: left; margin: 8px;" />
+                            </div>
+                        </div>
+                       
+                  </div>
+              </center>
+               
+             </div>
+
+          </div>
+         </div>
+
+        </div>
+ 
+                
+<!-- button modle  end -->  
+</script>
+
+<script id="Ergo-Payment-Desktop" type="text/template">
+    <div class="panel panel-default cc_panel cc_checkout_payment_panel">
+        <div class="panel-body cc_body">
+            <!-- <input class="button processBack btn btn-default btn-sm btn-base btn-gray" type="button" value="{{pageLabelMap 'Back'}}" alt="{{pageLabelMap 'Back'}}" /> -->
+            <div class="checkoutContainer checkoutPaymentContainer cc_checkout_payment_container">
+                <div class="messagingSection-Error" style="display: none"></div>
+                <div class="messagingSection-Info" style="display: none"></div>
+                <div class="messagingSection-Warning" style="display: none"></div>
+                <div class="checkoutPaymentTarget"/>
+            </div>
+        </div>
+    </div>
+
+     <button class="btn btn-default btn-sm remove sendOrderToCustomer" onclick="CCRZ.subsc3.customActions.sendOrderToCustomer()" type="button">Send Order To Customer</button>
+ 
+    
+    <!-- Modal -->
+    <div id="emailsent" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Email Sent To This Contact</h4>
+            </div>
+            <div class="modal-body">
+                <div id="sendto_contact_info" > </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+
+        </div>
+    </div>   
+</script>
+
+<script id="UserInfo-AddressEdit-Desktop" type="text/template">
+    <form id="{{classPrefix}}AddressForm" class="addressForm" onkeydown="return event.key != 'Enter';">
+        <div class="{{classPrefix}}-messagingSection-Error" style="display: none"></div>
+        <h3 class="cc_section_title">{{pageLabelMap sectionLabel}}</h3>
+        {{#ifEquals classPrefix 'shipping'}}
+            <!-- <a class="copyAddress cc_copy_address">{{pageLabelMap 'Checkout_UseBillingAddress'}}</a> -->
+            <a class="copyAddress cc_copy_address"><i class="fa fa-pencil"></i>{{pageLabelMap 'Checkout_UseBillingAddress'}}</a>
+        {{/ifEquals}}
+        <p class="change_address cc_change_address">  
+            <a href="#modal_{{classPrefix}}" data-toggle="modal" class="cc_change_address_modal">{{pageLabelMap 'UserInfo_AddressBook'}}</a>
+        <br/>
+        <div style="width:260px;" class="accountAddressSelector"> 
+            <a href="#SetAccountAddress"  onclick="DisplayAccountAddressSelector('{{pageLabelMap sectionLabel}}')" style="text-decoration: none; padding-top: 0px;  padding-bottom: 0px; margin-top:0px; margin-bottom: 0px;" id="additionalInfoLink" data-toggle="modal">
+                <button class="btn btn-default btn-block btn-sm " role="button">
+                    SELECT DIFFERENT ACCOUNT ADDRESS
+                </button>
+            </a> 
+            <br/>
+            {{#ifEquals classPrefix 'shipping'}}
+                <a href="#SetContAddress" onclick="DisplayContactSelector()" style="text-decoration: none; padding-top: 0px;  padding-bottom: 0px; margin-top:0px; margin-bottom: 0px;"  id="contcatInfoLink" data-target="#SetContAddress" data-toggle="modal">
+                    <button class="btn btn-default btn-block btn-sm" role="button">
+                        SELECT Contact
+                    </button>
+                </a> 
+                <br/>
+            {{/ifEquals}}
+        </div>    
+    </p>
+    {{#ifDisplay 'SO.DsplAddrName'}}
+    <div class="form-group required-field">
+        <!-- <label for="firstName">{{pageLabelMap 'CheckOut_FirstName'}}</label> -->
+        <input id="firstName" type="text" placeholder="{{pageLabelMap 'CheckOut_FirstName'}}" class="form-control {{classPrefix}}firstNameField {{classPrefix}}Field cc_contact_input_firstname" name="{{classPrefix}}Address.firstName" maxlength=100 value="{{this.firstName}}" />
+        <!-- <span class="alert alert-danger fName_error"></span> -->
+    </div>
+    <div class="form-group required-field">
+        <!-- <label for="lasttName">{{pageLabelMap 'CheckOut_LastName'}}</label> -->
+        <input id="lastName" type="text" placeholder="{{pageLabelMap 'CheckOut_LastName'}}" class="form-control {{classPrefix}}lastNameField {{classPrefix}}Field cc_contact_input_lastname" name="{{classPrefix}}Address.lastName" maxlength=100 value="{{this.lastName}}" />
+        <!-- <span class="alert alert-danger lName_error"></span> -->
+    </div>
+    {{/ifDisplay}}
+    {{#ifDisplay 'SO.DsplAddrCompany'}}
+    <div class="form-group required-field">
+        <!-- <label for="companyName">{{pageLabelMap 'Profile_CompanyName'}}</label> -->
+        <input id="companyName" type="text" placeholder="{{pageLabelMap 'Profile_CompanyName'}}" class="form-control {{classPrefix}}companyField {{classPrefix}}Field cc_contact_input_company" name="{{classPrefix}}Address.companyName" maxlength=100 value="{{this.companyName}}" />
+        <!-- <span class="alert alert-danger primPhone_error"></span> -->
+    </div>
+    {{/ifDisplay}}
+    <input type="hidden" class="{{classPrefix}}acctIdField {{classPrefix}}Field" name="{{classPrefix}}Address.partnerId" maxlength=100 value="{{this.partnerId}}" />
+    <div class="form-group required-field">
+     <!-- <label for="address1">{{pageLabelMap 'Profile_Address'}}</label> -->
+     <input id="address1" type="text" placeholder="{{pageLabelMap 'Profile_Address'}}" class="form-control {{classPrefix}}Address1 {{classPrefix}}Field cc_contact_input_address" name="{{classPrefix}}Address.address1" value="{{this.address1}}" maxlength="40" />
+     <input id="address2" type="text" placeholder="" class="form-control {{classPrefix}}Address2 {{classPrefix}}Field cc_contact_input_address" name="{{classPrefix}}Address.address2" value="{{this.address2}}" maxlength="40" />
+     <!-- <input id="address3" type="text" class="form-control {{classPrefix}}Address3 {{classPrefix}}Field cc_contact_input_address" name="{{classPrefix}}Address.address3" value="{{this.address3}}" maxlength="40" /> -->
+    </div>
+    <div class="form-group">
+     <!-- <label for="country">{{pageLabelMap 'CheckOut_Country'}}</label> -->
+     {{{selectGeo 'country' this.countryList this.countryCode 'countryListing form-control' this.classPrefix}}}
+    </div>
+    <div class="form-group">
+     <!-- <label for="state">{{pageLabelMap 'CheckOut_State'}}</label> -->
+     <div class="stateSection cc_state_section"></div>
+    </div>
+    <div class="form-group required-field">
+     <!-- <label for="city">{{pageLabelMap 'CheckOut_City'}}</label> -->
+     <input id="city" type="text" placeholder="{{pageLabelMap 'CheckOut_City'}}" class="form-control {{classPrefix}}City {{classPrefix}}Field cc_contact_input_city" name="{{classPrefix}}Address.city" maxlength=255 value="{{this.city}}" />
+    </div>
+    <div class="form-group required-field">
+     <!-- <label for="postalCode">{{pageLabelMap 'CheckOut_PostalCode'}}</label> -->
+     <input id="postalCode" type="text" placeholder="{{pageLabelMap 'CheckOut_PostalCode'}}" class="form-control {{classPrefix}}PostalCode {{classPrefix}}Field cc_contact_input_postal_code" name="{{classPrefix}}Address.postalCode" value="{{this.postalCode}}" maxlength=10/>
+    </div>
+   </form>
+   <div id="modal_{{classPrefix}}" class="modal fade cc_address_book_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog cc_modal-dialg" role="document">
+     <div class="modal-content cc_modal-content">
+      <div class="modal-header cc_modal-header">
+       <button type="button" class="close" data-dismiss="modal" aria-label="{{pageLabelMap 'Modal_Aria_Close'}}"><span aria-hidden="true">&#215;</span></button>
+       <h4 class="modal-title cc_title">{{pageLabelMap 'UserInfo_AddressBookModal'}}</h4>
+      </div>
+      <div class="modal-body cc_modal-body">
+       {{#each this.addressList}}
+        <div class="row cc_billing_shipping_info">
+         <div class="col-md-6 cc_personal_info">
+          {{> addressDisplay}}
+         </div>
+         <div class="col-md-6 cc_select">
+          <input type="button" value="{{pageLabelMap 'UserInfo_selectAddress'}}" class="btn btn-default btn-sm {{../classPrefix}}Field selectAddress cc_select_address" data-id="{{this.sfid}}"/>
+         </div>
+        </div>
+       <hr>
+       {{/each}}
+      </div>
+     </div>
+    </div>
+   </div>
+   <!--  start of manual address modal div   aria-hidden="true" keep -->                        
+    <div id="SetAccountAddress" class="modal fade cc_modal" tabindex="-1" role="dialog" aria-labelledby="SetAccountAddress" aria-hidden="true">
+        <div class="modal-dialog cc_modal-dialog" role="document">
+            <div class="modal-content cc_modal-content">
+                <div class="modal-header cc_modal-header">
+                        <button type="button" class="close cc_close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">X</span></button>
+                        <h3 class="cc_prod_list_item_label" id="differentaddressselector"> Different Account Selector </h3>
+                </div>
+                <div class="modal-body cc_body">
+                    <center>
+                        <div id="dynamicContent2"> 
+                            <br/><br/><br/><br/><br/>
+                            <span style="display: inline-block; padding: 10px 0px;">Getting Accounts...</span>
+                            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                                <div style="display: inline-block; padding: 2px; background-color: #fff;   text-align: center">
+                                    <img src="/auraFW/resources/aura/images/spinner.gif" style="float: left; margin: 8px;" />
+                                </div>
+                            </div>
+                        </div>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- button modle  end -->                 
+    <!--contact select Modal -->
+    <div id="SetContAddress" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="width: 53%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <input id="searchConts" type="text" placeholder="Search.." style="float: right;padding-right: 12rem;margin-right: 6rem;"/>
+                    <h4 class="modal-title">Contacts</h4>
+                </div>
+                <div id="overlay-massOrder" class="modal-backdrop fade in hideDiv" style="display:none;"></div>
+                <div class="modal-body">
+                    <table class="table" id="contTable">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody id="contBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+              
+    <style>
+        #overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2;
+            cursor: pointer;
+        }          
+    </style>  
+</script>
+
+<script id="Erg-Review-Desktop" type="text/template">
+    <div class="panel panel-default cc_panel cc_checkout_review">
+     <div class="panel-heading cc_heading hidden-print">
+      <h3 class="panel-title cc_title">{{pageLabelMap 'CheckOut_GeneralInformation'}}</h3>
+     </div>
+     <div class="visible-print-block text-center" style="margin: 20px 20px 50px">
+      <img src="https://www.ergotron.com/portals/0/ergotron-logo-blue.svg" alt="Ergotron Logo" />
+      <h3 class="panel-title cc_title">Price Quote</h3>
+     </div>
+     <!-- <p class="hidden-print">
+        <a href="javascript:window.print()">{{pageLabelMap 'OrderReview_PrintPage'}}</a>
+    </p> -->
+     <div class="panel-body cc_body">
+      <form enctype="multipart/form-data" class="margin_form cc_OrderReview_new">
+       <div class="messagingSection-Error" style="display: none"></div>
+       <div class="messagingSection-Info" style="display: none"></div>
+       <div class="messagingSection-Warning" style="display: none"></div>
+       <!-- <div class="well cc_well cc_order_review">
+        <div class="row">
+         <div class="col-xs-12 col-md-4">
+          <h5 class="cc_buyer_information">{{pageLabelMap 'CheckOut_BuyerInformation'}}</h5>
+          <p class="cc_buyer">
+            {{#showOrderReviewdit}}    
+           <a id="edit_UserInfo" href="#edit_UserInfo" class="editAddressInfo cc_edit_address_info">{{pageLabelMap 'CheckOut_edit'}}</a><br>
+           {{/showOrderReviewdit}}
+           
+           <div class="cc_buyer_firstname">{{this.buyerFirstName}} {{this.buyerLastName}}</div>
+           <div class="cc_buyer_phone">{{this.buyerPhone}}</div>
+           <div class="cc_buyer_email">{{this.buyerEmail}}</div>
+          </p>
+          {{#isErgotronStoreCart}}
+          {{else}}
+          <h5 class="cc_shipping_information">{{pageLabelMap 'CheckOut_ShipmentInformation'}}</h5>
+          <p class="cc_shipping">
+            {{#showOrderReviewdit}}   
+                <a id="edit_Shipping" href="#edit_Shipping" class="editShippingInfo cc_edit_shipping_info">{{pageLabelMap 'CheckOut_edit'}}</a><br>
+           {{/showOrderReviewdit}}
+           {{/isErgotronStoreCart}}
+           {{#if this.shippingMethod}}
+            <p class="cc_shipping_method_section">
+             <span class="cc_shipping_method_label">{{pageLabelMap 'CheckOut_ShippingMethod'}}&#58;&#160;</span>
+             <span class="cc_shipping_method">{{this.shippingMethod}}</span>
+            </p>
+           {{/if}}
+           {{#if this.shippingInst}}
+            <p class="cc_shipping_notes_section">
+             <span class="cc_shipping_notes_label">{{pageLabelMap 'CheckOut_ShippingNotes'}}&#58;&#160;</span>
+             <span class="cc_shipping_notes">{{this.shippingInst}}</span>
+            </p>
+           {{/if}}
+           {{#if this.requestedDateStr}}
+            <p class="cc_shipping_delivery_section">
+             <span class="cc_shipping_delivery_date_label">{{pageLabelMap 'Checkout_RequestedDeliveryDt'}}&#58;&#160;</span>
+             <span class="cc_shipping_delivery_date">{{this.requestedDateStr}}</span>
+            </p>
+           {{/if}}
+          </p>
+         </div>
+         <div class="col-xs-12 col-md-4">
+          <h5 class="cc_billing_address_label">{{pageLabelMap 'CheckOut_BillingAddress'}}</h5>
+          {{#showOrderReviewdit}}
+          <a id="edit_UserInfo" href="#edit_UserInfo" class="editAddressInfo cc_edit_address_info">{{pageLabelMap 'CheckOut_edit'}}</a><br>
+          {{/showOrderReviewdit}}
+          <span class="cc_billing_address">{{> addressDisplay this.billingAddress}}</span>
+         </div>
+         <div class="col-xs-12 col-md-4">
+          {{#if this.hasCoupon}}
+          <h5 class="cc_coupon_label">{{pageLabelMap 'CartInc_AppliedCoupon'}}</h5>
+          <p class="cc_coupon_section">
+           <span class="cc_coupon">{{this.couponName}}</span>
+          </p>
+          {{/if}}
+         </div>
+         <div class="col-xs-12 col-md-4">
+          <h5 class="cc_shipping_address_label">{{pageLabelMap 'CheckOut_OrderReviewShippingAddress'}}</h5>
+          {{#showOrderReviewdit}}
+          <a id="edit_UserInfo" href="#edit_UserInfo" class="editAddressInfo cc_edit_address_info">{{pageLabelMap 'CheckOut_edit'}}</a><br>
+          {{/showOrderReviewdit}}
+          <p class="cc_shipping">
+           <span class="cc_shipping_address">{{> addressDisplay this.shippingAddress}}</span>
+          </p>
+         </div>
+        </div>
+       </div> -->
+       <div class="reviewCartSection"></div>
+       <div class="link_button cc_link_button">
+        <div class="checkbox" style="text-align:left">
+            <label for="termsConditions" class="poLabel SavePayment fieldLabel cc_po_label_save_payment">
+                <!--<input type="checkbox" name="termsConditions" id="nonSubscriptionTerms" onClick="acceptTermsAndConditions()" value="true" />
+                check this to continue-->
+                <!-- <div style="margin-bottom:3px;">
+                    <span>Prices and offers in the cart are subject to change until the order is submitted.</span>
+                </div>
+                <span id="termsAndCon">
+                    <div class="spinner-border drSpinner" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    {{termsAndConditions  this}}-->
+                </span>
+            </label>
+        </div>
+        {{#showProceedPaymentBtn this}} {{/showProceedPaymentBtn}}
+        <span id="taxExemptNotApplied" style="color:red;padding-left:10px;padding-right:10px;padding-bottom: 10px;display:none;" > {{pageLabelMap 'Tax_Exemption_Not_Applied'}}</span>                        
+        <span id="taxExemptApplied" style="color:red;padding-left:10px;padding-right:10px;padding-bottom: 10px;display:none;" >{{pageLabelMap 'Tax_Exemption_Applied'}} </span> 
+        <div id="errorMessageId" style="color:red;padding-left:10px;padding-right:10px;padding-bottom: 10px;"></div>
+       <div class="reviewPaymentSection"></div>
+       <p class="link_button cc_link_button hidden-print">
+        {{#showOrderReviewdit}}
+            <input class="btn btn-default btn-sm btn-base btn-gray processBack cc_process_back {{#isCSRMode}} isCSR {{/isCSRMode}} " type="button" value="{{pageLabelMap 'Back'}}" alt="{{pageLabelMap 'Back'}}" />
+        {{/showOrderReviewdit}}
+        {{#if this.showProceedPayment}}             
+            <!--<input id="acceptTermsButton"  disabled="true" class="btn btn-default btn-sm btn-base btn-blue processReview proceed cc_process_review" type="button" value="{{pageLabelMap 'CheckOut_MobileGotoPayment'}}" alt="{{pageLabelMap 'CheckOut_AcceptAndProceed'}}" />-->
+            <button id="acceptTermsButton"  disabled="true" class="btn btn-default btn-sm btn-base btn-blue cc_process_review" onclick="proceedToPay(event)"  value="{{pageLabelMap 'CheckOut_MobileGotoPayment'}}" alt="{{pageLabelMap 'CheckOut_AcceptAndProceed'}}">{{pageLabelMap 'CheckOut_MobileGotoPayment'}}</button>
+        {{/if}}
+        {{#if this.isShown}}
+            <!--<input id="processPayments" disabled="true"  class="btn btn-default btn-sm " type="button" value="{{pageLabelMap 'DR_Process_Payments'}}" alt="Place Order" onClick="proceedToPayments()" />-->
+        {{/if}}
+        <!-- <input class="btn btn-default btn-sm processReview proceed cc_process_review" id="processPayments" type="button" value="{{pageLabelMap 'CheckOut_MobileGotoPayment'}}" alt="{{pageLabelMap 'CheckOut_AcceptAndProceed'}}" /> -->
+       </p>
+      </form>
+     </div>
+    </div>
+</script>
+<!--Here used to be tax exempt component of DR, which is now removed-->
+<script id="ERGReviewCartDesktop" type="text/template"> 
+    <div id="cart_items_container reviewSection" class="">
+        <div class="cart_item_list">
+            {{#each this.cartItems}}  
+            <!-- {{{json this}}} -->
+            <div class="cart_item row" >
+                {{#ifNotEquals this.cartItemType 'Coupon'}}
+                    <div class="col-xs-4 col-sm-3 col-md-2 cart_item-image col-align--top mt-0">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="cc_cart_product_image">
+                                    <!--  image section    -->
+                                    {{#if this.product.EProductMediasS.[0]}}
+                                    <img class="orderReview img-responsive center-block img-thumbnail" 
+                                    src="{{getSizeOfImage product.EProductMediasS.[0].URI}}"
+                                            alt="{{this.product.EProductMediasS.[0].altMessage}}" 
+                                            data-id="{{this.product.SKU}}"></img>
+                                    {{else}}
+                                    <img class="orderReview img-responsive center-block img-thumbnail" 
+                                    src="{{getSizeOfImage mockProduct.EProductMediasS.[0].URI}}"
+                                            alt="{{this.mockProduct.EProductMediasS.[0].altMessage}}" 
+                                            data-id="{{this.product.SKU}}"></img>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-8 col-sm-9 col-md-10 cart_item-details">
+                        <div class="row">
+                            <div class="col-sm-9 cart_item-details--leftcol">
+                                <div class="item_title-sku_block">
+                                    {{#if this.product.externalURL}}
+                                        <a href="{{baseUrl}}{{this.product.externalURL}}" >
+                                            <p class="item_title">
+                                                <span>
+                                                    {{#if this.product.alternateName}}
+                                                    {{this.product.alternateName}}
+                                                    {{else}}
+                                                    {{#if this.product.sfdcName}}
+                                                    {{this.product.sfdcName}} 
+                                                        {{else}}
+                                                        {{this.mockProduct.sfdcName}}
+                                                    {{/if}}
+                                                    {{/if}}
+                                                </span>
+                                            </p>
+                                        </a>
+                                    {{else}}
+                                        <p class="item_title">
+                                            <span>
+                                                {{#if this.product.alternateName}}
+                                                {{this.product.alternateName}}
+                                                {{else}}
+                                                {{#if this.product.sfdcName}}
+                                                {{this.product.sfdcName}} 
+                                                    {{else}}
+                                                    {{this.mockProduct.sfdcName}}
+                                                {{/if}}
+                                                {{/if}}
+                                            </span>
+                                        </p>
+                                    {{/if}}
+                                    <p class="cc_external">
+                                        {{#ifEquals this.pricingType 'external'}}
+                                            {{#if this.extName}}
+                                                <span class="cc_ext_sku_label">{{pageLabelMap 'Checkout_SKU'}}&#58;&#160;</span>
+                                                <span class="cc_ext_sku">{{this.extSKU}}</span>
+                                            {{else}}
+                                                <span class="cc_checkout_sku_label">{{pageLabelMap 'Checkout_SKU'}}&#58;&#160;</span>
+                                                {{#if this.product.SKU}}
+                                                    <span class="cc_checkout_sku">{{this.product.SKU}}</span>
+                                                {{else}}
+                                                <span class="cc_checkout_sku">{{this.productR.SKU}}</span>
+                                                {{/if}}
+                                            {{/if}}
+                                        {{else}}
+                                            <span class="cc_checkout_sku_label">{{pageLabelMap 'Checkout_SKU'}}&#58;&#160;</span>
+                                            {{#if this.product.SKU}}
+                                                <span class="cc_checkout_sku">{{this.product.SKU}}</span>
+                                            {{else}}
+                                                <span class="cc_checkout_sku">{{this.productR.SKU}}</span>
+                                            {{/if}}
+                                        {{/ifEquals}}
+                                    </p>
+                                </div>
+                                <div class="item_price-qty_block">
+                                    <p class="cc_item_price">
+                                        {{#if this.price}}
+                                            <!-- <span class="cc_total_label">{{pageLabelMap 'CartInc_Price'}}&#58;&#160;</span> -->
+                                            {{#if this.absoluteDiscount}}
+                                            <span class="cc_price">{{price (perQtyPrice this.price this.absoluteDiscount this.quantity )}}</span>
+                                            {{else}}
+                                                <span class="cc_price">{{price this.price}}</span>
+                                            {{/if}}
+                                        {{/if}}
+                                        <span class="cc_order_quantity">
+                                            <span class="cc_quantity_label">
+                                                <!-- {{pageLabelMap 'CartInc_Qty'}}:&nbsp; -->&times;
+                                            </span>
+                                            <span class="cc_quantity">{{this.quantity}}</span>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 cart_item-details--rightcol">
+                                <p class="cc_item_total">
+                                    {{#if this.price}}
+                                        <!-- <span class="cc_total_label">{{pageLabelMap 'CartInc_Price'}}&#58;&#160;</span> -->
+                                        <!--<span class="cc_total">{{price (mul this.price this.quantity)}}</span>-->
+                                        <span class="cc_total">{{price this.itemTotal}}</span>
+                                    {{/if}}
+                                </p>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!--
+                        <p class="cc_item_title">
+                            hello
+                            {{#ifEquals pricingType 'external'}}
+                                                    {{#if extName}}
+                            <span class="cc_ext_name">{{displayProductName 'Aggregate_Display' displayProduct.sfdcName extName }}</span>
+                            {{else}}
+                            {{#if itemLabel}}
+                            <span class="cc_ext_name">{{displayProductName 'Aggregate_Display' displayProduct.sfdcName itemLabel }}</span>
+                            {{else}}
+                            <span class="cc_ext_name">{{displayProductName 'Aggregate_Display' displayProduct.sfdcName product.sfdcName }}</span>
+                            {{/if}}
+                            {{/if}}
+                            {{else}}
+                            {{#if itemLabel}}
+                            <span class="cc_ext_name">{{displayProductName 'Aggregate_Display' displayProduct.sfdcName itemLabel }}</span>
+                            {{else}}
+                            <span class="cc_ext_name">{{displayProductName 'Aggregate_Display' displayProduct.sfdcName product.sfdcName }}</span>
+                            {{/if}}
+                            {{/ifEquals}}ccrz
+                        </p>
+                    -->
+
+                    {{#ifContains this.pricingModifierTypes 'tiered'}}
+                    <div class="cc_prt_tool_tip_div cc_prt_tool_tip_div_or" data-toggle="tooltip" title="{{pageLabelMap 'ProductPricingTiers_VolumeHover'}}">
+                        <span class="cc_prt_tool_tip_text cc_prt_tool_tip_text_or">{{pageLabelMap 'ProductPricingTiers_VolumePricingApplied'}}</span>
+                    </div>
+                    {{/ifContains}}
+                    </div>
+            
+                    <!-- <div class="col-md-6 text-right">
+                        <div class="price cc_price text-right">
+                            {{#ifNotEquals this.cartItemType 'Coupon'}}
+                            <br>
+                            <p class="cc_order_quantity text-right" >
+                            <span class="cc_quantity_label">{{pageLabelMap 'CartInc_Qty'}}&#58;&#160;</span>
+                            <span class="cc_quantity">{{this.quantity}}</span>
+                            </p>  
+                            <p class="cc_item_price text-right">
+                            {{#if this.price}}
+                            <span class="cc_price_label">{{pageLabelMap 'CartInc_Price'}}&#58;&#160;</span>
+                            <span class="cc_price">{{price this.price}}</span>
+                            {{/if}}
+                            {{#if this.absoluteDiscount}}
+                            {{#ifGreater this.absoluteDiscount 0}}
+                            <span class="cc_price_label">{{pageLabelMap 'Checkout_YouSave'}}&#58;&#160;</span>
+                            <span class="cc_price">{{price this.absoluteDiscount}}</span>
+                            {{/ifGreater}}
+                            {{#ifLessThan this.absoluteDiscount 0}}
+                            <span class="cc_price_label">{{pageLabelMap 'CartInc_Surcharge'}}&#58;&#160;</span>
+                            <span class="cc_price">{{priceAbs this.absoluteDiscount}}</span>
+                            {{/ifLessThan}}
+                            {{/if}}
+                            </p>
+                            {{/ifNotEquals}}
+                            <p class="cc_item_total">
+                            <span class="cc_total_label">{{pageLabelMap 'CartInc_Total'}}&#58;&#160;</span>
+                            <span class="cc_total">{{price this.itemTotal}}</span>
+                            </p>
+                            <p class="cc_external">
+                            {{#ifEquals this.pricingType 'external'}}
+                            {{#if this.extName}}
+                                <span class="cc_ext_sku_label">{{pageLabelMap 'Checkout_SKU'}}&#58;&#160;</span>
+                                <span class="cc_ext_sku">{{this.extSKU}}</span>
+                            {{else}}
+                                <span class="cc_checkout_sku_label">{{pageLabelMap 'Checkout_SKU'}}&#58;&#160;</span>
+                                {{#if this.product.SKU}}
+                                    <span class="cc_checkout_sku">{{this.product.SKU}}</span>
+                                {{else}}
+                                <span class="cc_checkout_sku">{{this.productR.SKU}}</span>
+                                {{/if}}
+                            {{/if}}
+                            {{else}}
+                            <span class="cc_checkout_sku_label">{{pageLabelMap 'Checkout_SKU'}}&#58;&#160;</span>
+                                {{#if this.product.SKU}}
+                                    <span class="cc_checkout_sku">{{this.product.SKU}}</span>
+                                {{else}}
+                                    <span class="cc_checkout_sku">{{this.productR.SKU}}</span>
+                                {{/if}}
+                            {{/ifEquals}}
+                            </p>
+                            {{#if sellerName}}
+                            <p class="cc_seller">
+                            <span class="cc_soldby_label">{{pageLabelMap 'Prod_SoldBy'}}&#58;&#160;</span>
+                            <span class="cc_soldby">{{sellerName}}</span>
+                            </p>
+                            {{/if}}
+                            {{#if this.isSubscription}}
+                            <p class="cc_subscription_summary">
+                            {{subscriptionSummary 'Order_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}
+                            </p>
+                            <p class="cc_subscription_next_date">
+                            {{pageLabelMap 'Order_Subscription_Next_Payment'}} {{this.nextSubscriptionDateStr}}
+                            </p>
+                            {{#if this.isLimitedSubscription}}
+                            <p class="cc_subscription_summary">
+                            {{pageLabelMap 'Order_Subscription_End_Date'}} {{this.subscriptionEndDateStr}}
+                            </p>
+                            {{/if}}
+                            {{/if}}
+                            {{#each minorLines}}
+                            {{#if this.isSubscription}}
+                            <p class="cc_subscription_summary">
+                            {{subscriptionSummary 'Order_Subscription_' this.subscriptionFrequency mockProduct.sku itemTotal}}
+                            </p>
+                            <p class="cc_subscription_next_date">
+                            {{pageLabelMap 'Order_Subscription_Next_Payment'}} {{this.nextSubscriptionDateStr}}
+                            </p>
+                            {{#if this.isLimitedSubscription}}
+                            <p class="cc_subscription_end_date">
+                            {{pageLabelMap 'Order_Subscription_End_Date'}} {{this.subscriptionEndDateStr}}
+                            </p>
+                            {{/if}}
+                            {{/if}}
+                            {{/each}}
+                            {{#if this.minorLines}}
+                            {{#ifNotEquals this.pricingType "attrGroup"}}
+                            <p class="cc_included_items">
+                            <a href="#included_items{{this.itemID}}" id="includedItemsLink" class="includedItemsLink cc_included_items_link" data-toggle="modal" data-id="{{this.itemID}}">{{pageLabelMap 'CheckOut_IncludedItems'}}</a>
+                            </p>
+                            <div id="included_items{{this.sfid}}" class="modal fade cc_modal cc_cart_included_items_modal" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content cc_modal_content">
+                                <div class="modal-header">
+                                <button type="button" class="close cc_close" data-dismiss="modal" aria-label="{{pageLabelMap 'Modal_Aria_Close'}}"><span aria-hidden="true">&#215;</span></button>
+                                {{#ifEquals this.pricingType 'external'}}
+                                {{#if extName}}
+                                    <h3 id="myModalLabel">{{this.extName}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                {{else}}
+                                    <h3 id="myModalLabel">{{this.product.sfdcName}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                {{/if}}
+                                {{else}}
+                                {{#if itemLabel}}
+                                    <h3 id="myModalLabel">{{this.itemLabel}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                {{else}}
+                                    <h3 id="myModalLabel">{{this.product.sfdcName}}&#58;&#160;{{pageLabelMap 'CheckOut_IncludedItems'}}</h3>
+                                {{/if}}
+                                {{/ifEquals}}
+                                </div>
+                                <div class="modal-body cc_modal-body modal-body_included_items{{this.sfid}}" id="included_items_body{{sfid}}">
+                                <i class="fa fa-spinner fa-pulse fa-lg slds-m-top--medium"/>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                            {{/ifNotEquals}}
+                            {{/if}}
+                            {{#if this.minorLines}}
+                            {{#ifEquals this.pricingType "attrGroup" }}
+                            <p class="cc_cart_attribute_items">
+                            <a href="#order_attribute_items{{this.itemID}}" id="orderAttributeItemsLink" class="orderAttributeItemsLink cc_attribute_items_link" data-toggle="modal" data-id="{{this.itemID}}">{{pageLabelMap 'CheckOut_AttributeItems'}}</a>
+                            </p>
+                            <div id="order_attribute_items{{this.itemID}}" class="modal fade cc_modal cc_order_attribute_items_modal" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content cc_modal_content">
+                            <div class="modal-header">
+                                <button type="button" class="close cc_close" data-dismiss="modal" aria-label="{{pageLabelMap 'Modal_Aria_Close'}}"><span aria-hidden="true">&#215;</span></button>
+                                <h3 id="myModalLabel">{{this.product.sfdcName}}:&#160;{{pageLabelMap 'CheckOut_AttributeItems'}}</h3>
+                            </div>
+                            <div class="modal-body cc_modal-body modal-order_attribute_items{{this.sfid}}" id="modal-order_attribute_items{{sfid}}">
+                                <i class="fa fa-spinner fa-pulse fa-lg slds-m-top--medium"/>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                            {{/ifEquals}}
+                            {{/if}}
+                        </div>
+                    </div> -->
+                {{/ifNotEquals}}
+
+                {{setVar "discount" 0}}
+                {{#ifEquals this.cartItemType 'Coupon'}}
+                    {{setVar "discount" this.itemTotal}}
+                    <div class="col-xs-8 col-lg-9 cart_item-details">
+                      <div class="row">
+                        <div class="col-sm-8 cart_item-details--leftcol coupon_title-wrap">
+                          <p class="item_title coupon_title cc_coupon_title">
+                            <span class="cc_label">{{pageLabelMap 'CartInc_AppliedCoupon'}}:</span>
+                            <span class="cc_value">{{this.product.sfdcName}}</span>
+                          </p>
+                        </div>
+                        <div class="col-sm-4 cart_item-details--rightcol coupon_price-wrap">
+                          <div class="price cc_price">
+                            <p class="cc_item_total">
+                              <!-- <span class="cc_total_label">{{pageLabelMap 'CartInc_Total'}}&#58;&#160;</span>
+                            <span class="cc_total">{{price this.itemTotal}}</span> -->
+                              <span class="cc_total">{{price this.itemTotal}}</span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- <div class="col-md-8">
+                        <p class="item_title coupon_title cc_coupon_title">
+                            <span class="cc_label">{{pageLabelMap 'CartInc_AppliedCoupon'}}</span>
+                            <span class="cc_value">{{this.product.sfdcName}}</span>
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="price cc_price">
+                            <p class="cc_item_total">
+                            <span class="cc_total_label">{{pageLabelMap 'CartInc_Total'}}&#58;&#160;</span>
+                            <span class="cc_total">{{price this.itemTotal}}</span>
+                            </p>
+                        </div>
+                    </div> -->
+                {{/ifEquals}}
+                {{/each}}
+              </div>
+        </div>
+    </div>
+        
+    <!-- <div  class="col-md-12 text-right"  >
+        {{> totalsSection}}
+    </div> --> 
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-push-6 col-md-5 col-md-push-7 cart-totals-wrap">
+            
+            <section class="cart-totals total cc_total">
+                
+                   {{#if this.cartItems}}
+                            <!-- {{#each this.cartItems}} -->
+                                <!-- {{#if this.absoluteDiscount}} -->
+                                {{#showYouSave this.cartItems}}
+                                {{else}}
+                                    <article class="cc_subTotal youSave">
+                                        <span class="cc_label" style="color: #F26859;">{{pageLabelMap 'Checkout_YouSave'}}</span>
+                                        <!-- <span class="cc_value" style="color: #F26859;">({{price this.absoluteDiscount}})</span> -->
+                                        <span class="cc_value" style="color: #F26859;">{{#absDiscOrder this.cartItems}} {{/absDiscOrder}}</span>
+                                    </article>
+                                {{/showYouSave}}
+                                <!-- {{/if}} -->
+                            <!-- {{/each}} -->
+                        {{/if}}
+                
+                <article class="cc_subTotal">
+                    <span class="cc_subTotal_label cc_label">{{pageLabelMap 'CartInc_Subtotal'}}&#58;&nbsp;</span>
+                    {{changeSign 'positiveDiscount' discount}}
+                    <span class="cc_subTotal cc_value">{{sum this.subTotal positiveDiscount this.currencyCode}}</span>
+                </article>
+                {{#if discount}}
+                <article class="cc_savings">
+                    <span class="cc_label">Discounts:&nbsp;</span>
+                    <span class="cc_value">{{price discount}}</span>
+                </article>
+                {{/if}}
+                <article class="cc_taxes">
+                    <!-- {{#if this.tax }} -->
+                        <span class="cc_tax_label cc_label">{{pageLabelMap 'CheckOut_EstimatedTax'}}&#58;&nbsp;</span>
+                        <span class="cc_tax cc_value">{{price this.tax this.currencyCode}}</span>
+                    <!-- {{/if}} -->
+                </article>
+                <article class="shipnote-wrap">
+                    <span class="cc_label">{{pageLabelMap 'CartInc_Shipping'}}:&nbsp;</span>
+                    {{#if this.shippingCharge }}
+                        <span class="cc_value">{{price this.shippingCharge this.currencyCode}}</span>
+                    {{else}}
+                        <span class="cc_value">Free</span>
+                    {{/if}}
+                </article>
+                <article class="totals-footnotes">
+                  <p>Final sales tax includes state &amp; local taxes.</p>
+                </article>
+                 
+                <article class="tax-exempt-link-wrap">
+                   <!-- <a id="displayCertificateLink" href="#" onclick="openTaxExemptModal(); return false;">I'm buying tax exempt.&nbsp;</a>-->
+                </article>
+                <!-- Removal of tax exempt
+                <article class="totals-footnotes">
+                    <span class="certificate-msg hidden-print">
+                        <br/>
+                        {{displayCertificateLinkHelper this}}
+                    </span>
+                </article>
+                    -->
+                <article class="cc_grand_total">
+                    <span class="cc_total_label">{{pageLabelMap 'CartInc_GrandTotal'}}&#58;&#160;</span>
+                    <span class="cc_total_amount">{{sum this.subTotal this.tax this.shippingCharge this.adjustment this.surchargeAmount this.currencyCode}}</span>
+                    <!-- <span class="price-change-no-notice">
+                      <a href="javascript:window.print()">{{pageLabelMap 'OrderReview_PrintPage'}}</a><br>Prices subject to change without notice.</span> -->
+                          <p class="cc_order_confirmation_guidingtext2 hidden-print" style="margin-bottom: 0;"><a href="javascript:window.print()" style="font-size: 1.4em; display: inline-block; padding-top: 30px;"><i class="fa fa-print"></i>{{pageLabelMap 'OrderReview_PrintPage'}}</a></p>
+                    <p class="cc_order_confirmation_guidingtext1"><span style="color: rgb(62, 62, 60); font-size: 1em;">Prices subject to change without notice.</span></p>
+                </article>
+            </section>
+            
+            
+        </div>
+        <div class="col-sm-6 col-sm-pull-6 col-md-7 col-md-pull-5 cc_order_review">
+            <div class="user-info-wrap">
+                <div class="row">
+                    <div class="col-md-6 user-info-cols">
+                        <h5 class="cc_buyer_information">{{pageLabelMap 'CheckOut_BuyerInformation'}}</h5>
+                        <p class="cc_buyer_firstname">{{this.buyerFirstName}} {{this.buyerLastName}}</p>
+                        <p class="cc_buyer_email">{{this.buyerEmail}}</p>
+                        <p class="cc_buyer_phone">{{this.buyerPhone}}</p>
+                    </div>
+                    <div class="col-md-6 user-info-cols">
+                        <h5 class="cc_shipping_address_label">Shipping Address</h5>
+                        <p class="cc_addr_name">
+                            <span class="cc_firstname">{{this.shippingAddress.firstName}}</span>
+                            <span class="cc_lastname">{{this.shippingAddress.lastName}}</span>
+                        </p>
+                        <p class="cc_addr_company">{{this.shippingAddress.companyName}}</p>
+                        <p class="cc_addr_linewrap">
+                            <span class="addr_line1 cc_addr_line">{{this.shippingAddress.address1}}</span><br>
+                             <span class="addr_line2 cc_addr_line">{{this.shippingAddress.address2}}</span><br>
+                            <span class="cc_addr_city">{{this.shippingAddress.city}}</span><span class="cc_addr_state">,&nbsp;{{this.shippingAddress.state}}</span>
+                            <span class="cc_addr_postal">&nbsp;{{this.shippingAddress.postalCode}}</span>
+                        </p>
+                    </div>
+                    {{#showOrderReviewdit}}
+                    <div class="edit_UserInfo-wrap hidden-print">
+                        <a id="edit_UserInfo" href="#edit_UserInfo" class="editAddressInfo cc_edit_address_info" title="Edit User Information"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="edit" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="100%" height="100%" class="svg-inline--fa fa-edit fa-w-18 fa-3x">
+                            <path fill="#000" d="M402.6 83.2l90.2 90.2c3.8 3.8 3.8 10 0 13.8L274.4 405.6l-92.8 10.3c-12.4 1.4-22.9-9.1-21.5-21.5l10.3-92.8L388.8 83.2c3.8-3.8 10-3.8 13.8 0zm162-22.9l-48.8-48.8c-15.2-15.2-39.9-15.2-55.2 0l-35.4 35.4c-3.8 3.8-3.8 10 0 13.8l90.2 90.2c3.8 3.8 10 3.8 13.8 0l35.4-35.4c15.2-15.3 15.2-40 0-55.2zM384 346.2V448H64V128h229.8c3.2 0 6.2-1.3 8.5-3.5l40-40c7.6-7.6 2.2-20.5-8.5-20.5H48C21.5 64 0 85.5 0 112v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V306.2c0-10.7-12.9-16-20.5-8.5l-40 40c-2.2 2.3-3.5 5.3-3.5 8.5z" class=""></path>
+                        </svg>
+                        </a>
+                    </div>
+                    {{/showOrderReviewdit}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+</script>
+
+<script id="UserInfo-Desktop" type="text/template">
+    <div class="checkoutContent">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="panel panel-default cc_panel cc_checkout_user_info checkout_user_info_col1">
+           <div class="panel-heading cc_heading">
+            <!-- <h3 class="panel-title cc_title">{{pageLabelMap 'CheckOut_ContactInformation'}}</h3> -->
+            <h3 class="panel-title cc_title">{{pageLabelMap 'Primary_Contact'}}</h3>
+           </div>
+           <div class="panel-body cc_body">
+            <form id="mainform" class="cc_userInfo_form">
+             <div class="main-messagingSection-Error" style="display: none"></div>
+                <div class="form-group required-field">
+                    <!-- <label for="firstNameField" class="cc_contact_input_firstname_label">{{pageLabelMap 'CheckOut_FirstName'}}<span class="text-danger"> *</span></label> -->
+                    <input id="firstNameField" type="text" placeholder="{{pageLabelMap 'CheckOut_FirstName'}}" class="form-control contactInput cc_contact_input_firstname" name="buyerFirstName" maxlength=40 value="{{this.buyerFirstName}}" />
+                    <span class="alert-danger fName_error"></span>
+             </div>
+             <div class="form-group required-field">
+                <!-- <label for="lastNameField" class="cc_contact_input_lastname_label">{{pageLabelMap 'CheckOut_LastName'}}<span class="text-danger"> *</span></label> -->
+                <input id="lastNameField" type="text" placeholder="{{pageLabelMap 'CheckOut_LastName'}}" class="form-control contactInput cc_contact_input_lastname" name="buyerLastName" maxlength=40 value="{{this.buyerLastName}}" />
+                <span class="alert-danger lName_error"></span>
+            </div>
+             <div class="form-group required-field">
+                <!-- <label for="homePhoneField" class="cc_contact_input_phone_label">{{pageLabelMap 'CheckOut_PrimaryPhone'}}</label> -->
+                <input id="homePhoneField" type="text" placeholder="{{pageLabelMap 'CheckOut_PrimaryPhone'}}" class="form-control contactInput cc_contact_input_phone" name="buyerPhone" maxlength=40 value="{{this.buyerPhone}}" />
+                <span class="alert-danger primPhone_error"></span>
+             </div>
+             <div class="form-group required-field">
+                <!-- <label for="emailField" class="cc_contact_input_email_label">{{pageLabelMap 'CheckOut_Email'}}<span class="text-danger"> *</span></label> -->
+                <input id="emailField" type="email" placeholder="{{pageLabelMap 'CheckOut_Email'}}" class="form-control contactInput cc_contact_input_email" name="buyerEmail" maxlength=80 value="{{this.buyerEmail}}" />
+                <span class="alert-danger email_error"></span>
+            </div>
+            <div class="form-group required-field">
+                <!-- <label for="emailField" class="cc_contact_input_email_label">{{pageLabelMap 'CheckOut_Email'}}<span class="text-danger"> *</span></label> -->
+                <input id="emailFieldConf" type="email" placeholder="{{pageLabelMap 'CheckOut_ConfEmail'}}" class="form-control contactInput cc_contact_input_conf_email" name="buyerEmail" maxlength=80 value="{{this.buyerEmail}}" />
+                <span class="alert-danger email_conf_error"></span>
+            </div>
+            </form>
+            <div class="cc_address_entry_billing">
+             {{> addressEntry this.billingAddress}}
+            </div>
+          </div>
+        </div>
+
+            
+        <div class="col-sm-6">
+          <div class="panel panel-default cc_panel cc_checkout_user_info">
+            <div class="cc_address_entry_shipping">
+              {{> addressEntry this.shippingAddress}}
+            </div>
+        {{#ifDisplay 'Dspl.CCEmail'}}
+         <form id="ccEmailForm" class="cc_ccemail_new">
+          <div class="ccemail-messagingSection-Error" style="display: none"></div>
+          <h3 class="cc_ccemail_title">{{pageLabelMap 'CheckOut_ccEmailAddress'}}</h3>
+          <div class="cc_ccemail_helptext">{{{pageLabelMap 'CheckOut_ccEmailAddressHelpText'}}}</div>
+          <div class="form-group required-field">
+           <!-- <label for="ccEmailAddress" class="cc_contact_input_cc_email_label">{{pageLabelMap 'CheckOut_ccEmailAddress'}}</label> -->
+           <input id="ccEmailAddress" type="text" placeholder="{{pageLabelMap 'CheckOut_ccEmailAddress'}}" class="form-control contactInput ccemail cc_contact_input_cc_email" name="ccEmailAddresses" maxlength=80 value="{{this.ccEmailAddresses}}" />
+          </div>
+         </form>
+        {{/ifDisplay}}
+        <form class="userInformation cc_user_information">
+          {{#isErgotronStoreCart}}
+              <!-- <p class="cc_user_information_helptext">{{{pageLabelMap 'Required_Fields'}}}</p> -->
+         {{else}}
+              <div class="cc_user_information_helptext">{{{pageLabelMap 'Required_Fields'}}}</div>
+              <!-- <p class="cc_user_information_helptext">{{{pageLabelMap 'ERG_Address_Selection'}}}</p> -->
+         {{/isErgotronStoreCart}}
+         <!-- <p class="link_button cc_link_button">
+          <input class="btn btn-default btn-sm processBack cc_process_back" type="button" value="{{pageLabelMap 'Back'}}" alt="{{pageLabelMap 'Back'}}" />
+          <input class="btn btn-default btn-sm processUserInfo cc_process_user_info" type="button" value="{{pageLabelMap 'CheckOut_Continue'}}" alt="{{pageLabelMap 'CheckOut_Continue'}}" />
+         </p> -->
+        </form>
+       </div>
+      </div>
+    </div>
+      </div>
+      <div class="row">
+        <span id="add-verify-err" class="alert alert-danger hide" style="float:right;"></span>
+        <div class="col-xs-12">
+            <form class="userInformation cc_user_information">
+                <p class="link_button cc_link_button hidden-print">
+                    <input class="btn btn-default btn-sm btn-base btn-gray processBack cc_process_back" type="button" value="{{pageLabelMap 'Back'}}" alt="{{pageLabelMap 'Back'}}" />
+                    <input class="btn btn-default btn-sm btn-base btn-blue processUserInfo cc_process_user_info hide" type="button" value="{{pageLabelMap 'CheckOut_Continue'}}" alt="{{pageLabelMap 'CheckOut_Continue'}}" />
+                    <button class="btn btn-default btn-sm btn-base btn-blue" onclick="verifyAddress(event);">{{pageLabelMap 'CheckOut_Continue'}}</button>
+                </p>
+            </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal fade" tabindex="-1" role="dialog" id="verify-add">
+        <div class="modal-dialog modal-md" role="document" style="top:17%;">
+            <div class="modal-content">
+                <button type="button" class="close" onclick="closeVerifyModal()" data-dismiss="modal" aria-label="Close" style="position: absolute;right: 5px;top: 5px;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-body">
+                    <div class="fb-justify-content-center guest-coupon-wrap">
+                        <button type="button" data-dismiss="modal" class="btn btn-default btn-sm btn-base btn-blue 
+                            checkOutBtn cc_checkout_btn">{{pageLabelMap 'CheckOut_As_Guest'}}</button></div>
+                    <h3 class="text-center">OR</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="Erg-UserInfo-AddressEdit-Desktop" type="text/template">
+        <form id="{{classPrefix}}AddressForm" class="addressForm" onkeydown="return event.key != 'Enter';">
+            <div class="{{classPrefix}}-messagingSection-Error" style="display: none"></div>
+                <h3 class="cc_section_title">{{pageLabelMap sectionLabel}}</h3>
+                {{#ifEquals classPrefix 'shipping'}}
+                    <!-- <a class="copyAddress cc_copy_address">{{pageLabelMap 'Checkout_UseBillingAddress'}}</a> -->
+                    <a class="copyAddress cc_copy_address"><i class="fa fa-pencil"></i></a>
+                {{/ifEquals}}
+                <div class="change_address cc_change_address">
+                    <a href="#modal_{{classPrefix}}" data-toggle="modal" class="cc_change_address_modal">{{pageLabelMap
+            'UserInfo_AddressBook'}}</a>
+                    </div>
+                    <div style="width:260px;" class="accountAddressSelector"> 
+                        <a href="#SetAccountAddress"  onclick="DisplayAccountAddressSelector('{{pageLabelMap sectionLabel}}')" style="text-decoration: none; padding-top: 0px;  padding-bottom: 0px; margin-top:0px; margin-bottom: 0px;" id="additionalInfoLink" data-toggle="modal">
+                            <button class="btn btn-default btn-block btn-sm " role="button">
+                                SELECT DIFFERENT ACCOUNT ADDRESS
+                            </button>
+                        </a> 
+                        <br/>
+                        {{#ifEquals classPrefix 'shipping'}}
+                            <a href="#SetContAddress" onclick="DisplayContactSelector()" style="text-decoration: none; padding-top: 0px;  padding-bottom: 0px; margin-top:0px; margin-bottom: 0px;"  id="contcatInfoLink" data-target="#SetContAddress" data-toggle="modal">
+                                <button class="btn btn-default btn-block btn-sm" role="button">
+                                    SELECT Contact
+                                </button>
+                            </a> 
+                            <br/>
+                        {{/ifEquals}}
+                    </div>   
+                {{#ifDisplay 'SO.DsplAddrName'}}
+                    <div class="form-group required-field">
+                        <!-- <label for="firstName">{{pageLabelMap 'CheckOut_FirstName'}}</label> -->
+                        {{#disableBillingFields classPrefix}}
+                        <input id="firstName" disabled="true" placeholder="{{pageLabelMap 'CheckOut_FirstName'}}" type="text" class="form-control {{classPrefix}}firstNameField {{classPrefix}}Field cc_contact_input_firstname" name="{{classPrefix}}Address.firstName" maxlength=100 value="{{this.firstName}}" />
+                        {{else}}
+                           <input id="firstName" placeholder="{{pageLabelMap 'CheckOut_FirstName'}}" type="text" class="form-control {{classPrefix}}firstNameField {{classPrefix}}Field cc_contact_input_firstname" name="{{classPrefix}}Address.firstName" maxlength=100 value="{{this.firstName}}" />
+                        {{/disableBillingFields}}
+                        <span class="alert-danger {{classPrefix}}firstNameField_error"></span>
+                        
+                    </div>
+                    <div class="form-group required-field">
+                        <!-- <label for="lasttName">{{pageLabelMap 'CheckOut_LastName'}}</label> -->
+                        {{#disableBillingFields classPrefix}}
+                        	<input id="lastName" disabled="true" placeholder="{{pageLabelMap 'CheckOut_LastName'}}" type="text" class="form-control {{classPrefix}}lastNameField {{classPrefix}}Field cc_contact_input_lastname" name="{{classPrefix}}Address.lastName" maxlength=100 value="{{this.lastName}}"/>                        
+                        {{else}}
+                        	<input id="lastName" placeholder="{{pageLabelMap 'CheckOut_LastName'}}" type="text" class="form-control {{classPrefix}}lastNameField {{classPrefix}}Field cc_contact_input_lastname" name="{{classPrefix}}Address.lastName" maxlength=100 value="{{this.lastName}}"/>
+                        {{/disableBillingFields}}
+                        <span class="alert-danger {{classPrefix}}lastNameField_error"></span>
+                    </div>
+                {{/ifDisplay}}
+                {{#ifDisplay 'SO.DsplAddrCompany'}}
+                    <div class="form-group">
+                        <!-- <label for="companyName">{{pageLabelMap 'Profile_CompanyName'}}</label> -->
+                        {{#disableBillingFields classPrefix}}
+                        	<input id="companyName" disabled="true" placeholder="{{pageLabelMap 'Profile_CompanyName'}}" type="text" class="form-control {{classPrefix}}companyField {{classPrefix}}Field cc_contact_input_company" name="{{classPrefix}}Address.companyName" maxlength=100 value="{{this.companyName}}" />                        
+                       	{{else}}
+                        	<input id="companyName" placeholder="{{pageLabelMap 'Profile_CompanyName'}}" type="text" class="form-control {{classPrefix}}companyField {{classPrefix}}Field cc_contact_input_company" name="{{classPrefix}}Address.companyName" maxlength=100 value="{{this.companyName}}" />
+                        {{/disableBillingFields}}
+                    </div>
+                {{/ifDisplay}}
+                <input type="hidden" class="{{classPrefix}}acctIdField {{classPrefix}}Field" name="{{classPrefix}}Address.partnerId" maxlength=100 value="{{this.partnerId}}" />
+                <div class="form-group required-field">
+                    <!-- <label for="address1">{{pageLabelMap 'Profile_Address'}} <span class="text-danger"> *</span></label> -->
+					{{#disableBillingFields classPrefix}}    
+                    	<input id="address1" disabled="true" type="text" placeholder="{{pageLabelMap 'Profile_Address'}}" class="form-control {{classPrefix}}Address1 {{classPrefix}}Field cc_contact_input_address" name="{{classPrefix}}Address.address1" value="{{this.address1}}" maxlength="40" />
+                    {{else}}
+                    	<input id="address1" type="text" placeholder="{{pageLabelMap 'Profile_Address'}}" class="form-control {{classPrefix}}Address1 {{classPrefix}}Field cc_contact_input_address" name="{{classPrefix}}Address.address1" value="{{this.address1}}" maxlength="40" />
+                     {{/disableBillingFields}}
+                    <span class="alert-danger {{classPrefix}}Address1_error"></span>
+                    {{#disableBillingFields classPrefix}}    
+                    	<input id="address2" disabled="true" type="text" placeholder="Apt, suite, unit, building, floor, etc." class="form-control {{classPrefix}}Address2 {{classPrefix}}Field cc_contact_input_address" name="{{classPrefix}}Address.address2" value="{{this.address2}}" maxlength="40" />
+                    {{else}}
+                    	<input id="address2" type="text" placeholder="Apt, suite, unit, building, floor, etc." class="form-control {{classPrefix}}Address2 {{classPrefix}}Field cc_contact_input_address" name="{{classPrefix}}Address.address2" value="{{this.address2}}" maxlength="40" />
+                    {{/disableBillingFields}}
+                    <!-- <input id="address3" type="text" class="form-control {{classPrefix}}Address3 {{classPrefix}}Field cc_contact_input_address" name="{{classPrefix}}Address.address3" value="{{this.address3}}" maxlength="40" /> -->
+                </div>
+                <div class="form-group required-field">
+                    <!-- <label for="city">{{pageLabelMap 'CheckOut_City'}}</label> -->
+                    {{#disableBillingFields classPrefix}}
+                    	<input id="city" disabled="true" type="text" placeholder="{{pageLabelMap 'CheckOut_City'}}" class="form-control {{classPrefix}}City {{classPrefix}}Field cc_contact_input_city" name="{{classPrefix}}Address.city" maxlength=255 value="{{this.city}}" />
+                   	{{else}}
+                    	<input id="city" type="text" placeholder="{{pageLabelMap 'CheckOut_City'}}" class="form-control {{classPrefix}}City {{classPrefix}}Field cc_contact_input_city" name="{{classPrefix}}Address.city" maxlength=255 value="{{this.city}}" />
+                    {{/disableBillingFields}}
+                    <span class="alert-danger {{classPrefix}}City_error"></span>
+                </div>
+                <div class="form-group required-field">
+                    <!-- <label for="state">{{pageLabelMap 'CheckOut_State'}}</label> -->
+                    {{#disableBillingFields classPrefix}}
+                     <select disabled name="billingAddress.stateCode" class="wide form-control billingField billingstate">
+                         <option value="{{this.stateCode}}" selected><span id="billingState"></span></option>
+                     </select>
+                    {{else}}
+                    	<div class="stateSection cc_state_section"></div>
+                    {{/disableBillingFields}}
+                    <span class="alert-danger {{classPrefix}}state_error"></span>
+                </div>
+                <div class="form-group required-field">
+                    <!-- <label for="postalCode">{{pageLabelMap 'CheckOut_PostalCode'}}</label> -->
+                    <!-- <input id="postalCode" type="text" placeholder="{{pageLabelMap 'CheckOut_PostalCode'}}" class="form-control {{classPrefix}}PostalCode {{classPrefix}}Field cc_contact_input_postal_code" name="{{classPrefix}}Address.postalCode" value="{{this.postalCode}}" maxlength=10/> -->
+                    {{#disableBillingFields classPrefix}}
+                        <input id="postalCode" disabled="true" type="text" pattern="[\d\-]*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9\-]/g, '')"   placeholder="Zip / Postal Code" class="form-control {{classPrefix}}PostalCode {{classPrefix}}Field cc_contact_input_postal_code" name="{{classPrefix}}Address.postalCode" value="{{this.postalCode}}" maxlength=10/>
+                    {{else}}
+                        <input id="postalCode" type="text" pattern="[\d\-]*" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9\-]/g, '')"   placeholder="Zip / Postal Code" class="form-control {{classPrefix}}PostalCode {{classPrefix}}Field cc_contact_input_postal_code" name="{{classPrefix}}Address.postalCode" value="{{this.postalCode}}" maxlength=10/>  
+                    {{/disableBillingFields}}
+                    <span class="alert-danger {{classPrefix}}PostalCode_error"></span>
+                </div>
+                <div class="form-group">
+                  <!-- <label for="country">{{pageLabelMap 'CheckOut_Country'}}</label> -->
+                  {{#disableBillingFields classPrefix}}
+                     <select disabled name="billingAddress.countryCode" class="countryListing form-control billingField billingcountry">
+                     	<option value={{this.countryCode}} selected>{{this.country}}</option>
+                     </select>
+                  {{else}}
+                      {{{selectGeo 'country' this.countryList this.countryCode 'countryListing form-control' this.classPrefix}}}
+                  {{/disableBillingFields}}
+                </div>
+                {{#isCSRMode}}
+                {{else}}
+                    {{#ifEquals classPrefix 'shipping'}}
+                    <div class="form-group required-field hideindicator">
+                        <p class="radiobtn-introtext inline-req-indicator">Is this a business or residence?</p>
+                        <p class="contact_input_bizresq-wrap">
+                            {{#ifEquals '{!isBusinessAdd}' 'true'}}
+                            <input id="bizResQ-business" type="radio" 
+                                class="form-control shippingBizResQ shippingField contact_input_bizresq" 
+                                name="shippingAddress.bizResQ" value="Business" checked>
+                            {{else}}
+                            <input id="bizResQ-business" type="radio" 
+                                class="form-control shippingBizResQ shippingField contact_input_bizresq" 
+                                name="shippingAddress.bizResQ" value="Business">
+                            {{/ifEquals}}
+                            <label for="bizResQ-business" class="lbl-radiobtn">Business</label>
+                        </p>
+                        <p class="contact_input_bizresq-wrap">
+                            {{#ifEquals '{!isResidenceAdd}' 'true'}}
+                            <input id="bizResQ-residence" type="radio" 
+                                class="form-control shippingBizResQ shippingField contact_input_bizresq" 
+                                name="shippingAddress.bizResQ" value="Residence" checked>
+                            {{else}}
+                            <input id="bizResQ-residence" type="radio" 
+                                class="form-control shippingBizResQ shippingField contact_input_bizresq" 
+                                name="shippingAddress.bizResQ" value="Residence">
+                            {{/ifEquals}}
+                            <label for="bizResQ-residence" class="lbl-radiobtn">Residence</label>
+                        </p>
+                        <span class="alert-danger {{classPrefix}}AddType_error"></span>
+                    </div>
+                    <div class="userinfo-accept-text">
+                      <p>By selecting “Continue” below, you agree to the <a href="https://www.ergotron.com/en-us/company/legal/terms-of-use" target="_blank">Ergotron Terms of Use</a>, and acknowledge that you have read the <a href="https://www.ergotron.com/en-us/company/legal/privacy-policy" target="_blank">Ergotron Privacy Policy</a>.</p>
+                      <!--Removed DR statement and links-->
+                    </div>
+                    {{/ifEquals}}
+                {{/isCSRMode}}
+            </div>
+        </form>
+        <div id="modal_{{classPrefix}}" class="modal fade cc_address_book_modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog cc_modal-dialg" role="document">
+                <div class="modal-content cc_modal-content">
+                    <div class="modal-header cc_modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{{pageLabelMap
+                        'Modal_Aria_Close'}}"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title cc_title">{{pageLabelMap 'UserInfo_AddressBookModal'}}</h4>
+                    </div>
+                    <div class="modal-body cc_modal-body">
+                    {{#each this.addressList}}
+                            <div class="row cc_billing_shipping_info">
+                                <div class="col-md-6 cc_personal_info">
+                                    {{> addressDisplay}}
+                                </div>
+                                <div class="col-md-6 cc_select">
+                                    <input type="button" value="{{pageLabelMap 'UserInfo_selectAddress'}}" class="btn btn-
+            default btn-sm {{../classPrefix}}Field selectAddress cc_select_address" data-id="{{this.sfid}}"/>
+                                </div>
+                            </div> <hr>
+                    {{/each}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--  start of manual address modal div   aria-hidden="true" keep -->                        
+        <div id="SetAccountAddress" class="modal fade cc_modal" tabindex="-1" role="dialog" aria-labelledby="SetAccountAddress" aria-hidden="true">
+            <div class="modal-dialog cc_modal-dialog" role="document">
+                <div class="modal-content cc_modal-content">
+                    <div class="modal-header cc_modal-header">
+                            <button type="button" class="close cc_close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">X</span></button>
+                            <h3 class="cc_prod_list_item_label" id="differentaddressselector"> Different Account Selector </h3>
+                    </div>
+                    <div class="modal-body cc_body">
+                        <center>
+                            <div id="dynamicContent2"> 
+                                <br/><br/><br/><br/><br/>
+                                <span style="display: inline-block; padding: 10px 0px;">Getting Accounts...</span>
+                                <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                                    <div style="display: inline-block; padding: 2px; background-color: #fff;   text-align: center">
+                                        <img src="/auraFW/resources/aura/images/spinner.gif" style="float: left; margin: 8px;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- button modle  end -->                 
+        <!--contact select Modal -->
+        <div id="SetContAddress" class="modal fade" role="dialog">
+            <div class="modal-dialog" style="width: 53%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <input id="searchConts" type="text" placeholder="Search.." style="float: right;padding-right: 12rem;margin-right: 6rem;"/>
+                        <h4 class="modal-title">Contacts</h4>
+                    </div>
+                    <div id="overlay-massOrder" class="modal-backdrop fade in hideDiv" style="display:none;"></div>
+                    <div class="modal-body">
+                        <table class="table" id="contTable">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody id="contBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+              
+    <style>
+        #overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2;
+            cursor: pointer;
+        }          
+    </style> 
+</script>
+
+<script type="text/javascript">
+    //CCRZ.uiProperties.CartOrderReviewView.desktop.tmpl = 'ERGReviewCartDesktop'; 
+    CCRZ.uiProperties.CartOrderReviewViewV2.desktop.tmpl = 'ERGReviewCartDesktop';
+    CCRZ.uiProperties.PaymentView.desktop.tmpl = 'Ergo-Payment-Desktop';
+    CCRZ.uiProperties.ShippingView.desktop.tmpl = 'Ergo-Shipping-Desktop';
+    CCRZ.uiProperties.OrderReviewView.desktop.tmpl = 'Erg-Review-Desktop';
+    CCRZ.uiProperties.UserInfoView.partial.addressEntry = '#Erg-UserInfo-AddressEdit-Desktop';
+</script>
+
+<script type="text/javascript">
+    function fetchStateName(){
+        CC_ERG_ctrl_ReviewCart.getStateName(function(result,event){
+        if(event.status){
+            let stateName = result;
+            document.querySelector('#billingState').innerHTML = result;
+        }
+    	}); 
+    }
+    
+    function updateFreightAccount(id) {
+        //debugger;
+        console.log("ERGRewviewCartDesktop.vfp:updateFreightAccount  ");
+
+
+        //alert("in updateFreightAccount");
+
+        //var thislocation = document.getElementById(id).value ;
+        var thislocation = document.getElementById('FreightCarrierActNbr').value;
+
+        //    debugger;
+        CCRZ.subsc.customActions.updateFCAN(thislocation, function (response) {
+            CCRZ.cartCheckoutModel.attributes.ccFreightCarrierActNbr = thislocation;
+        });
+        document.getElementById("FreightCarrierActNbrDisp").value = thislocation;
+        //    alert("Your FCAN="+thislocation);
+        //    alert("left FCAN box ");
+    }
+</script>
+
+<script type="text/javascript">
+    Handlebars.registerHelper('json', function (context) {
+        return JSON.stringify(context);
+    });
+
+    Handlebars.registerHelper('getSizeOfImage', function (imgString) {
+        var finalImageString = '';
+        if(imgString != null && imgString != '' && imgString != undefined){
+            finalImageString = imgString.replace('65x65.jpg', '560x500.jpg');
+        }
+        return finalImageString;
+    });
+
+    Handlebars.registerHelper("changeSign", function(varName, varValue, options) {
+        if(!isNaN(varValue)) {
+            if(varValue < 0) {
+                varValue *= -1;
+            }
+            options.data.root[varName] = varValue;
+        } else {
+            options.data.root[varName] = varValue;
+        }
+        
+    });
+
+    Handlebars.registerHelper("setVar", function(varName, varValue, options) {
+        options.data.root[varName] = varValue;
+    });
+
+    Handlebars.registerHelper('mul', function(price, qty, options) {
+        return price * qty;
+    });
+    /*docmation code start*/
+    let currentPageUrl = window.location.href;
+
+    /*docmation code end*/
+    var $ = jQuery.noConflict();
+    $(document).ready(function () {
+        console.log('hi');
+        //jQuery.noConflict();
+        var redirectUri = '{!OrderId}';
+        if (redirectUri != '') {
+            window.location.href = redirectUri;
+        }
+        setTimeout(function () {
+            $("#searchConts").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#contTable tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        }, 1000);
+    });
+    function proceedToPay(event){
+        /*ga(
+            'send',
+            'event',
+            'Order Review',
+            'Customer Proceeding to Payment'
+        );*/
+        
+        //gtag('event', 'Payment');
+        event.preventDefault();
+        CCRZ.cartCheckoutView.slideRight();
+    }
+
+    function ProceedToOrderReview(event){
+        /*ga(
+            'send',
+            'event',
+            'Shipping',
+            'Customer Proceeding to Order Review'
+        );*/
+        
+        event.preventDefault();
+        $('.processShippingInfo').click();
+
+    }
+     var shippingData;
+    function verifyAddress(event){
+        if($("#verify-overlay").is(":visible")){
+            $( "#verify-overlay" ).remove();
+        }
+        if(CCRZ.pagevars.portalUserId != ''){
+            $('.processUserInfo.cc_process_user_info').click();
+            event.preventDefault();
+        }
+        else{
+        $('#verify-add .modal-dialog').addClass('hide');
+            $('#verify-add .modal-body').html('');
+            if($('#verify-add').modal != undefined){
+                $('#verify-add').modal({
+                    show: true,
+                    backdrop: 'static'
+                });
+            }
+            
+            
+            event.preventDefault();
+            if(!CCRZ.pagevars.portalUserId){
+                updateAddressTypeCart();
+            }
+            const validateRes = validateUserInfo();
+            console.log(validateRes);
+            if(!validateRes?.isError) {
+                
+                const street = $('.shippingAddress1').val();
+                const secondary = $('.shippingAddress2').val();
+                const city = $('.shippingCity').val();
+                const state = $('.shippingstate').val();
+                const country = $('.shippingcountry').val();
+                const zipCode = $('.shippingPostalCode').val();
+                const addressType = $("#shippingAddressForm input[name='shippingAddress.bizResQ']:checked").val();
+                // smarty street setting
+                const candidates = '10';
+                console.log('zipCodezipCode'+zipCode);
+                if(street && city && state && candidates) {
+                    var url = new URL(window.location.href);
+                    var cartID = url.searchParams.get("cartID");
+                    //if(state == 'AK' || state == 'HI'){
+                        CCRZ.cartCheckoutModel.attributes.shippingMethod = '';
+                    //}
+                    CC_ERG_ValidateAddress_ext.verifyAddress(street, city, state, candidates, secondary, country, zipCode,cartID ,function(result,event){
+                        if(event.status && result && result.data?.length > 0 && !result?.isError){
+                            console.log(result);
+                            shippingData = result.data?.[0];
+                            console.log('shippingDatashippingData'+JSON.stringify(shippingData));
+                            const response = result.data?.[0];
+                            const recordType = response.metadata?.record_type ?? '';
+                            const matchCode = response.analysis?.dpv_match_code;
+                            const footnotes = response.analysis?.footnotes;
+                            console.log('footnotes---->'+footnotes);
+                            console.log('matchCode---->'+matchCode);
+                            if((matchCode.toLowerCase() === 'y' || matchCode.toLowerCase() === 'n' || matchCode.toLowerCase() === 's'
+                                || matchCode.toLowerCase() === 'd' || matchCode.toLowerCase() !== '[null]' || matchCode.toLowerCase() !== '[blank]' 
+                                || matchCode.toLowerCase() !== '[blank or null]') && recordType.toLowerCase() !== 'p' && recordType.toLowerCase() !== '[blank]') {
+                                if(matchCode.toLowerCase() === 'y' && footnotes == null || footnotes === '' ) {
+                                    console.log('verified');
+                                    $('.processUserInfo.cc_process_user_info').click();
+                                    if($('#verify-add').modal != undefined){
+                                        $('#verify-add').modal('hide');
+                                    }
+                                }else if(matchCode.toLowerCase() === 'y' && footnotes != null ){
+                                    $('#verify-add .modal-dialog').removeClass('hide');
+                                    $('#verify-add .modal-body').html( `
+                                        <h3>Address Verification</h3>
+                                        <p>To ensure accurate delivery, please choose an option below or <a href="#" onclick='closeModal()'>go&nbsp;back</a> to make changes.</p>
+                                        <section>
+                                        <article class="row">
+                                            <dl class="col-sm-6">
+                                            <dt>Original address as entered:</dt>
+                                            <dd>${street} ${secondary}<br>${city} ${state} <!-- <br>${country} -->${zipCode}</dd>
+                                            </dl>
+                                            <dl class="col-sm-6">
+                                            <dt>Suggested address:</dt>
+                                            <dd>${response.delivery_line_1}<br>${response.last_line}<!-- <br> ${country} --></dd>
+                                            </dl>
+                                        </article>
+                                        </section>
+                                        <section>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                            <button class="btn btn-default btn-base btn-blue  processUserInfo cc_process_user_info" onclick="useOriginal()">Use Original</button>
+                                            </div>
+                                            <div class="col-sm-6">
+                                            <button class="btn btn-default btn-base btn-blue  processUserInfo cc_process_user_info" onClick = "setShippingAddress()">Use Suggested</button>
+                                            </div>
+                                        </div>
+                                        </section>
+                                    `
+                                    ); 
+                                }
+                                else if(matchCode.toLowerCase() === 's' && footnotes != null ){
+                                    $('#verify-add .modal-dialog').removeClass('hide');
+                                    $('#verify-add .modal-body').html( `
+                                        <h3>Address Verification</h3>
+                                        <p>To ensure accurate delivery, please choose an option below or <a href="#" onclick='closeModal()'>go&nbsp;back</a> to make changes.</p>
+                                        <section>
+                                        <article class="row">
+                                            <dl class="col-sm-6">
+                                            <dt>Original address as entered:</dt>
+                                            <dd>${street} ${secondary}<br>${city} ${state} <!-- <br>${country} -->${zipCode}</dd>
+                                            </dl>
+                                            <dl class="col-sm-6">
+                                            <dt>Suggested address:</dt>
+                                            <dd>${response.delivery_line_1}<br>${response.last_line}<!-- <br> ${country} --></dd>
+                                            </dl>
+                                        </article>
+                                        </section>
+                                        <section>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                            <button class="btn btn-default btn-base btn-blue  processUserInfo cc_process_user_info" onclick="useOriginal()">Use Original</button>
+                                            </div>
+                                            <div class="col-sm-6">
+                                            <button class="btn btn-default btn-base btn-blue  processUserInfo cc_process_user_info" onClick = "setShippingAddress()">Use Suggested</button>
+                                            </div>
+                                        </div>
+                                        </section>
+                                    `
+                                    ); 
+                                }
+                                else if(matchCode.toLowerCase() === 'd') {
+                                    $('#verify-add .modal-dialog').removeClass('hide');
+                                    $('#verify-add .modal-body').html( `
+                                    <h3>Address Verification</h3>
+                                        <p>To ensure accurate delivery, please choose an option below or <a href="#" onclick='closeModal()'>go&nbsp;back</a> to make changes.</p>
+                                        <section>
+                                        <article class="row">
+                                            <dl class="col-sm-6">
+                                            <dt>Original address as entered:</dt>
+                                            <dd>${street} ${secondary}<br>${city} ${state} <!-- <br>${country} -->${zipCode}</dd>
+                                            </dl>
+                                            <dl class="col-sm-6">
+                                            <dt>Suggested address:</dt>
+                                            <dd>${response.delivery_line_1}<br>${response.last_line}<!-- <br> ${country} --></dd>
+                                            </dl>
+                                        </article>
+                                        </section>
+                                        <section>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                            <button data-dismiss="modal" class="btn btn-default btn-base btn-blue  processUserInfo cc_process_user_info" onclick="useOriginal()">Use Original</button>
+                                            </div>
+                                            <div class="col-sm-6">
+                                            <button data-dismiss="modal" class="btn btn-default btn-base btn-blue  processUserInfo cc_process_user_info" onClick = "setShippingAddress()">Use Suggested</button>
+                                            </div>
+                                        </div>
+                                        </section>
+                                    `
+                                    );
+                                }
+                            } else {
+                                $('#verify-add .modal-dialog').removeClass('hide');
+                                if(recordType.toLowerCase() === 'p') {
+                                    $('#verify-add .modal-body').html( `  <h3>Address Verification</h3>
+                                                        <p>Sorry, we do not deliver to P.O. boxes.</p>
+                                                        <section>
+                                                            <article class="row">
+                                                            <aside class="col-sm-6 col-sm-push-6 return-to-sender"></aside>
+                                                            <dl class="col-sm-6 col-sm-pull-6 single-col">
+                                                                <dt>Original address as entered:</dt>
+                                                                <dd>${street} ${secondary}<br>${city} ${state} <!-- <br>${country} -->${zipCode}</dd>
+                                                            </dl>
+                                                            </article>
+                                                        </section>
+                                                        <section>
+                                                            <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <button class="btn btn-default btn-base btn-gray" onclick='closeModal()'>Enter New Address</button>
+                                                            </div>
+                                                            </div>
+                                                        </section>
+                                    `
+                                    );
+                                } else {
+                                    $('#verify-add .modal-dialog').removeClass('hide');
+                                    $('#verify-add .modal-body').html( `
+                                            <h3>Address Verification</h3>
+                                            <p>Sorry, we were not able to verify your shipping address. To ensure accurate delivery, please choose an option below.</p>
+                                            <section>
+                                                <article class="row">
+                                                <dl class="col-sm-6">
+                                                    <dt>Original address as entered:</dt>
+                                                    <dd>${street} ${secondary}<br>${city} ${state} <!-- <br>${country} -->${zipCode}</dd>
+                                                </dl>
+                                                <dl class="col-sm-6">
+                                                    <dt><span class="addr-not-verified-msg">Address not verified</span></dt>
+                                                    <dd>Only select “Use Original” if you are certain the address you have entered is valid.</dd>
+                                                </dl>
+                                                </article>
+                                            </section>
+                                            <section>
+                                                <div class="row">
+                                                <div class="col-sm-6">
+                                                    <button data-dismiss="modal" class="btn btn-default btn-base btn-gray cc_process_user_info" >Edit Original</button>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <button data-dismiss="modal" class="btn btn-default btn-base btn-blue processUserInfo  cc_process_user_info">Use Original</button>
+                                                </div>
+                                                </div>
+                                            </section>
+                                    `
+                                    );
+                                }
+                                setTimeout(() => {
+                                    $('#add-verify-err').addClass('hide');
+                                    $('#add-verify-err').html('');
+                                }, 7000);
+                            }
+                        } else {
+                            console.log('wwww');
+                            console.log(result);
+    
+                            if(result && !result?.isError) {
+                                $('#verify-add .modal-dialog').removeClass('hide');
+                                    $('#verify-add .modal-body').html( `
+                                    <h3>Address Verification</h3>
+                                    <p>Sorry, we were not able to verify your shipping address. To ensure accurate delivery, please choose an option below.</p>
+                                    <section>
+                                        <article class="row">
+                                        <dl class="col-sm-6">
+                                            <dt>Original address as entered:</dt>
+                                            <dd>${street} ${secondary}<br>${city} ${state} <!-- <br>${country} -->${zipCode}</dd>
+                                        </dl>
+                                        <dl class="col-sm-6">
+                                            <dt><span class="addr-not-verified-msg">Address not verified</span></dt>
+                                            <dd>Only select “Use Original” if you are certain the address you have entered is valid.</dd>
+                                        </dl>
+                                        </article>
+                                    </section>
+                                    <section>
+                                        <div class="row">
+                                        <div class="col-sm-6">
+                                            <button data-dismiss="modal" class="btn btn-default btn-base btn-gray cc_process_user_info" >Edit Original</button>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <button data-dismiss="modal" class="btn btn-default btn-base btn-blue processUserInfo  cc_process_user_info">Use Original</button>
+                                        </div>
+                                        </div>
+                                    </section>
+                                    `
+                                    );
+                            } else if(result && result?.isError) {
+                                $('#add-verify-err').removeClass('hide');
+                                if($('#verify-add').modal != undefined){
+                                    $('#verify-add').modal('hide');
+                                }
+                                $('#add-verify-err').html('Sorry! there is some issue, Please contact us.');
+                            }else {
+                                $('#add-verify-err').removeClass('hide');
+                                if($('#verify-add').modal != undefined){
+                                    $('#verify-add').modal('hide');
+                                }
+                                $('#add-verify-err').html('There is some issue, Please contact us.');
+                            }
+                        }
+                        if(!$( "#verify-add" ).hasClass("in")){
+                            $( "#verify-add" ).addClass("in");
+                            $( "body" ).after( "<div class='modal-backdrop fade in' id='verify-overlay' ></div>" );
+                            $('#verify-add').show();
+                        }
+                        if(!$(".modal-backdrop").hasClass("in")){
+                            $( ".modal-backdrop" ).addClass("in");
+                            $( ".modal-backdrop" ).show();
+                        }
+                        if(!$("#verify-add").is(":visible")){
+                            $( ".modal-backdrop" ).show();
+                        }
+                        setTimeout(() => {
+                            $('#add-verify-err').addClass('hide');
+                            $('#add-verify-err').html('');
+                            
+                        }, 7000);
+                    });
+                } else {
+                    $('.processUserInfo.cc_process_user_info').click();
+                    if($('#verify-add').modal != undefined){
+                        $('#verify-add').modal('hide');
+                    }
+                }
+            } else {
+                if($('#verify-add').modal != undefined){
+                    $('#verify-add').modal('hide');
+                }
+            }
+        }
+    }
+    function useOriginal(){
+        if($("#verify-overlay").is(":visible")){
+            $( "#verify-overlay" ).remove();
+        }
+        closeVerifyModal();
+        //$('.processUserInfo.cc_process_user_info').click();
+    }
+    function closeVerifyModal(){
+        $( "#verify-add" ).removeClass("in");
+        $('#verify-add').hide();
+        $('#verify-overlay').remove();
+    }
+     function closeModal(){
+        if($('#verify-add').modal != undefined){
+            $('#verify-add').modal('hide');
+        }
+     }
+     function setShippingAddress(){
+         console.log('setShippingAddress');
+        //if($('#verify-add').modal != undefined){
+            $('#verify-add').hide();
+        //}
+         const address1 = shippingData.delivery_line_1;
+         const zipCode = shippingData.components?.zipcode;
+         const plusCode = shippingData.components?.plus4_code;
+         const cityName = shippingData.components?.city_name;
+         const address2 = shippingData.delivery_line_2
+         const stateCode = shippingData.components?.state_abbreviation;
+         $('.shippingAddress1').val(address1) ;
+         $('.shippingCity').val(cityName);
+         if (plusCode != null) {
+            const newZipCode = zipCode+'-'+plusCode;
+            $('.shippingPostalCode').val(newZipCode);  
+         }
+         if(address2 != null){
+            $('.shippingAddress2').val(address2);
+         }
+         if(shippingData.analysis.dpv_match_code.toLowerCase() === 's'){
+            $('.shippingAddress2').val('');
+         }
+         if(stateCode != null){
+            $('.shippingstate').val(stateCode);
+         }
+         
+        if($("#verify-overlay").is(":visible")){
+            $( "#verify-overlay" ).remove();
+        }
+     }
+    function resetError() {
+        $('.fName_error').html('');
+        $('.lName_error').html('');
+        $('.primPhone_error').html('');
+        $('.email_error').html('');
+        $('.billingfirstNameField_error').html('');
+        $('.billinglastNameField_error').html('');
+        $('.billingAddress1_error').html('');
+        $('.billingCity_error').html('');
+        $('.billingstate_error').html('');
+        $('.billingPostalCode_error').html('');
+
+        $('.shippingfirstNameField_error').html('');
+        $('.shippinglastNameField_error').html('');
+        $('.shippingAddress1_error').html('');
+        $('.shippingCity_error').html('');
+        $('.shippingstate_error').html('');
+        $('.shippingPostalCode_error').html('');
+        $(".shippingAddType_error").html('');
+    }
+
+    function validateUserInfo() {
+        console.log('validate user info');
+        resetError();
+        let isError = false;
+        const fName = $('.contactInput.cc_contact_input_firstname').val();
+        const lName = $('.contactInput.cc_contact_input_lastname').val();
+        const primPhone = $('.contactInput.cc_contact_input_phone').val();
+        const email = $('.contactInput.cc_contact_input_email').val();
+        const confEmail = $('.contactInput.cc_contact_input_conf_email').val();
+
+        const billFName = $('.billingfirstNameField').val();
+        const billLName = $('.billinglastNameField').val();
+        const billStreet = $('.billingAddress1').val();
+        const billCity = $('.billingCity').val();
+        const billState = $('.billingstate').val();
+        const billZip = $('.billingPostalCode').val();
+
+        const ShipFName = $('.shippingfirstNameField').val();
+        const ShipLName = $('.shippinglastNameField').val();
+        const street = $('.shippingAddress1').val();
+        const secondary = $('.shippingAddress2').val();
+        const city = $('.shippingCity').val();
+        const state = $('.shippingstate').val();
+        const country = $('.shippingcountry').val();
+        const zipCode = $('.shippingPostalCode').val();
+        const addressType = $("#shippingAddressForm input[name='shippingAddress.bizResQ']:checked")?.val();
+
+        if(!fName || fName.trim() === '') {
+            isError = true;
+            $('.fName_error').html('Please enter valid first name.');
+        }
+        if(!lName || lName.trim() === '') {
+            isError = true;
+            $('.lName_error').html('Please enter valid last name.');
+        }
+        if(!primPhone || primPhone?.trim() === '' || primPhone?.length < 10) {
+            isError = true;
+            $('.primPhone_error').html('Please enter valid phone.');
+        }
+        if(!email || email.trim() === '') {
+            isError = true;
+            $('.email_error').html('Please enter valid email.');
+        }
+        if(!confEmail || confEmail.trim() === '') {
+            isError = true;
+            $('.email_conf_error').html('Please enter valid email.');
+        }
+        if((confEmail || confEmail.trim() != '') && confEmail.trim() != email.trim()) {
+            isError = true;
+            $('.email_conf_error').html('Email Address does not match');
+        }
+        
+
+        
+
+        if(!billFName || billFName.trim() === '') {
+            isError = true;
+            $('.billingfirstNameField_error').html('Please enter valid billing first name.');
+        }
+        if(!billLName || billLName.trim() === '') {
+            isError = true;
+            $('.billinglastNameField_error').html('Please enter valid billing last name.');
+        }
+        if(!billStreet || billStreet?.trim() === '') {
+            isError = true;
+            $('.billingAddress1_error').html('Please enter valid billing address.');
+        }
+        if(!billCity || billCity.trim() === '') {
+            isError = true;
+            $('.billingCity_error').html('Please enter valid city.');
+        }
+        if(!billState || billState.trim() === '' || billState === 'AA') {
+            isError = true;
+            $('.billingstate_error').html('Please enter valid state.');
+        }
+        if(!billZip || billZip.trim() === '') {
+            isError = true;
+            $('.billingPostalCode_error').html('Please enter valid Zip/Postal code.');
+        }
+
+
+        if(!ShipFName || ShipFName?.trim() === '') {
+            isError = true;
+            $('.shippingfirstNameField_error').html('Please enter valid shipping first name.');
+        }
+        if(!ShipLName || ShipLName.trim() === '') {
+            isError = true;
+            $('.shippinglastNameField_error').html('Please enter valid shipping last name.');
+        }
+        if(!street || street?.trim() === '') {
+            isError = true;
+            $('.shippingAddress1_error').html('Please enter valid shipping address.');
+        }
+        if(!city || city.trim() === '') {
+            isError = true;
+            $('.shippingCity_error').html('Please enter valid shipping city.');
+        }
+        if(!state || state.trim() === '' || state === 'AA') {
+            isError = true;
+            $('.shippingstate_error').html('Please enter valid shipping state.');
+        }
+        if(!zipCode || zipCode.trim() === '') {
+            isError = true;
+            $('.shippingPostalCode_error').html('Please enter valid shipping Zip/Postal code.');
+        }
+        if((!addressType || addressType === '') && !CCRZ.pagevars.portalUserId) {
+            isError = true;
+            $(".shippingAddType_error").html('Please select address type.');
+        }
+
+
+        return {isError};
+    }
+
+    function updateAddressTypeCart() {
+        const addressType = $("#shippingAddressForm input[name='shippingAddress.bizResQ']:checked").val();
+        if(addressType) {
+            CC_ERG_ctrl_ReviewCart.updateAddressTypeInCart(CCRZ.pagevars.currentCartID,addressType, function(result,event){
+                if(event.status){}
+            });
+        }
+    }
+
+    function makeInputAndSelectReadonly() {
+
+        var fields = document.getElementById("mainform").getElementsByTagName('input');
+        for (var i = 0; i < fields.length; i++) {
+            fields[i].disabled = true;
+        }
+
+        fields = document.getElementById("billingAddressForm").getElementsByTagName('input');
+        for (var i = 0; i < fields.length; i++) {
+            fields[i].disabled = true;
+        }
+
+        fields = document.getElementById("billingAddressForm").getElementsByTagName('select');
+        for (var i = 0; i < fields.length; i++) {
+            fields[i].disabled = true;
+        }
+
+
+
+        fields = document.getElementById("shippingAddressForm").getElementsByTagName('input');
+        for (var i = 0; i < fields.length; i++) {
+            if (fields[i].id != "firstName" && fields[i].id != "lastName") {
+                fields[i].disabled = true;
+            }
+        }
+
+        fields = document.getElementById("shippingAddressForm").getElementsByTagName('select');
+        for (var i = 0; i < fields.length; i++) {
+            fields[i].disabled = true;
+        }
+        //$("input.shippingfirstNameField, .shippinglastNameField ").removeAttr("readonly");                     
+
+    } // end of makeInputAndSelectReadonly
+
+
+    function setDefaultPONumber() {
+        //alert(" do it here ");
+        var theInputField = document.getElementById("accountNumber");
+        theInputField.value = "{!dfltPONumber}";
+    }
+
+    CCRZ.pubSub.on('view:PaymentsPOView:refresh', function (theView) {
+        if (!isExternalCart) {
+            setDefaultPONumber();
+        }
+    });
+
+    CCRZ.pubSub.on('view:StateView:refresh', function (theView) {
+        if (isExternalCart) {
+
+            setTimeout(function () {
+                $('select option').prop('disabled', false);
+            }, 1000);
+        }
+    });
+
+    // this waits for a refresh event then invokes the read only function
+    //          CCRZ.pubSub.on('view:PaymentsPOView:refresh', function(theView){
+    CCRZ.pubSub.on('view:PaymentView:refresh', function (theView) {
+        //            setDefaultPONumber()
+        //debugger;
+        var billCountry = CCRZ.cartCheckoutModel.attributes.billingAddress.countryCode;
+        var allowedCountries = CCRZ.pagevars.pageConfig["erg_cs.Credit_Card_Allowed_Countries"].split(',');
+        var isCSR = CCRZ.pagevars.queryParams.portalUser;
+
+        //alert("isCSR = "+isCSR+' billCountry='+billCountry);
+        // we should see if there is a portalUser on the               
+        if (isCSR) {
+            for (var i = 0; i < allowedCountries.length; i++) {
+                if (billCountry == allowedCountries[i]) {
+                    $('.sendOrderToCustomer').show();
+                }
+            }
+        }
+        let currStep  = CCRZ.cartCheckoutView.currStep;
+        let step = currStep + 1;
+        let title = CCRZ.cartCheckoutView.subViewArray[currStep].title
+        localStorage.setItem("confPgLdCounter", 0);
+        onCheckout(title, step);
+        console.log('fired PAyment');
+
+    });
+
+    let isRendered = false, isRun = false, isRefreshed = false, isExecuted = false, isCartUpdated = false;
+    CCRZ.pubSub.on('view:cartCheckoutView:refresh', function (checkoutView) {
+        console.log('hi________');
+        let csrUserToShowShipping = {!csrUserToShowShipping};
+        let endUserToShowShipping = {!endUserToShowShipping};
+        let csrFlow = false;
+        if (CCRZ && CCRZ.pagevars && CCRZ.pagevars.portalUserId != '') {
+            csrFlow = true;
+        }
+        if($("#verify-overlay").is(":visible")){
+            $( "#verify-overlay" ).remove();
+        }
+        $('#processPayments').attr('disabled', 'true');
+        if(CCRZ.pagevars.portalUserId != '' && CCRZ.subsc.customActions != undefined){
+        CCRZ.subsc.customActions.className = 'CC_ERG_ctrl_ReviewCart';
+        }
+        //debugger
+        //if (CCRZ.cartCheckoutView.subViewArray && CCRZ.cartCheckoutView.subViewArray.length > 0 && CCRZ.pagevars.portalUserId == ''  && !isRendered) {
+        if (CCRZ.cartCheckoutView.subViewArray && CCRZ.cartCheckoutView.subViewArray.length > 0 && 
+            ( (CCRZ.pagevars.portalUserId == '' && !isExternalCart) || (CCRZ.pagevars.portalUserId == '' && !endUserToShowShipping || (CCRZ.pagevars.portalUserId != '' && !csrUserToShowShipping) )) && !isRendered ) {
+        
+            let isShippingRemoved = false, isUserInfoRemoved = false;
+            let viewLength = CCRZ.cartCheckoutView.subViewArray.length, newSubArray = [];
+            //debugger;
+            for (let i = 0; i < viewLength; i++) {
+            let currentSubView = CCRZ.cartCheckoutView.subViewArray[i];
+            if (i === 1 && typeof currentSubView == 'undefined') {
+            isShippingRemoved = true;
+            }
+            if (i === 0 && typeof currentSubView == 'undefined') {
+            isUserInfoRemoved = true;
+            }
+            if (typeof currentSubView != 'undefined') {
+                console.log(isExternalCart);
+                if (typeof currentSubView.title != 'undefined' &&
+                ((currentSubView.title === 'Shipping') || (currentSubView.title === 'User Information' && CCRZ.pagevars.portalUserId == '' && !isExternalCart))) {
+                CCRZ.cartCheckoutView.removeView(i);
+                }
+                else if (typeof currentSubView.title != 'undefined' && i === 2 && !isExternalCart) {
+                CCRZ.cartCheckoutView.subView = CCRZ.cartCheckoutView.subViewArray[i].view;
+                newSubArray.push(CCRZ.cartCheckoutView.subViewArray[i]);
+                } else {
+                newSubArray.push(CCRZ.cartCheckoutView.subViewArray[i]);
+                }
+            }
+        }
+        console.log(newSubArray);
+        
+        
+            if (!isShippingRemoved && !isUserInfoRemoved && !isRendered) {
+                isRendered = true;
+                CCRZ.cartCheckoutView.subViewArray = newSubArray;
+                CCRZ.cartCheckoutView.navView.model.views = newSubArray;
+                CCRZ.cartCheckoutView.lastIdx = newSubArray.length - 1;
+                CCRZ.cartCheckoutView.render();
+                CCRZ.cartCheckoutView.navView.render();
+            }
+        }
+        
+        if(CCRZ.cartCheckoutView != undefined && !isExecuted){
+            isExecuted = true;
+            let currStep  = CCRZ.cartCheckoutView.currStep;
+            let step = currStep + 1;
+            let title = CCRZ.cartCheckoutView.subViewArray[currStep].title
+            onCheckout(title, step);
+            console.log('UserInfo is fired original');
+        }
+        /*docmation code started*/
+        if (isExternalCart) {
+            console.log('hello 12', isExternalCart);
+            $('.cc_change_address').hide();
+            $('.accountAddressSelector').hide();
+        }
+        /*docmation code end*/
+    });
+
+
+    CCRZ.pubSub.on('view:ShippingView:refresh', function (theView) {
+        if (isExternalCart) {
+            $('#FreightCarrierActNbrDisp').val(CCRZ.cartCheckoutModel.attributes.ccFreightCarrierActNbr);
+        }
+        if(CCRZ.cartCheckoutView != undefined){
+            let currStep  = CCRZ.cartCheckoutView.currStep;
+            let step = currStep + 1;
+            let title = CCRZ.cartCheckoutView.subViewArray[currStep].title
+            onCheckout(title, step);
+        }
+    });
+    CCRZ.pubSub.on('view:AddressListing:refresh', function (view) {
+        //if(view.addressBook.billingAddresses.length == 0){
+            //$('.billingstate').val('NO');
+        //}
+        //if(view.addressBook.shippingAddresses.length == 0){
+          //  $('.shippingstate').val('NO');
+        //}
+        view.events["click .processUserInfo"] = "processUserInfoCustom";
+        view.processUserInfoCustom = function (event) {
+            if (this.validateInfo()) {
+                                      console.log('validating info');
+                var formData = form2js('mainform', '.', false, function (node) { }, false, true);
+                CCRZ.cartCheckoutModel.set(formData);
+                if ($("#ccEmailForm").length > 0) {
+                    var ccFormData = form2js('ccEmailForm', '.', false, function (node) { }, false, true);
+                    CCRZ.cartCheckoutModel.set(ccFormData);
+                }
+                //if (!CCRZ.display.isPhone()){
+                var billData = form2js('billingAddressForm', '.', false, function (node) { }, false, true);
+                billData.billingAddress.country = $(".billingcountry option:selected").text();
+                billData.billingAddress.state = $(".billingstate option:selected").text();
+                CCRZ.cartCheckoutModel.set(billData);
+                var shipData = form2js('shippingAddressForm', '.', false, function (node) { }, false, true);
+                shipData.shippingAddress.country = $(".shippingcountry option:selected").text();
+                shipData.shippingAddress.state = $(".shippingstate option:selected").text();
+                CCRZ.cartCheckoutModel.set(shipData);
+                this.initAddresses();
+                if($('#verify-add').modal != undefined){
+                    $('#verify-add').modal('hide');
+                }
+                //}
+                CCRZ.cartCheckoutView.slideRight();
+            } else {
+                window.scrollTo(0, 0);
+            }
+        };
+        view.delegateEvents();
+    });
+
+    // this waits for a refresh event then invokes the read only function
+    CCRZ.pubSub.on('view:AddressListing:refresh', function (theView) {
+        if (!isExternalCart) {
+            makeInputAndSelectReadonly();
+        } else {
+            $("input").removeAttr("readonly");
+        }
+        setTimeout(function(){ 
+        
+        },2000);
+
+        
+        //      var thisPage;
+        //         thisPage = window.location.href;
+        //         var  locationOfJumpto;
+        //         locationOfJumpto = thisPage.indexOf("jumpto=");
+
+        //         if( locationOfJumpto > 0 ) 
+        //         {
+        //             //alert("do a jump");
+        //              CCRZ.cartCheckoutView.goToPosition(3);
+        //         }       
+
+
+    });
+
+    jQuery(function ($) {
+
+        //window.location.href = 'https://ergosf.my.salesforce.com/' + resp.data.contactId;
+        $("#emailsent").on('hide.bs.modal', function () {
+            //alert("Closed email sent dialog");
+            //window.location.href = 'https://ergosf.my.salesforce.com/' + resp.data.contactId;
+            window.location.href = CCRZ.homePage;
+        });
+
+        //debugger;
+        console.log("ERGReviewCartDesktop.vfp page load ");
+
+        listenerEvent = 'view:OrderReviewView:refresh';
+        CCRZ.pubSub.on(listenerEvent, function (theView) {
+
+            //console.log("I did this ");
+
+            //            var thislocation = document.getElementById('FreightCarrierActNbr').value ;
+            //CCRZ.subsc.customActions.updateFCAN(thislocation,function(response){ });
+
+            // console.log("Your FCAN="+thislocation);            
+
+
+        });  // end of view:cartView:refresh pubSub                
+
+
+
+        //          debugger;
+
+        CCRZ.subsc3 = _.extend(CCRZ.subsc3 || {});
+        CCRZ.subsc3.customActions = _.extend({
+            className: 'CC_ERG_ctrl_ReviewCart',
+            //CCRZ.subsc2.customActions.className = 'CC_ERG_ctrl_ReviewCart',
+            sendOrderToCustomer: function () {
+                this.invokeCtx('sendOrderToCustomer',
+                    function (resp) {
+                        if (resp && resp.success) {
+
+                            var FirstName = CCRZ.currentUser.FirstName;
+                            var LastName = CCRZ.currentUser.LastName;
+                            var Email = CCRZ.currentUser.Email;
+
+
+                            var jumpToServer = '{!jumpToServer}';
+
+                            var protocol = location.protocol;
+                            var slashes = protocol.concat("//");
+                            var thisServer = slashes.concat(window.location.hostname);
+
+                            var do_jump = 'yes';
+
+                            if (thisServer == jumpToServer) {
+                                //alert(" stay here and continue process ");
+                                do_jump = 'no';
+                            }
+                            else {
+                                //alert(" do jump");
+                                do_jump = 'yes';
+                            }
+
+                            //                            var thisServer = 'stupid';
+                            //                            alert( thisServer );   
+
+
+
+                            document.getElementById("sendto_contact_info").innerHTML = FirstName + " " + LastName + "<br>" + Email;
+                            $("#emailsent").modal('show');
+
+                            $("#emailsent").on('hide.bs.modal', function (do_jump) {
+                                if (do_jump = 'yes') {
+
+                                    var protocol = location.protocol;
+                                    var slashes = protocol.concat("//");
+                                    var jump_to_location = "/lightning/o/Contact/list?filterName=Recent";
+                                    var host = slashes.concat(window.location.hostname)
+                                    var jump_to_url = host + jump_to_location;
+                                    //                                    window.location.href = 'https://ergotron--ecom.lightning.force.com/lightning/o/Contact/list?filterName=Recent';
+                                    //                                    alert(jump_to_url);
+
+                                    window.location.href = jump_to_url;
+
+                                }
+
+
+                            });
+
+                        }
+                    },
+                    {
+                        buffer: false,
+                        nmsp: false
+                    });
+            },
+
+        }, CCRZ.RemoteInvocation);
+        CCRZ.subsc3.customActions.className = 'CC_ERG_ctrl_ReviewCart';
+        CCRZ.subsc = _.extend(CCRZ.subsc || {});
+        CCRZ.subsc.customActions = _.extend({
+            className: 'CC_ERG_ctrl_ReviewCart',
+            updateFCAN: function (FreightCarrierAccountNumber, callback) {
+                //                debugger;
+                console.log("ERGRewviewCartDesktop.vfp:FreightCarrierAccountNumber response callback");
+
+                this.invokeCtx('updateFCAN', FreightCarrierAccountNumber, function (response) {
+                    //                        debugger;
+                    console.log("ERGRewviewCartDesktop.vfp:FreightCarrierAccountNumber response callback2");
+
+
+
+                    callback(response);
+                },
+                    {
+                        buffer: false, nmsp: false
+                    }
+                );
+
+            },
+            setPricelistFromCart: function (cartID, callback) {
+                //                debugger;
+                //console.log("ERGRewviewCartDesktop.vfp:FreightCarrierAccountNumber response callback");
+
+                this.invokeCtx('setPricelistFromCart', cartID, function (response) {
+                    //                        debugger;
+                    console.log("ERGRewviewCartDesktop.vfp:FreightCarrierAccountNumber response callback2");
+                    callback(response);
+                },
+                    {
+                        buffer: false, nmsp: false
+                    }
+                );
+
+            },
+            populateManualAddressList: function (addresstype, callback) {
+                this.invokeCtx('populateManualAddressList', addresstype, function (response) {
+                    callback(response);
+                },
+                    {
+                        buffer: false, nmsp: false
+                    }
+                );
+            },
+
+            setSelectedAccountAddress: function (addresstype, searchword, callback) {
+                this.invokeCtx('setSelectedAccountAddress', addresstype, searchword, function (response) {
+                    callback(response);
+                },
+                    {
+                        buffer: false, nmsp: false
+                    }
+                );
+            },
+
+            setSelectedContact: function (callback) {
+                this.invokeCtx('setSelectedContact', function (response) {
+                    callback(response);
+                },
+                    {
+                        buffer: false, nmsp: false
+                    }
+                );
+            },
+
+            saveContactId: function (contId, callback) {
+
+                this.invokeCtx('saveContactId', contId, function (response) {
+                    callback(response);
+                },
+                    {
+                        buffer: false, nmsp: false
+                    }
+                );
+            },
+
+            updatesAccountList: function (addresstype, theaccountID, callback) {
+                this.invokeCtx('updatesAccountList', addresstype, theaccountID, function (response) {
+                    callback(response);
+                },
+                    {
+                        buffer: false, nmsp: false
+                    }
+                );
+            },
+
+
+
+
+        }, CCRZ.RemoteInvocation);
+
+
+
+        /*
+        //alert(" do it here ");
+            thisPage = window.location.href;
+        // ccrz__CheckoutNew
+        //           anonymousURL = thisPage.indexOf("ccrz__CheckoutNew");
+        //          if( anonymousURL > 0 )
+        anonymousURL = thisPage.indexOf("store=");
+        if( anonymousURL == -1 )
+        {
+            var cartID = '123123123';
+            CCRZ.subsc.customActions.setPricelistFromCart(cartID,function(response){ alert("after remote call "); });
+            //alert("after remote call ");
+        }              
+        */
+
+
+    });
+
+    function displayFCAN(thisFCAN) {
+
+        //debugger;
+        console.log("ERGRewviewCartDesktop.vfp:displayFCAN");
+        var html = '<h1>' + thisFCAN + '</h1> <br/><br/>';
+
+        // form submit
+        //    html += '<form  onsubmit="updateFreightAccount(\'FreightCarrierActNbr\')"><br/><label>Freight Carrier Account Number </label>.....<input id="FreightCarrierActNbr" type="text" name="FreightCarrierActNbr" size="50" value="thisFCAN" >.....';  
+        // no form submit 
+        html += '<div><br/><label>Freight Carrier Account Number </label>.....<input id="FreightCarrierActNbr" type="text" name="FreightCarrierActNbr" size="50" value="" autofocus >';
+
+        // via button submit 
+        html += ' <br/><input type="button" value="Update Cart" onclick="updateFreightAccount(\'FreightCarrierActNbr\')" data-dismiss="modal" > </div>';
+
+        // no button submit 
+        // html += ' <input type="submit" value="Update Cart2" data-dismiss="modal" > </form>';    
+
+        document.getElementById("dynamicContent").innerHTML = html;
+
+        document.getElementById("FreightCarrierActNbr").focus();
+
+    }
+
+    function DisplayContactSelector() {
+        //document.getElementById("overlay").style.display = "block";
+        CCRZ.subsc.customActions.setSelectedContact(function (response) {
+            var html = '';
+            if (!response.success || response === undefined) {
+                html += '<tr>';
+                html += '<td colspan="4"><h1>Please select the Account First.</h1></td>';
+                html += '</tr>';
+                document.getElementById("contBody").innerHTML = html;
+            }
+            else {
+                $(response.data).each(function (index, value) {
+                    html += '<tr>';
+                    html += '<td id="fname-' + value.Id + '" data-fname="' + value.FirstName + '" data-lname="' + value.LastName + '">' + value.Name + '</td>';
+                    html += '<td>' + value.Email + '</td>';
+                    html += '<td><button type="button" class="btn btn-default" id="' + value.Id + '" onclick="saveContactId(\'' + value.Id + '\')">Select</button></td>';
+                    html += '</tr><br/>';
+                });
+                document.getElementById("contBody").innerHTML = html;
+                //alert('Success account update '+response.data);
+            }
+        });
+
+        $("#searchConts").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#contTable tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    }
+
+    function saveContactId(contId) {
+        document.getElementById("overlay-massOrder").style.display = "block";
+        $('.shippingfirstNameField').val($('#fname-' + contId).attr("data-fname"));
+        $('.shippinglastNameField').val($('#fname-' + contId).attr("data-lname"));
+        //document.getElementById("overlay").style.display = "block";
+        CCRZ.subsc.customActions.saveContactId(contId, function (response) {
+            if (!response.success || response === undefined) {
+                alert('Failed contact update ' + response.data);
+            }
+            else {
+                //alert('Success contact update '+response.data);
+            }
+            document.getElementById("overlay-massOrder").style.display = "none";
+        });
+    }
+
+    function DisplayAccountAddressSelector(addresstype) {
+        var html = '<div id="overlay">  </div>  ';
+        //        var html = '<div id="overlay"> </div> <h1> this is a '+addresstype+' address</h1> <br/><br/>';
+        //        var html = '<h1> this is a '+addresstype+' address</h1> <br/><br/>';
+
+        html += '<b>Search Value:</b> <input type="text" id="accountToSearchFor" name="accountToSearchFor">  <input type="button" class="btn btn-default btn-sm" value="Search" onclick="SearchForAccountAddress(\'' + addresstype + '\')"><br/><br/>';
+
+
+        html += '<div id="accountSelect"><select id="AccountsList" style="width:350px" > <option value="-1">Enter text above then click Search button</option></select></div>';
+
+        // via button submit 
+        //    html += ' <br/><input type="button" value="Set Address" onclick="updateAddress(\''+addresstype+'\')" data-dismiss="modal" > </form> ';    
+        //    html += ' <br/><input type="button" value="Use Selected Address"   class="btn btn-default btn-block btn-sm" onclick="updateAddress(\''+addresstype+'\')" > </form> ';    
+        html += '<br/><br/><br/><br/><br/><input type="button" value="Use Selected Address"   class="btn btn-default btn-block btn-sm" onclick="updateAddress(\'' + addresstype + '\')" > ';
+
+        document.getElementById("dynamicContent2").innerHTML = html;
+
+        //        document.getElementById("accountToSearchFor").focus();  use this to put cursor into first filed on to be created form         
+
+
+    }
+
+    function updateAddress(addresstype) {
+
+        // will need to get the current select list itme 
+        //    var theaccountid = 'bufu';
+        var theaccountid = document.getElementById("AccountsList").value;
+
+        if (theaccountid < 0) {
+
+            alert('Please perform a search and select a new address to use');
+
+            // removes gray out        
+            //        document.getElementById("overlay").style.display = "none";                   
+            //        document.getElementById("accountToSearchFor").focus();
+
+        }
+        else {
+
+            document.getElementById("overlay").style.display = "block";
+
+            // alert('In update address theaccountid='+theaccountid);
+
+            CCRZ.subsc.customActions.setSelectedAccountAddress(addresstype, theaccountid, function (response) {
+                /*    
+                    if( !response.success || response === undefined  )
+                    {
+                            alert('Failed account update '+ addresstype +' '+theaccountid+' '+response.data);
+                    }
+                    else
+                    {
+                            alert('Success account update '+ addresstype +' '+theaccountid+' '+response.data);
+                    }
+                */
+
+                // will need to refreash page
+                jumpToURL = window.location.href;
+                window.location.href = jumpToURL;
+
+            });
+
+        }
+
+    }
+
+    function SearchForAccountAddress(addresstype) {
+
+        //debugger;
+        // get the input field value to serach for 
+        var searchword = document.getElementById("accountToSearchFor").value;
+
+        var checksearchword;
+
+        checksearchword = searchword.trim();
+
+
+        if (checksearchword && checksearchword.length > 3) {
+
+            //return;
+
+            // tursn on gray out 
+            document.getElementById("overlay").style.display = "block";
+
+            //  alert( 'in SearchForAccountAddress ');
+
+            CCRZ.subsc.customActions.updatesAccountList(addresstype, searchword, function (response) {
+
+
+                if (!response.success || response === undefined) {
+                    alert(" Can not lookup up Accounts, contact system admin");
+                }
+                else {
+
+                    // make the variable an empty array 
+                    var returneddata = [];
+
+                    returneddata = response.data;
+
+
+                    var optionindex = 0;
+                    var firstone = true;
+                    var newoptions = '';
+                    var numof = 0;
+
+                    for (let [key, value] of Object.entries(returneddata)) {
+
+                        numof++;
+                        var thiskey = key;
+                        var thisvalue = value;
+                        newoptions += "<option value='" + key + "'>" + value + "</option>";
+                        optionindex++;
+                        firstone = false;
+
+                        console.log(`${key}: ${value}`);
+                    }
+
+
+                    $("#AccountsList").html(newoptions);
+
+                    // removes gray out        
+                    document.getElementById("overlay").style.display = "none";
+
+                    if (numof == 0) {
+                        alert("No matches found, try again");
+
+                        newoptions = "<option value='-1'>Enter text above then click Search button</option>";
+                        $("#AccountsList").html(newoptions);
+                    }
+
+
+                }
+
+
+            });
+
+        }
+        else {
+
+            if (checksearchword) {
+                alert(" You must enter at least 3 characters for a search value ");
+            }
+            else {
+                alert(" You must enter a search for value ");
+            }
+        }
+
+
+
+    }
+    Handlebars.registerHelper("displayCertificateLinkHelper", function(data) {
+    var isDisplayUploadTaxCert = {!isDisplayUploadTaxCertificateLinkCust};
+        if(isDisplayUploadTaxCert){
+            if(CCRZ.currentUser.UserType == 'Guest'){
+                var pageLabelValue = 'Guest_User_profile';
+                if(typeof CCRZ.pagevars.pageLabels.Guest_User_profile !== 'undefined' && CCRZ.pagevars.pageLabels.Guest_User_profile !== null && CCRZ.pagevars.pageLabels.Guest_User_profile !== '' ){
+                    pageLabelValue = CCRZ.pagevars.pageLabels.Guest_User_profile;
+                }
+                return new Handlebars.SafeString(' '+pageLabelValue);
+            }else{
+                var pageLabelValue = 'Display_Certificate_Link_CC';
+                if(typeof CCRZ.pagevars.pageLabels.Display_Certificate_Link_CC !== 'undefined' && CCRZ.pagevars.pageLabels.Display_Certificate_Link_CC !== null && CCRZ.pagevars.pageLabels.Display_Certificate_Link_CC !== '' ){
+                    pageLabelValue = CCRZ.pagevars.pageLabels.Display_Certificate_Link_CC;
+                }
+                return new Handlebars.SafeString('<a id="displayCertificateLink" href="#" onclick="openTaxExemptModal(); return false;">'+pageLabelValue+'</a>');
+            }
+        }else{
+            if(CCRZ.currentUser.UserType == 'Guest'){
+                var pageLabelValue = 'Guest_User_profile';
+                if(typeof CCRZ.pagevars.pageLabels.Guest_User_profile !== 'undefined' && CCRZ.pagevars.pageLabels.Guest_User_profile !== null && CCRZ.pagevars.pageLabels.Guest_User_profile !== '' ){
+                    pageLabelValue = CCRZ.pagevars.pageLabels.Guest_User_profile;
+                }
+                return new Handlebars.SafeString(' '+pageLabelValue);
+            }else{
+                return '';
+            }
+            
+        }
+
+    });
+
+    function openTaxExemptModal(){  
+        // debugger; 
+        populatePageLabels();   
+        $("#taxModal").show();  
+        $(".loader").show();    
+        $('#CertificateTable').hide();  
+        $('.taxCertificateFormValid').hide();   
+        $('#MyTaxCertificateUploadForm').hide();    
+        $('.manageTaxExemption').hide();    
+        var reqcheckCertificateStatus = { 'userId': '{!$User.Id}' };    
+        var ajaxData = JSON.stringify(reqcheckCertificateStatus);   
+        intilizeTaxRemoting();  
+        CCRZ.subsc = _.extend(CCRZ.subsc || {});    
+        // debugger; 
+        CCRZ.subsc.MyRemote.checkCertificateStatus(ajaxData);  
+        refreshTaxDiv(); 
+    }
+    
+    function refreshTaxDiv(){
+        //debugger;
+       $('.taxCertificateModalClose').click(function(){
+           CCRZ.cartCheckoutView.goToPosition(CCRZ.cartCheckoutView.currStep);
+        });
+    }
+    
+    /* Handlebars.registerHelper("termsAndConditions", function (currentObj) {
+        CCRZ.subsc = {};
+        $("#nonSubscriptionTerms").attr('disabled', true);
+        checkTermsAndConditions();
+        CCRZ.subsc.checkTermsAndContrionsFunction.checkTermsAndConditions();
+
+    });*/
+
+    Handlebars.registerHelper("showProceedPaymentBtn", function (currentObj, options) {
+        // debugger;
+        CCRZ.subsc = {};
+        var totalAmount = CCRZ.cartCheckoutModel.attributes.subTotal + (CCRZ.cartCheckoutModel.attributes.tax == undefined ? 0 : CCRZ.cartCheckoutModel.attributes.tax) + (CCRZ.cartCheckoutModel.attributes.shippingCharge == undefined ? 0 : CCRZ.cartCheckoutModel.attributes.shippingCharge) + (CCRZ.cartCheckoutModel.attributes.surchargeAmount == undefined ? 0 : CCRZ.cartCheckoutModel.attributes.surchargeAmount);
+        var isSubscriptionProductPresent = false;
+        for (i = 0; i < CCRZ.cartCheckoutModel.attributes.cartItems.length; i++) {
+            if ('installmentFrequency' in CCRZ.cartCheckoutModel.attributes.cartItems[i] || 'orderFrequency' in CCRZ.cartCheckoutModel.attributes.cartItems[i] || 'ignoreInstallmentFrequencyFields' in CCRZ.cartCheckoutModel.attributes.cartItems[i]) {
+                isSubscriptionProductPresent = true;
+            }
+        }
+        if (totalAmount > 0 || isSubscriptionProductPresent) {
+            this.isShown = false;
+            this.showProceedPayment = true;
+            return options.fn(this);
+        } else {
+            if (typeof {!displayPlaceOrderButton
+        } !== 'undefined' && {!displayPlaceOrderButton
+    } !== null && {!displayPlaceOrderButton}){
+        this.isShown = true;
+    }else {
+        this.isShown = false;
+    }
+    try {
+        if (typeof {!displayProceedPaymentButton
+    } !== 'undefined' && {!displayProceedPaymentButton} !== null && !{!displayProceedPaymentButton}) {
+        this.showProceedPayment = false;
+    }else {
+        this.showProceedPayment = true;
+    }
+            }catch (e) {
+        this.showProceedPayment = true;
+    }
+    return options.fn(this); 
+        }
+    return options.inverse(this);
+    });
+
+        //Handlebars.registerHelper('enableDisableContinueBtn', function (options) {
+        // debugger;
+        //acceptTermsAndConditions();
+        //});
+    Handlebars.registerHelper('isCSRMode', function (options) {
+        if (CCRZ && CCRZ.pagevars && CCRZ.pagevars.portalUserId != '') {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    });
+    
+    Handlebars.registerHelper('disableBillingFields', function (classPrefix, options) {
+    const isUserValid = typeof CCRZ !== 'undefined' &&
+                        CCRZ.currentUser &&
+                        CCRZ.currentUser.UserType !== 'Guest';
+
+    const isCartValid = CCRZ?.cartCheckoutModel?.attributes?.source === 'Ergotron';
+
+    if (classPrefix === 'billing' && isUserValid && isCartValid) {
+        if (typeof fetchStateName === 'function') {
+            fetchStateName();
+        }
+
+        if (options && typeof options.fn === 'function') {
+            return options.fn(this);
+        }
+    }
+
+    if (options && typeof options.inverse === 'function') {
+        return options.inverse(this);
+    }
+
+    return '';
+	});
+
+    Handlebars.registerHelper('showOrderReviewdit', function (options) {
+        if (CCRZ && CCRZ.pagevars && CCRZ.pagevars.portalUserId != '' || isExternalCart) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    });
+    var cartEncryptedId = CCRZ.pagevars.currentCartID;
+    /*function checkTermsAndConditions() {
+        $(".drSpinner").attr("style", "display:block;");
+        CCRZ.subsc.checkTermsAndContrionsFunction = _.extend(CCRZ.RemoteInvocation, {
+            className: 'digitalriverb2b.DROrderReviewController',
+            checkTermsAndConditions: function () {
+                this.invokeCtx('checkTermsAndConditions', cartEncryptedId,
+                    function (result, event) {
+                        if (event.status) {
+                            $(".drSpinner").attr("style", "display:none;");
+                            if (!result.data.isErrorPresent) {
+                                //debugger;
+                                //var termsData1 = unescapedHtml(result.data.termsAndConditions);
+                                //$('#termsAndCon').html($("<div/>").html(result.data.termsAndConditions).text());
+
+                                /*if(result.data.taxExemptation){
+                                    $('#taxExemptApplied').show(); 
+                                }else{
+                                    $('#taxExemptNotApplied').show();
+                                }*/
+
+    /*$("#nonSubscriptionTerms").attr('disabled', false);
+                                setTimeout(renderDRIframeTerms(result.data.termsAndConditions), 40000);
+                            } else {
+                                if (result.data.isPermissionSet) {
+                                    var termsData1 = unescapedHtml(result.data.msg);
+                                    $('#errorMessageId').html(result.data.msg);
+                                    $('#acceptTermsButton').attr('disabled', 'true');
+                                    $('#nonSubscriptionTerms').prop('checked', false);
+                                    $("#nonSubscriptionTerms").attr('disabled', true);
+                                }
+                            }
+                        } else {
+                            console.log('in else block');
+                        }
+                    },
+                    {
+                        buffer: false, //this call will be executed by itself
+                        nmsp: false, //defines that this is a call to a subscriber class
+                        timeout: 120000
+                    }
+                );//end invokeCtx call
+            }
+        });
+    }*/
+
+    /*function renderDRIframeTerms(entityName) {
+        // debugger;
+        var digitalriverjs = new DigitalRiver('9fe315028c8747f49773130e9bbae6ff');
+        if (digitalriverjs.Compliance != null && digitalriverjs.Compliance != '') {
+            //debugger;
+            var drComplianceDetail = digitalriverjs.Compliance.getDetails(entityName);
+
+            var drDisclosure = drComplianceDetail.disclosure;
+            var termsOfSales = '<a href="' + drDisclosure.privacyPolicy.url + '" target="_blank" rel="noopener noreferrer" data-auth="NotApplicable">';
+            termsOfSales += '<span style="color:#337AB7;">' + drDisclosure.privacyPolicy.localizedText + '</span>';
+            termsOfSales += '</a>';
+            var privacyPolicy = '<a href="' + drDisclosure.termsOfSale.url + '" target="_blank" rel="noopener noreferrer" data-auth="NotApplicable">';
+            privacyPolicy += '<span style="color:#337AB7;">' + drDisclosure.termsOfSale.localizedText + '</span>';
+            privacyPolicy += '</a>';
+
+            var termsHtml = '<span>';
+            termsHtml += '<a href="' + drDisclosure.resellerDisclosure.url + '" target="_blank" rel="noopener noreferrer" data-auth="NotApplicable">';
+            termsHtml += '<span style="color:#337AB7;">' + drDisclosure.businessEntity.name + '</span>';
+            termsHtml += '</a>';
+            termsHtml += ' &#160; <span>' + drDisclosure.resellerDisclosure.localizedText + '</span>';
+            termsHtml += '</span>';
+            termsHtml += '<div style="box-sizing:border-box;margin-top:3px;">';
+            termsHtml += '<span>';
+            termsHtml += '<span>';
+            termsHtml += termsOfSales + ' &#160;';
+            termsHtml += privacyPolicy;
+            termsHtml += '</span>';
+            termsHtml += '</span>';
+            termsHtml += '</div>';
+            $('#termsAndCon').html(termsHtml);
+            $('#trmsOfSales').html(termsOfSales);
+            $('#privecyPolicy').html(privacyPolicy);
+        } else {
+            $('#termsAndCon').html('Digital River Inc.is the authorized reseller and merchant of the products and services offered within this store.');
+            $('#trmsOfSales').html('<a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRPrivacyPolicyPage/eCommerceProvider.Digital+River%2C+Inc." target="_blank" rel="noopener noreferrer" data-auth="NotApplicable"><span style="color:#337AB7;">Privacy Policy</span></a>');
+            $('#privecyPolicy').html('<a href="https://store.digitalriver.com/store/defaults/en_US/DisplayDRTermsAndConditionsPage/eCommerceProvider.Digital+River%2C+Inc." target="_blank" rel="noopener noreferrer" data-auth="NotApplicable"><span style="color:#337AB7;">Terms of Sale</span></a>');
+        }
+    }*/
+    var isShowTerms = {!showTerms};
+    var taxCalculationError = {!taxCalculationError};
+    function enableDisableBtn() {
+        if ($("#taxValueSpan").length > 0) {
+            var taxHTML = $("#taxValueSpan").html();
+            taxHTML = taxHTML.replace("$", "");
+            productTaxValue = parseFloat(taxHTML);
+        }
+        if (isShowTerms) {
+            if (!taxCalculationError) {
+                if ($("#acceptTerms").is(':checked')) {
+                    $('#acceptTermsButton').removeAttr("disabled");
+                    $('#processPayments').removeAttr("disabled");
+                }
+                else {
+                    $('#acceptTermsButton').attr('disabled', 'true');
+                    $('#processPayments').attr('disabled', 'true');
+                }
+            }
+            else {
+                $('#acceptTermsButton').attr('disabled', 'true');
+                $('#processPayments').attr('disabled', 'true');
+                checkTaxCalculationMsg();
+            }
+        } else {
+            if (!taxCalculationError) {
+                $('#acceptTermsButton').removeAttr("disabled");
+                $('#processPayments').removeAttr("disabled");
+            }
+            else {
+                checkTaxCalculationMsg();
+                $('#acceptTermsButton').attr('disabled', 'true');
+                $('#processPayments').attr('disabled', 'true');
+            }
+        }
+    }
+
+    CCRZ.pubSub.on('view:OrderReviewView:refresh', function (userView) {
+        var isCsr = CCRZ.pagevars.queryParams.portalUser;
+        if (isCsr == undefined || isCsr == '')
+            if (isCsr == undefined)
+                $('.cc_addr_extId').hide();
+                enableDisableBtn();
+        let currStep  = CCRZ.cartCheckoutView.currStep;
+        let step = currStep + 1;
+        let title = CCRZ.cartCheckoutView.subViewArray[currStep].title
+        onCheckout(title, step);
+        console.log('fired Order Review');
+    });
+
+</script>
+
+<script>         
+    /*function proceedToPayments() {
+        $("#overlayDivNew").css("display", "block");
+        var cartId = CCRZ.cartCheckoutModel.attributes.sfid;
+        intilizeProcessPaymentRemoting();
+        CCRZ.subsc.processProcessPayments.proceedToPayment(cartId);
+    }*/
+
+    /*function intilizeProcessPaymentRemoting() {
+        CCRZ.subsc = _.extend(CCRZ.subsc || {});
+        CCRZ.subsc.processProcessPayments = _.extend(CCRZ.RemoteInvocation, {
+            className: 'digitalriverb2b.DROrderReviewController',
+            proceedToPayment: function (cartId) {
+                var data = { ccCartId: cartId, sourceId: '', saveCardToWallet: false, savedCardOptionName: '', isDefaultPayment: false, paymentType: '{!JSENCODE(zeroDollarPaymentType)}' };
+                this.invokeCtx('proceedToPayments', JSON.stringify(data),
+                    function (result, event) {
+                        if (event.status) {
+                            $("#overlayDivNew").css("display", "none");
+                            $("#overlayDivNew").css("display", "none");
+                            if (result.error || !result.data) {
+                                if (typeof CCRZ.pagevars.pageLabels.DR_SERVER_PAYMENT_FAILED != 'undefined') {
+                                    showMessageToast('fail', CCRZ.pagevars.pageLabels.DR_SERVER_PAYMENT_FAILED);
+                                } else {
+                                    showMessageToast('fail', 'Failed to submit payment data to DR Server.Check Error Log Object in your org.');
+                                }
+                            } else if (!result.success || typeof result.data.ERROR != 'undefined' && result.data.ERROR.length > 0) {
+                                if (typeof CCRZ.pagevars.pageLabels.Error_while_submitting_payments != 'undefined') {
+                                    showMessageToast('fail', CCRZ.pagevars.pageLabels.Error_while_submitting_payments);
+                                } else {
+                                    showMessageToast('fail', 'Got error while submitting payment.');
+                                }
+                            } else {
+                                setTimeout(function () { CCRZ.pubSub.trigger('action:processPayment', result.data['txObject']); }, 3000);
+                            }
+                        } else {
+                            if (event.type == 'exception') {
+                                if (typeof CCRZ.pagevars.pageLabels.Error_while_submitting_payments != 'undefined') {
+                                    showMessageToast('fail', CCRZ.pagevars.pageLabels.Error_while_submitting_payments);
+                                } else {
+                                    showMessageToast('fail', 'Got error while submitting payment.');
+                                }
+                            }
+                        }
+                    },
+                    {
+                        buffer: false, //this call will be executed by itself
+                        nmsp: false, //defines that this is a call to a subscriber class
+                        timeout: 120000
+                    }
+                );//end invokeCtx call
+            }
+        });
+    }*/
+
+    function showMessageToast(errorType, errorMsg) {
+        if ($("#messageDiv").length < 1) {
+            $("#overlayDivNew").before('<div id="messageDiv" class="alert alert-success fade in alert-dismissible messageDivCss"><a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a><span id="messageText"></span></div>');
+        }
+        if (errorType == 'success') {
+            $("#messageDiv").removeClass('alert-danger').addClass('alert-success');
+            $("#messageText").removeClass('alert-danger').addClass('alert-success');
+            $("#messageText").text(errorMsg);
+            $("#messageDiv").show();
+        } else {
+            $("#successMsgDiv").removeClass('alert-success').addClass('alert-danger');
+            $("#messageText").removeClass('alert-success').addClass('alert-danger');
+            $("#messageText").text(errorMsg);
+            $("#messageDiv").show();
+        }
+    }
+</script>
+
+</apex:page>

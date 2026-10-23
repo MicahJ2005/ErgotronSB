@@ -1,0 +1,91 @@
+<!--
+  @File Name          : lookup.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 1/6/2020, 3:37:09 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    1/6/2020   James Loghry (Demand Chain)     Initial Version
+-->
+<template>
+    <div class={menuDivCSS}>
+        <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+            <template if:true={displayPillContainer}>
+                <label class="slds-form-element__label">
+                    <template if:true={required}>
+                        <abbr class="slds-required" title="required">*</abbr>
+                    </template>
+                    {label}
+                </label>
+                <template if:true={helpText}>
+                    <lightning-helptext content={helpText}></lightning-helptext>
+                </template>
+
+            	<div class="slds-pill_container">
+                	<span class="slds-pill slds-size--1-of-1">
+                        <lightning-icon class="slds-pill__icon_container" icon-name={iconName} size="small"></lightning-icon>
+
+                        <template if:true={value}>
+                            <span class="slds-pill__label sl-pill__label" title={valueLabel}>{valueLabel}</span>
+                            <button class="slds-button slds-button--icon slds-pill__remove" title="Remove" onclick={handlePillClick}>
+                                <lightning-icon icon-name="utility:close" size="xx-small"></lightning-icon>
+                            </button>
+                        </template>
+
+                        <template if:false={value}>
+                            <template if:true={recordsIsEmpty}>
+                                <span class="slds-pill__label sl-pill__label" title="No Records Found">No Records Found</span>
+                            </template>
+                        </template>
+                    </span>
+                </div>
+            </template>
+
+            <template if:false={displayPillContainer}>
+                <div class="slds-form-element slds-lookup slds-is-close" data-select="single">
+                    <label class="slds-form-element__label">
+                        <template if:true={required}>
+                            <abbr class="slds-required" title="required">*</abbr>
+                        </template>
+                        {label}
+                    </label>
+
+                    <div class="slds-form-element__control">
+                        <div class="slds-input-has-icon slds-input-has-icon--right slds-show">
+                            <lightning-icon class="slds-input__icon" icon-name="utility:search" size="x-small" aura:id="searchIcon" alternative-text="search"></lightning-icon>
+                            <div>
+                                <span class="slds-icon_container  slds-combobox__input-entity-icon" title="record">
+                                    <lightning-icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default" icon-name={iconName} size="x-small" alternative-text="icon"></lightning-icon>
+                                    <span class="slds-assistive-text"></span>
+                                </span>
+                                <input onclick={handleOnFocus} onkeyup={handleOnChange} class="slds-lookup__search-input slds-input leftPaddingClass" placeholder={placeholder}></input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <template if:true={filteredRecords}>
+                    <div class="slds-lookup__menu scrollable" role="listbox">
+                        <div>
+                            <ul class="slds-lookup__list" role="listbox">
+                                <template for:each={filteredRecords} for:item="record" for:index="index">
+                                    <li role="presentation" data-index={index} onclick={handleRecordClick} key={record.Id}>
+                                        <span data-index={index} class="slds-lookup__item-action slds-media" role="option" style="width: 100%">
+                                            <lightning-icon class="slds-media__figure" icon-name={iconName} size="small"></lightning-icon>
+                                            <div class="slds-media__body">
+                                                <div class="slds-lookup__result-text">{record.Name}</div>
+                                            </div>
+                                        </span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </div>
+</template>

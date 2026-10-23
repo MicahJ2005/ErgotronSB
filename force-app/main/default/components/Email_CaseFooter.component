@@ -1,0 +1,12 @@
+<apex:component access="global">
+<!-- used in email templates to display a consistent footer -->
+    We appreciate the opportunity to support your request. 
+    If you have any questions or need more information about this order, please have your case number handy and 
+    call us at 1-800-888-8458 or <a href="mailto:customerservice@ergotron.com?subject=Order - Case">send us an Email</a> 
+    or <a href="https://home-c6.incontact.com/inContact/ChatClient/ChatClientPatron.aspx?poc=6b2a277e-e9e5-4019-a891-d1b7a9a5b1cb&bu=4592980">Chat now</a>.
+    <br/><br/>
+    Thanks,<br/>
+    Customer Care<br/>
+    Ergotron, Inc.<br/>
+    <a href="http://www.surveygizmo.com/collab/3398292/Customer-Satisfaction-Survey">Click here to tell us how we did!</a>
+</apex:component>

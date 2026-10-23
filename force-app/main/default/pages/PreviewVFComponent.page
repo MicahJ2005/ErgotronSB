@@ -1,0 +1,14 @@
+<apex:page >
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>Congratulations</h1>
+  This is your new Page
+
+    <style type="text/css">
+        table, th, 
+        td {border: 1px solid;}
+    </style>
+    
+<c:OpportunityProduct opptyId="0061M00001A26iyQAB" />
+
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

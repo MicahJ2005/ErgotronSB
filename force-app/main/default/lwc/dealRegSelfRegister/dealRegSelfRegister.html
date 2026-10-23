@@ -1,0 +1,106 @@
+<!--
+  @File Name          : dealRegSelfRegister.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 1/12/2020, 12:33:05 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    11/21/2019   James Loghry (Demand Chain)     Initial Version
+        06/11/2020     Sophia Murphy (Demand Chain)     Added handleCountryChange into .js
+-->
+<template>
+    <lightning-record-edit-form object-api-name="User" onsubmit={handleSubmit}>
+
+           <lightning-layout multiple-rows vertical-align="stretch">
+                <lightning-layout-item size="12" large-device-size="12" medium-device-size="12" small-device-size="12" padding="around-small"><h2>Contact Details</h2></lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">First Name</label>
+                    <lightning-input-field variant="label-hidden" field-name="FirstName"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Last Name</label>
+                    <lightning-input-field variant="label-hidden" field-name="LastName"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Title</label>
+                    <lightning-input-field variant="label-hidden" field-name="Title"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Company Name</label>
+                    <lightning-input-field variant="label-hidden" field-name="CompanyName"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Email</label>
+                    <lightning-input-field variant="label-hidden" field-name="Email"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Phone</label>
+                    <lightning-input-field variant="label-hidden" field-name="Phone"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="4" medium-device-size="4" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Fax</label>
+                    <lightning-input-field variant="label-hidden" field-name="Fax"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="12" medium-device-size="12" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Street</label>
+                    <lightning-input-field variant="label-hidden" field-name="Street"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">City</label>
+                    <lightning-input-field variant="label-hidden" field-name="City"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">State</label>
+                    <lightning-combobox name="state" variant="label-hidden" value={selectedState} placeholder="Select State/Province" options={provinceOptions} onchange={handleStateChange}></lightning-combobox>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Zip / Postal Code</label>
+                    <lightning-input-field variant="label-hidden" field-name="PostalCode"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Country</label>
+                    <lightning-combobox name="country" variant="label-hidden" label="Country" value={selectedCountry} placeholder="Select Country" options={countryOptions} onchange={handleCountryChange}></lightning-combobox>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Currency</label>
+                    <lightning-input-field variant="label-hidden" field-name="CurrencyIsoCode"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="horizontal-small">
+                    <label class="slds-form-element__label">Language</label>
+                    <lightning-input-field variant="label-hidden" field-name="LanguageLocaleKey"></lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="12" medium-device-size="12" small-device-size="12" padding="around-small"><h2>Password</h2></lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Password</label>
+                    <lightning-helptext content={helpText} class="customIcon"></lightning-helptext>
+                    <lightning-input required variant="label-hidden" label="Password" type="password" value={password} onchange={handlePasswordChange} ></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="6" medium-device-size="6" small-device-size="12" padding="horizontal-small">
+                    <label class="slds-form-element__label">Confirm</label>
+                    <lightning-input required variant="label-hidden" label="Confirm" type="password" value={confirm} onchange={handleConfirmChange}></lightning-input></lightning-layout-item>
+                <lightning-layout-item size="12" large-device-size="12" medium-device-size="12" small-device-size="12" padding="around-small">
+                    <template if:true={errors}>
+                        <ul>
+                            <template for:each={errors} for:item="error">
+                                <li class="error" key={error}>{error}</li>
+                            </template>
+                        </ul>
+                    </template>
+                    <template if:true={displayAlreadyExists}>
+                        <ul>
+                            <li class="error">A registered user already exists with this email address.  Please visit the <a href="../login">login</a> page.</li>
+                        </ul>
+                    </template>
+                </lightning-layout-item>
+                <lightning-layout-item padding="horizontal-small" size="12" large-device-size="12" medium-device-size="12" small-device-size="12" >
+                    <div class="buttonContainer">
+                            <button type="submit" class="btn-blue login">Submit</button>
+                            <a class="btn-blue-border login cancelbtn" href="../login">Cancel</a>
+                        </p>
+                    </div>
+                </lightning-layout-item>
+            </lightning-layout>
+    </lightning-record-edit-form>
+</template>

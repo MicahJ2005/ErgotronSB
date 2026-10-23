@@ -1,0 +1,15 @@
+<aura:component controller="Flow_ATP_Controller" >
+	<aura:attribute name="atp" type="OrderComponentWrapperClass"/>
+	<aura:attribute name="partQty" type="Integer"/>
+	<div class="slds-col--padded slds-size--1-of-1 slds-p-bottom--large">
+		<div class="slds-grid slds-box sldx-box--small slds-theme_shade">
+			<div class="slds-size--1-of-1">
+				<b> Organization Code: </b> {!atp.orgCode}<br/>
+				<b> Available QTY: </b> {!atp.netOH}<br/>
+				<b> Sales Qty: </b> {!atp.salesQty}<br/>
+				<b> Available Qty within a week: </b> {!atp.supplyQty}<br/> 
+				<ui:inputNumber label="QTY: " value="{!v.partQty}"/>
+			</div>
+		</div>
+	</div>
+</aura:component>

@@ -1,0 +1,319 @@
+<!--
+  @description       : 
+  @author            : Unknown
+  @group             : 
+  @last modified on  : 09-05-2020
+  @last modified by  : Manoj Kumar
+  Modifications Log 
+  Ver   Date         Author         Modification
+  1.0   09-04-2020  Unknown   Initial Version
+-->
+<apex:page docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false"  controller="CC_ERG_ctrl_PDP">
+	<script id="ERGProductListRow" type="text/template"> 
+    
+  <div class="cc_product_item cc_row_item">
+   <div class="panel panel-default cc_panel">
+    <div class="panel-body cc_body"> 
+     <div class="messagingSection-Warning-{{this.sfid}}" style="display: none"></div>
+     <div class="messagingSection-Info-{{this.sfid}}" style="display: none"></div>
+     <div class="messagingSection-Error-{{this.sfid}}" style="display: none"></div>
+     
+    
+     <div class="cc_product_item_row row">
+         
+         
+      
+         
+     <!-- Title col 1 -->
+     <div class="col-xs-6" > 
+       <!-- title -->
+       <p class="cc_product_link">
+        {{#if this.alternateName}}
+         {{productLink this 'cc_product_name' text=this.alternateName}}
+        {{else}}
+         {{productLink this 'cc_product_name' text=this.sfdcName}}
+        {{/if}}
+        <br>SKU: {{this.SKU}}
+       </p>
+        </div>
+
+        <!-- col 2  quantity form --> 
+         <div class="col-xs-2">  
+       
+       {{#ifDisplay 'PL.DsplAddCart'}}
+        {{#unless this.showNewSubscriptionSelection}}
+         {{#if this.canAddtoCart}}
+          {{> productQuantityControls}}
+          <div class="action cc_action wishFinder row">
+           <div class="cc_add_to col-xs-12 col-md-6 form-group">
+           </div>
+          </div>
+         {{/if}}
+        {{/unless}}
+       {{/ifDisplay}}
+        
+        </div>
+        
+        
+		<!-- col 3 price -->
+		<div class="col-xs-2">
+        	<div class="cc_price_container cc_row_price_info">
+    	    {{>priceDisplay}}
+	        </div>
+        </div>
+         
+            
+       <!-- col 4  buttons-->
+      <div class="col-xs-2">
+         <!-- add to cart button -->
+		<button class="btn btn-default btn-block btn-sm cc_add_to_btn cc_add_to_btn_{{this.sfid}}" role="button">{{pageLabelMap 'ProductList_AddToCart'}}</button>
+		<!-- <button class="btn btn-default btn-block btn-sm " role="button">Availability</button> -->
+<!--         <Br><a  href="#warehousebutton"  onclick="warehouserequest('LTSC20WH/SM', 'hardcoded data');" style="text-decoration: none; margin: 0; padding: 0;"  id="additionalInfoLink" data-toggle="modal"><button class="btn btn-default btn-block btn-sm " role="button" >Availability</button></a> -->
+       <Br/><a  href="#warehousebutton"  onclick="warehouserequest('{{this.SKU}}', '{{this.sfdcName}}', '{{this.sfid}}');" style="text-decoration: none; margin: 0; padding: 0;"  id="additionalInfoLink" data-toggle="modal"><button class="btn btn-default btn-block btn-sm " role="button" >Availability</button></a>
+            
+            
+            
+	</div>
+       
+     </div>  <!-- end of action row -->
+
+        
+        
+        
+     <div class="cc_product_item_row row ">
+       {{#ifDisplay 'PL.DsplShortDesc'}}
+        <div class = " description cc_desc col-xs-12">
+         {{unescape shortDesc}} <Br>
+        </div>
+       {{/ifDisplay}}
+     </div>  <!-- end of description row -->  
+
+       
+       
+       
+    </div>
+  </div>
+</div>    
+ <hr style="color:blue;"> 
+ 
+       
+</script>    
+    
+    
+    
+    <script type="text/javascript">
+        jQuery(function ($) {
+            CCRZ.pubSub.on('view:productListPageView:refresh', function(plpView){
+                if((CCRZ.pagevars.portalUserId=='' || CCRZ.pagevars.portalUserId== undefined) && CCRZ.pagevars.currentPageName == 'ccrz__ProductList' ) {
+                    let myActLink =CCRZ.pagevars.currSiteURL+"/ccrz__MyAccount" + CCRZ.buildQueryString('?viewState=viewOrders&welcome=true')
+                    location.href = myActLink;
+                }
+            });
+        });    
+        CCRZ.uiProperties.productListPageView.productItem.list.tmpl = 'ERGProductListRow'; 
+    
+    </script>    
+    
+    
+    <!--  start of modal popup -->
+    
+<!--  start of button modal div   aria-hidden="true" --> 
+       <div id="warehousebutton" class="modal fade cc_modal" tabindex="-1" role="dialog" aria-labelledby="displaywarehouselocation" aria-hidden="true">
+          
+         <div class="modal-dialog cc_modal-dialog" role="document">
+          <div class="modal-content cc_modal-content">
+
+           <div class="modal-header cc_modal-header">
+	            <button type="button" class="close cc_close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">X</span></button>
+	            <h3 class="cc_prod_list_item_label" id="displaywarehouselocation"> Warehouse Location(s) of Product</h3>
+           </div>
+
+           <div class="modal-body cc_body">
+ 
+               <center>
+               
+                   <div id="dynamicContent"> 
+                       <br/><br/><br/><br/><br/>
+                       <span style="display: inline-block; padding: 10px 0px;">Checking Warehouse Availability...</span>
+                       
+                        <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                            <div style="display: inline-block; padding: 2px; background-color: #fff;   text-align: center">
+                                <img src="/auraFW/resources/aura/images/spinner.gif" style="float: left; margin: 8px;" />
+                            </div>
+                        </div>
+                       
+                  </div>
+              </center>
+               
+             </div>
+
+          </div>
+         </div>
+
+        </div>
+                
+<!-- button modal  end --> 
+
+
+   
+  
+    
+<script type="text/javascript">
+    
+jQuery(function ($) {
+    //	debugger;
+    CCRZ.subsc = _.extend(CCRZ.subsc || {});
+
+    CCRZ.subsc.customActions = _.extend({
+	className: 'CC_ERG_ctrl_PDP',
+	doATPForStore: function (SKU, callback) {
+	    this.invokeCtx('doATPForStore', SKU, function (response) {
+		    callback(response);
+		},
+		{
+		    buffer: false, nmsp: false
+		}
+	    );
+	},
+
+	updatecart: function (location, SKU, qty, callback) {
+	    this.invokeCtx('updatecart', location, SKU, qty, function (response) {
+		    callback(response);
+		},
+		{
+		    buffer: false, nmsp: false
+		}
+	    );
+        
+	},                
+
+    }, CCRZ.RemoteInvocation);
+    
+    
+    //var pl_and_ordertype = 'Ordertype = '+{!theOrderType};
+    //var pl_and_ordertype = 'Ordertype = '+{!theOrderType}+' Pricelist = '+{!thePriceList};
+    var pl_and_ordertype = 'Ordertype = {!theOrderType} &nbsp;&nbsp;&nbsp;Pricelist = {!thePriceList}';
+    
+    
+    
+    //    document.getElementById("PLOT").innerHTML = 'updatea data here' ;
+    document.getElementById("PLOT").innerHTML = pl_and_ordertype;
+    
+  
+    
+    
+});
+
+function warehouserequest(SKU,ProductName,sfid) {
+  CCRZ.subsc.customActions.doATPForStore(SKU, function(response){
+      
+      var html = '<h1>'+ProductName+'<br><br>SKU: '+SKU+'</h1>';
+      var number_returned=0;
+      
+      var input_field_id = sfid+'_qtyEntry';
+      var qnty = document.getElementById(input_field_id).value;
+      //      alert("qnty = "+qnty);
+      
+      // debugger;
+      
+ 	  if( !response.success || response === undefined  )
+      {
+		number_returned=0;
+      }
+      else
+	  {
+          
+        if( response.data === undefined || response.data.atpresult === undefined )
+        {
+			number_returned=0;
+        }
+        else
+        {
+            number_returned=response.data.atpresult.length;
+        }
+	  }     
+
+      if( number_returned > 0 )
+      {
+	      html += '<form><table border="0" id="warehousecontent"><tr> <td><B>Location</b></td> <td><B>Quantity on Hand</b></td></tr>';
+          for(var cnt = 0; cnt < response.data.atpresult.length; cnt++){
+            html += '<tr> <td><input type="radio" name="location" value="' + response.data.atpresult[cnt].ORGANIZATION_CODE + '">'+ response.data.atpresult[cnt].ORGANIZATION_CODE +'</td><td>' + response.data.atpresult[cnt].QTY_AVAIL + '</td> </tr>';
+          }
+		  html += '</table><Br><Br>   <input type="button" value="Update Cart" onclick="FormAction(\''+SKU+'\',\''+qnty+'\')" data-dismiss="modal" > </form>';
+      }
+      else
+      {
+          html += '<b>This item is not currently found in any warehouse.</b><br/><br/> Please contact the help desk';
+      }
+ 
+      document.getElementById("dynamicContent").innerHTML = html;
+      
+      
+  });
+}
+
+    
+$('#warehousebutton').on('hidden.bs.modal', function () {
+    
+    var html='<br/><br/><br/><br/><br/>\
+<span style="display: inline-block; padding: 10px 0px;">Checking Warehouse Availability ...</span>\
+                       \
+<div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">\
+<div style="display: inline-block; padding: 2px; background-color: #fff;   text-align: center">\
+<img src="/auraFW/resources/aura/images/spinner.gif" style="float: left; margin: 8px;" />\
+</div>\
+</div>\
+';    
+    
+          document.getElementById("dynamicContent").innerHTML = html;
+    
+});    
+    
+
+function FormAction(SKU,qnty) {
+ 
+    var ele = document.getElementsByName('location');
+    var selected_location = 'default';
+    
+    var cartId = CCRZ.headerModel.attributes.cartId;    
+    
+    //var qnty = '1';
+    
+    // get the selected location radio button
+    for(i = 0; i < ele.length; i++) {
+            if(ele[i].checked)
+            {
+                   selected_location = ele[i].value;            
+                   CCRZ.subsc.customActions.updatecart(selected_location,SKU,qnty, function(response){  
+					   CCRZ.pubSub.trigger('cartChange', CCRZ.pagevars.currentCartID);                       
+                       //  CCRZ.cartView.update();
+                       //alert("updatecart response 2= "+response.data.key1+" "+response.data.key2);  
+             });
+        }
+    }
+
+    //CCRZ.pubSub.trigger('cartChange', CCRZ.pagevars.currentCartID);                       
+    //CCRZ.productListPageView.render();
+    //CCRZ.cartView.update();
+    
+    // may need another spinner
+    //    location.reload();  
+
+    // these are supposed to update but they don't    
+    //CCRZ.cartView.update();
+    //CCRZ.headerView.update();    
+    
+
+ 
+}
+
+    
+    
+</script>   
+    
+    
+    
+    
+    
+    
+</apex:page>

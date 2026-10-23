@@ -1,0 +1,29 @@
+<apex:page showHeader="true" sidebar="true" standardController="Sales_Order__c" extensions="Sales_Order_SRAttachController">
+	
+	<apex:sectionHeader title="Sales Order" subtitle="Attach Sales Order to Service Request" />
+
+	<apex:form >
+
+		<apex:pageMessage severity="info" strength="3" summary="This Sales Order is not connected to an SR." rendered="{!Sales_Order__c.Service_Request__c == NULL}" /><br/>
+
+		<apex:pageBlock title="Attachment Information">
+			<apex:pageBlockButtons location="top">
+				<apex:commandButton id="cmdCancel" value="Cancel" action="{!cancel}" />
+				<apex:commandButton id="cmdAttach" value="Attach SO to SR" action="{!prSR}" rendered="{!Sales_Order__c.Service_Request__c != NULL}" />
+			</apex:pageBlockButtons>
+			<apex:pageBlockSection columns="1" rendered="{!Sales_Order__c.Service_Request__c != NULL}">
+				<apex:pageBlockSectionItem >
+					<apex:outputText value="Name of SR Attachment" />
+					<apex:inputText value="{!strAttachmentName}" />
+				</apex:pageBlockSectionItem>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+
+		<apex:inputHidden value="{!Sales_Order__c.Id}" />
+		<apex:inputHidden value="{!Sales_Order__c.Service_Request__c}" />
+		<apex:inputHidden value="{!Sales_Order__c.Name}" />
+		<apex:inputHidden value="{!Sales_Order__c.Order_Type__c}" />
+
+	</apex:form>
+
+</apex:page>

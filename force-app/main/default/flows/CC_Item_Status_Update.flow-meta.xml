@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Update_Error</name>
+        <label>Update Error</label>
+        <locationX>1095</locationX>
+        <locationY>908</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>esau.sanchez@ergotron.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>CC Item Status Update Error</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Found_CC_Item</name>
+        <label>Found CC Item</label>
+        <locationX>882</locationX>
+        <locationY>678</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Found_CC_Item_output</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CC_Item.Id</leftValueReference>
+                <operator>WasSet</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CC_Item_Status_Update</targetReference>
+            </connector>
+            <label>Found CC Item</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Found_Order_Line_Item</name>
+        <label>Found Order Line Item</label>
+        <locationX>561</locationX>
+        <locationY>436</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Found_OLI</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Order_Line_Item.Id</leftValueReference>
+                <operator>WasSet</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Sales_Order_Line</targetReference>
+            </connector>
+            <label>Found OLI</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Found_SOL</name>
+        <label>Found SOL</label>
+        <locationX>562</locationX>
+        <locationY>847</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>YesFoundSOL</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Sales_Order_Line.Id</leftValueReference>
+                <operator>WasSet</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CC_Item</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description>Added YotpoShipDate field</description>
+    <formulas>
+        <description>Stores the object identifier for the Sales Order Line object.</description>
+        <name>objectId</name>
+        <dataType>String</dataType>
+        <expression>LEFT({!Get_Sales_Order_Line_Object_Id.Id},3)</expression>
+    </formulas>
+    <formulas>
+        <description>Mapping of statuses from Order Line Item Status to CC Order Item Status (ccrz__OrderItemStatus__c)</description>
+        <name>statusMap</name>
+        <dataType>String</dataType>
+        <expression>CASE ({!Order_Line_Item.Status__c},
+&quot;Cancelled&quot;, &quot;Cancelled&quot;,
+&quot;Closed&quot;, &quot;Shipped&quot;,
+&quot;Booked&quot;, &quot;In Process&quot;,
+&quot;Awaiting Invoice Interface - On Hold&quot;, &quot;On Hold&quot;,
+TEXT({!CC_Item.ccrz__OrderItemStatus__c})
+)</expression>
+    </formulas>
+    <formulas>
+        <description>If the status is &apos;shipped&apos;, set to currentDate</description>
+        <name>YotpoShippedDateFormula</name>
+        <dataType>Date</dataType>
+        <expression>IF({!Order_Line_Item.Status__c} =  &apos;Closed&apos;, {!$Flow.CurrentDate}, null)</expression>
+    </formulas>
+    <interviewLabel>CC Item Status Update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>CC Item Status Update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>CC_Item</name>
+        <label>CC Item</label>
+        <locationX>726</locationX>
+        <locationY>676</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Found_CC_Item</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Sales_Order_Line.CC_Order_Item__r.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ccrz__E_OrderItem__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Sales_Order_Line_Object_Id</name>
+        <label>Get Sales Order Line Object Id</label>
+        <locationX>390</locationX>
+        <locationY>244</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Order_Line_Item</targetReference>
+        </connector>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Sales_Order_Line__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Order_Line_Item</name>
+        <label>Order Line Item</label>
+        <locationX>569</locationX>
+        <locationY>245</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Found_Order_Line_Item</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Orig_Sys_Line_Ref__c</field>
+            <operator>StartsWith</operator>
+            <value>
+                <elementReference>objectId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Order_Line_Item__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Sales_Order_Line</name>
+        <label>Sales Order Line</label>
+        <locationX>570</locationX>
+        <locationY>671</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Found_SOL</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Order_Line_Item.Orig_Sys_Line_Ref__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Sales_Order_Line__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Updates the status on the CC Order Item record based on the status of the Order Line Item (Oracle order line).</description>
+        <name>CC_Item_Status_Update</name>
+        <label>CC Item Status Update</label>
+        <locationX>1096</locationX>
+        <locationY>676</locationY>
+        <faultConnector>
+            <targetReference>Update_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>CC_Item.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>YotpoShippedDate__c</field>
+            <value>
+                <elementReference>YotpoShippedDateFormula</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ccrz__OrderItemStatus__c</field>
+            <value>
+                <elementReference>statusMap</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ccrz__E_OrderItem__c</object>
+    </recordUpdates>
+    <start>
+        <locationX>263</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Get_Sales_Order_Line_Object_Id</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

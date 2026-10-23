@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="urn:metadata.tooling.soap.sforce.com" fqn="partquickentry">
+    <apiVersion>51.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Parts Entry for WO</masterLabel>
+    <description>This component allows users to add parts on Work Order</description>
+    <targets>
+      <target>lightning__RecordPage</target>
+      <target>lightning__FlowScreen</target>
+    </targets>
+</LightningComponentBundle>

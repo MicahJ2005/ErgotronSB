@@ -1,0 +1,95 @@
+<!-- Confirmation page for submitting seed unit orders -->
+<apex:page standardController="Seed_Unit_Order__c" extensions="Seed_Unit_Order_Confirmation_Controller" docType="html-5.0">
+	<apex:includeScript value="{!$Resource.jQuery1111}" />
+
+    <script type="text/javascript">    
+        var j$ = jQuery.noConflict();
+
+	    function disableButtons()
+	    {    
+            j$("#divLoading").show();
+            j$("input[type='button']").prop({disabled: true});
+            j$("input[type='submit']").prop({disabled: true});
+	    }
+
+	    function enableButtons()
+	    {
+            j$("#divLoading").hide();
+            j$("input[type='button']").prop({disabled: false});
+            j$("input[type='submit']").prop({disabled: false});           
+	    }
+    </script>
+
+	<apex:form id="mainForm">
+		<apex:pageMessage severity="info" strength="3" summary="{!$Label.Seed_Order_Confirmation}" /><br/>
+		<apex:pageMessages id="pageMessages"/>
+		<apex:actionStatus id="submittingOrder" onstart="disableButtons()" onstop="enableButtons()" />
+		<!-- Submit/Cancel Buttons -->
+		<apex:commandButton action="{!orderConfirmationSubmit}" value="Submit Seed Order" id="btnSubmit" status="submittingOrder" rerender="btnSubmit,btnCancel,btnEdit,btnEditShipTo,divLoading,pageMessages"/>&nbsp;&nbsp;
+		<apex:commandButton action="{!cancel}" value="Cancel" id="btnCancel"/><br/><br/>
+
+	   	<div id="divLoading" align="center" style="display: none;">
+	       	<div style="color:red; font-style:italic"><img  src="{!$Resource.loadingimg}" />&nbsp;&nbsp;Submitting Order Details...</div>
+	   	</div>
+	
+		<apex:outputText style="font-family: Arial,Helvetica,sans-serif; font-size: 11px; color: #0066cc; font-weight:bold;" rendered="{!bApprovalRequired}" value="{!$Label.Seed_Approval_Required_Confirmation}"/><br/><br/>
+		
+		<apex:pageblock title="Seed Unit Order Details">
+			<apex:commandButton action="{!editOrderDetails}" value="Edit Order Details" id="btnEdit"/><br/>
+			<apex:pageBlockSection columns="1" collapsible="false" >
+				<apex:outputField value="{!Seed_Unit_Order__c.Salesrep__c}" />
+				<apex:outputField rendered="{!bApprovalRequired}" value="{!Seed_Unit_Order__c.Approver__c}" />
+				<apex:outputField value="{!Seed_Unit_Order__c.Seed_Unit_Location_Type__c}" />
+				<apex:outputField value="{!Seed_Unit_Order__c.Opportunity__r.Account.Name}" label="End User" />
+				<apex:outputField value="{!Seed_Unit_Order__c.Ship_To_Account__r.Name}" label="Ship To Customer"/>
+				<apex:outputField value="{!Seed_Unit_Order__c.Ship_To_Contact__c}" />
+				<apex:outputField value="{!Seed_Unit_Order__c.Requested_Ship_Date__c}" />
+				<apex:outputField value="{!Seed_Unit_Order__c.Internal_Notes_To_Customer_Care__c}" />
+				<apex:outputField rendered="{!bApprovalRequired}" value="{!Seed_Unit_Order__c.Ineligible_Product_Justification_Long__c}" />
+				<apex:outputField value="{!Seed_Unit_Order__c.Seed_Type__c}" />
+
+				<!-- Hidden fields used by the controller extension -->
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Address1__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Address2__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Address3__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Address4__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Org_Id__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Sold_To_Salesforce_Id__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Salesforce_Id__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Opportunity__r.Account.Id}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_County__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Address__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Country__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_City__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_County__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_State_Province__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Postal_Code__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Sold_To_Party_Id__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Sold_To_Party_Name__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Sold_To_Org_Id__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Contact_First_Name__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Contact_Last_Name__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Contact_Phone__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Contact_Email__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.ORIG_SYS_DOCUMENT_REF__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Contact_Role_Id__c}" />
+	 			<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Opportunity__r.Account.BillingStreet}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Opportunity__r.Account.BillingCity}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Opportunity__r.Account.BillingStateCode}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Opportunity__r.Account.BillingPostalCode}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Opportunity__r.Account.BillingCountryCode}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Customer_Account_Id__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Party_Id__c}" />
+				<apex:outputField rendered="false" value="{!Seed_Unit_Order__c.Ship_To_Party_Name__c}" />
+			</apex:pageBlockSection>
+		</apex:pageblock>
+
+		<apex:pageblock title="Ship To Location Details">
+			<apex:commandButton action="{!selectShipTo}" value="Edit Ship To Location" id="btnEditShipTo"/><br/>
+			<apex:pageBlockSection columns="1" collapsible="false" >
+				<apex:outputField value="{!Seed_Unit_Order__c.Ship_To_Address__c}" />
+			</apex:pageBlockSection>
+		</apex:pageblock>
+	</apex:form>
+	<apex:relatedList list="Seed_Unit_Products__r" />
+</apex:page>

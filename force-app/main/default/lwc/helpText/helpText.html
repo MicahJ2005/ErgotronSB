@@ -1,0 +1,21 @@
+<!--
+  @File Name          : helpText.html
+  @Description        : 
+  @Author             : James Loghry (Demand Chain)
+  @Group              : 
+  @Last Modified By   : James Loghry (Demand Chain)
+  @Last Modified On   : 12/19/2019, 2:06:34 PM
+  @Modification Log   : 
+  Ver       Date            Author      		    Modification
+  1.0    12/19/2019   James Loghry (Demand Chain)     Initial Version
+-->
+<template>
+    <div class="helpTextContainer"  onmouseover={handleMouseOver} onmouseout={handleMouseOut}>
+        <a href="javascript:void(0)" aria-describedby="help">
+            <lightning-icon icon-name="utility:info" size="x-small"></lightning-icon>
+        </a>
+        <div class={css} role="tooltip">
+          <div class="slds-popover__body">{content}</div>
+        </div>
+      </div>
+</template>

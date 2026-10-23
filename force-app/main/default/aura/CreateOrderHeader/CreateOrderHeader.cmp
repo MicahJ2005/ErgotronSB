@@ -1,0 +1,121 @@
+<aura:component controller="Flow_ATP_Controller">
+	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
+	<aura:attribute name="orderId" type="String"/>
+	<aura:attribute name="ponum" type="String" default="UNKNOWN"/>
+	<aura:attribute name="oType" type="String"/>
+	<aura:attribute name="billTo" type="String"/>
+	<aura:attribute name="shipTo" type="String"/>
+    <aura:attribute name="shipToContact" type="String"/>
+	<aura:attribute name="addbillTo" type="String"/>
+	<aura:attribute name="addshipTo" type="String"/>
+	<aura:attribute name="notes" type="String"/>
+	<aura:attribute name="caseId" type="String"/>
+	<aura:attribute name="bName" type="String"/>
+	<aura:attribute name="sName" type="String"/>
+	<aura:attribute name="lstBillTos" type="Account[]"/>
+	<aura:attribute name="lstShipTos" type="Account[]"/>
+	<aura:attribute name="lstAddBillTos" type="Account[]"/>
+	<aura:attribute name="lstAddShipTos" type="Account[]"/>
+	<aura:attribute name="defAcct" type="String"/>
+	<aura:attribute name="lstOrderTypes" type="Oracle_Order_Type__c[]"/>
+	<aura:attribute name="errorMessage" type="String"/>
+	<aura:attribute name="olines" type="HelperATPData[]"/>
+    <aura:attribute name="objCase" type="Case" />
+    <aura:attribute name="lstSTContacts" type="Contact[]" />
+    
+	<div class="slds">
+		<div aura:id="mySpinner" class="slds-hide">
+			<div class="slds-spinner_container">
+				<div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+					<span class="slds-assistive-text">Loading</span>
+					<div class="slds-spinner__dot-a"></div>
+					<div class="slds-spinner__dot-b"></div>
+				</div>
+			</div>
+		</div>
+		<div>
+			<div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium" aura:id="ordertypelist">
+				<ui:inputSelect label="Please Select the correct Order Type: " value="{!v.oType}">
+					<ui:inputSelectOption text="" label="--- Please Select Order Type ---"/>
+					<aura:iteration items="{!v.lstOrderTypes}" var="ot">
+						<ui:inputSelectOption text="{!ot.Name}" label="{!ot.Name}"/>
+					</aura:iteration>
+				</ui:inputSelect>
+			</div>
+			<div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium" aura:id="BillTolist">
+				<ui:inputSelect label="Select the correct Bill To Address: " value="{!v.billTo}" change="{!c.allowMoreBillTos}">
+					<ui:inputSelectOption text="" label="--- Please Select Address ---"/>
+					<aura:iteration items="{!v.lstBillTos}" var="ab">
+						<ui:inputSelectOption text="{!ab.Id}" label="{!ab.Display_BT_ST_Address__c}"/>
+					</aura:iteration>
+					<ui:inputSelectOption text="searchBill" label="Search For Different Bill to"/>
+				</ui:inputSelect>
+			</div>
+
+
+			<div aura:id="enterbill" class="slds-hide">
+				<div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium">
+					<ui:inputText label="Enter Account Name: " value="{!v.bName}"/>
+				</div>
+				<div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium">
+					<ui:button label="Search"  press="{!c.getmoreBillTos}"/>
+				</div>
+				<div aura:id="selectadditonalbill" class="slds-hide slds-p-top_medium slds-p-left_medium slds-p-right_medium">
+					<ui:inputSelect label="Select the Bill To Address: " value="{!v.addbillTo}">
+						<ui:inputSelectOption text="" label="--- Please Select Address ---"/>
+						<aura:iteration items="{!v.lstAddBillTos}" var="aab">
+							<ui:inputSelectOption text="{!aab.Id}" label="{!aab.BillingStreet}"/>
+						</aura:iteration>
+					</ui:inputSelect>
+				</div>
+			</div>
+
+
+			<div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium" aura:id="ShipTolist">
+				<ui:inputSelect aura:id="ShipToListPicker" label="Select the correct Ship To Address: " value="{!v.shipTo}" change="{!c.allowMoreShipTos}">
+					<ui:inputSelectOption text="" label="--- Please Select Address ---"/>
+					<aura:iteration items="{!v.lstShipTos}" var="as">
+						<ui:inputSelectOption text="{!as.Id}" label="{!as.Display_BT_ST_Address__c}"/>
+					</aura:iteration>
+					<ui:inputSelectOption text="searchShip" label="Search For Different Ship to"/>
+				</ui:inputSelect>
+			</div>
+            
+			<div aura:id="entership" class="slds-hide">
+				<div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium">
+					<ui:inputText label="Enter Account Name: " value="{!v.sName}"/>
+				</div>			
+				<div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium">				
+					<ui:button label="Search" press="{!c.getmoreShipTos}"/>
+				</div>
+				<div aura:id="selectadditonalShip" class="slds-hide slds-p-top_medium slds-p-left_medium slds-p-right_medium">
+					<ui:inputSelect label="Select the Ship To Address: " value="{!v.addshipTo}" change="{!c.searchForBTContacts}">
+						<ui:inputSelectOption text="" label="--- Please Select Address ---"/>
+						<aura:iteration items="{!v.lstAddShipTos}" var="aas">
+							<ui:inputSelectOption text="{!aas.Id}" label="{!aas.BillingStreet}"/>
+						</aura:iteration>
+					</ui:inputSelect>
+				</div>
+			</div>
+
+            <div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium" aura:id="ShipToContactList">
+				<ui:inputSelect label="Select the correct Ship To Contact: " value="{!v.shipToContact}">
+					<ui:inputSelectOption text="" label="--- Please Select Contact ---"/>
+					<aura:iteration items="{!v.lstSTContacts}" var="as">
+						<ui:inputSelectOption text="{!as.Id}" label="{!as.Order_Component_Display__c}"/>
+					</aura:iteration>
+				</ui:inputSelect>
+			</div>
+
+			<div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium">
+				<ui:inputText label="PO Number: " value="{!v.ponum}"/>
+			</div>
+			<div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium">
+				<ui:inputTextArea label="Notes: " value="{!v.notes}"/>
+			</div>
+			<div class="slds-p-top_medium slds-p-left_medium slds-p-right_medium">
+				<ui:button label="Process Order" press="{!c.submitOrder}" />
+			</div>
+		</div>
+	</div>
+</aura:component>

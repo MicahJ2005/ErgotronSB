@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Execute email alert &quot;RhythmConnect Issue Notification&quot; using email template RhythmConnectAlert</description>
+        <name>Rhythm_Case_Notification</name>
+        <label>Rhythm Case Notification</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <actionName>Case.RhythmConnect_Issue_Notification</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Case.RhythmConnect_Issue_Notification</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Double checking that the case was created by the RhythmConnect user</description>
+        <name>Evaluate_Created_By</name>
+        <label>Evaluate Created By</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Created_by_RhythmConnect</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.CreatedBy.LastName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>RhythmConnect</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Rhythm_Case_Notification</targetReference>
+            </connector>
+            <label>Created by RhythmConnect</label>
+        </rules>
+    </decisions>
+    <description>Flow to control email alerts for cases with &quot;RhythmConnect&quot; as Case Origin.</description>
+    <environments>Default</environments>
+    <interviewLabel>RhythmConnect Issue Notification {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RhythmConnect Issue Notification</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Evaluate_Created_By</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Origin</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>RhythmConnect</stringValue>
+            </value>
+        </filters>
+        <object>Case</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

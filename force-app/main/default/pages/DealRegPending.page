@@ -1,0 +1,116 @@
+<apex:page id="DealRegPending" docType="html-5.0" standardStylesheets="true" showHeader="true" sidebar="true" standardController="Lead" extensions="Deal_Reg_Pending_Cntrl" >
+	<style>	
+		.outputText {
+			padding-left: 40px;
+			font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;
+		}
+		.outputTextList {
+			font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;
+		}
+		.link {
+			font:bold 11px/16px Verdana,Arial,Helvetica,sans-serif;	
+		}
+
+		.form {
+			margin-top: 5px;
+			height: 600px;
+		}
+	</style>	
+	<apex:form id="formMain" styleClass="form">
+		<apex:outputText styleClass="outputText" value="{!$Label.Deal_Registration_No_Pending}" rendered="{!!bDisplayList}" />
+		<apex:outputText styleClass="outputTextList" value="{!$Label.Deal_Registration_Pending_Message}" rendered="{!bDisplayList}" />
+		<apex:pageBlock id="mainPageBlock" rendered="{!iNumberOfPages>0}">
+			<apex:panelGrid columns="5">
+				<apex:outputText value="{!$Label.Page_Number_Of}">
+					<apex:param value="{!iPageNumber}" />
+					<apex:param value="{!iNumberOfPages}" />
+				</apex:outputText>
+				<apex:commandLink action="{!first}" rendered="{!bDisplayFirst}">{!$Label.First}</apex:commandlink>
+                        <apex:commandLink action="{!previous}" rendered="{!bHasPrevious}">{!$Label.Previous}</apex:commandlink>
+                        <apex:commandLink action="{!next}" rendered="{!bHasNext}">{!$Label.Next}</apex:commandlink>
+                        <apex:commandLink action="{!last}" rendered="{!bDisplayLast}">{!$Label.Last}</apex:commandlink>
+                  </apex:panelGrid>
+
+			<apex:pageBlockTable id="pageBlockTableLeads" value="{!listLeads}" var="lead">           	
+                        <apex:column >
+                              <apex:facet name="header">
+                                    <apex:outputText value=" " />
+                              </apex:facet>
+                              <apex:outputLink value="/dealregistration/dealregview?Id={!lead.Id}">{!$Label.View}</apex:outputLink>
+                        </apex:column>
+                        <apex:column >
+                  		<apex:facet name="header">
+                  			<apex:commandLink value="{!$Label.End_User_Company}" action="{!toggleSort}" rerender="mainPageBlock" style="text-decoration:underline;">
+                  				<apex:param name="sortField" value="Company" assignTo="{!sSortField}" />
+                  			</apex:commandLink>
+                  		</apex:facet>
+                  		<apex:outputField value="{!lead.Company}" />
+                  	</apex:column>
+                  	<apex:column >
+                  		<apex:facet name="header">
+                  			<apex:commandLink value="{!$Label.Name}" action="{!toggleSort}" rerender="mainPageBlock" style="text-decoration:underline;">
+                  				<apex:param name="sortField" value="Name" assignTo="{!sSortField}" />
+                  			</apex:commandLink>
+                  		</apex:facet>
+                  		<apex:outputField value="{!lead.Name}" />
+                  	</apex:column>
+                  	<apex:column >
+                  		<apex:facet name="header">
+                  			<apex:commandLink value="{!$ObjectType.Lead.Fields.Phone.Label}" action="{!toggleSort}" rerender="mainPageBlock" style="text-decoration:underline;">
+                  				<apex:param name="sortField" value="Phone" assignTo="{!sSortField}" />
+                  			</apex:commandLink>
+                  		</apex:facet>
+                  		<apex:outputField value="{!lead.Phone}" />
+                  	</apex:column>
+                  	<apex:column >
+                  		<apex:facet name="header">
+                  			<apex:commandLink value="{!$ObjectType.Lead.Fields.Email.Label}" action="{!toggleSort}" rerender="mainPageBlock" style="text-decoration:underline;">
+                  				<apex:param name="sortField" value="Email" assignTo="{!sSortField}" />
+                  			</apex:commandLink>
+                  		</apex:facet>
+                  		<apex:outputField value="{!lead.Email}" />
+                  	</apex:column>
+                  	<apex:column >
+                  		<apex:facet name="header">
+                  			<apex:commandLink value="{!$ObjectType.Lead.Fields.City.Label}" action="{!toggleSort}" rerender="mainPageBlock" style="text-decoration:underline;">
+                  				<apex:param name="sortField" value="City" assignTo="{!sSortField}" />
+                  			</apex:commandLink>
+                  		</apex:facet>
+                  		<apex:outputField value="{!lead.City}" />
+                  	</apex:column>
+                  	<apex:column rendered="{!IF(TEXT($User.CountryCode)='US' || TEXT($User.CountryCode)='CA',true,false)}">
+                  		<apex:facet name="header">
+                  			<apex:commandLink value="{!$ObjectType.Lead.Fields.State.Label}" action="{!toggleSort}" rerender="mainPageBlock" style="text-decoration:underline;">
+                  				<apex:param name="sortField" value="State" assignTo="{!sSortField}" />
+                  			</apex:commandLink>
+                  		</apex:facet>
+                  		<apex:outputField value="{!lead.State}" />
+                  	</apex:column>
+                        <apex:column rendered="{!IF(TEXT($User.CountryCode)!='US' && TEXT($User.CountryCode)!='CA',true,false)}">
+                              <apex:facet name="header">
+                                    <apex:commandLink value="{!$ObjectType.Lead.Fields.Country.Label}" action="{!toggleSort}" rerender="mainPageBlock" style="text-decoration:underline;">
+                                          <apex:param name="sortField" value="Country" assignTo="{!sSortField}" />
+                                    </apex:commandLink>
+                              </apex:facet>
+                              <apex:outputField value="{!lead.Country}" />
+                        </apex:column>
+                  	<apex:column >
+                  		<apex:facet name="header">
+                  			<apex:commandLink value="{!$ObjectType.Lead.Fields.Territory_Account_Manager__c.Label}" action="{!toggleSort}" rerender="mainPageBlock" style="text-decoration:underline;">
+                  				<apex:param name="sortField" value="Territory_Account_Manager__r.Name" assignTo="{!sSortField}" />
+                  			</apex:commandLink>
+                  		</apex:facet>
+                  		<apex:outputField value="{!lead.Territory_Account_Manager__r.Name}" />
+                  	</apex:column>
+                  	<apex:column >
+                  		<apex:facet name="header">
+                  			<apex:commandLink value="{!$ObjectType.Lead.Fields.Date_Submitted__c.Label}" action="{!toggleSort}" rerender="mainPageBlock" style="text-decoration:underline;">
+                  				<apex:param name="sortField" value="Date_Submitted__c" assignTo="{!sSortField}" />
+                  			</apex:commandLink>
+                  		</apex:facet>
+                  		<apex:outputField value="{!lead.Date_Submitted__c}" />
+                  	</apex:column>
+                  </apex:pageBlockTable>
+            </apex:pageBlock> 
+      </apex:form>     
+</apex:page>

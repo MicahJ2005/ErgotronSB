@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Uses the Email Distribution when New Partner Authorization Request is created DH Dist email alert.</description>
+        <name>Email_D_and_H</name>
+        <label>Email D and H</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Lead.Email_Distribution_when_New_Partner_Authorization_Request_is_created_DH_Dist</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Email_Ingram</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Email_Distribution_when_New_Partner_Authorization_Request_is_created_DH_Dist</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <description>Uses the Email Distribution when New Partner Authorization Request is created Ingram Micro email alert</description>
+        <name>Email_Ingram</name>
+        <label>Email Ingram</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Lead.Email_Distribution_when_New_Partner_Authorization_Request_is_created_Ingram_Micr</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Email_Synnex</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Email_Distribution_when_New_Partner_Authorization_Request_is_created_Ingram_Micr</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <description>Uses the Email Distribution when New Partner Authorization Request is created Synnex email alert</description>
+        <name>Email_Synnex</name>
+        <label>Email Synnex</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Lead.Email_Distribution_when_New_Partner_Authorization_Request_is_created_Synnex</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Email_Distribution_when_New_Partner_Authorization_Request_is_created_Synnex</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Email_to_Bluestar</name>
+        <label>Email to Bluestar</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Lead.New_Partner_Auth_created_Bluestar_Canada</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.New_Partner_Auth_created_Bluestar_Canada</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <description>Uses the New Partner Auth created Ingram Canada</description>
+        <name>Email_to_Ingram_Canada</name>
+        <label>Email to Ingram Canada</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Lead.New_Partner_Auth_Ingram_Canada</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Email_to_Synnex_Canada</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.New_Partner_Auth_Ingram_Canada</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <description>Uses the New Partner Auth created Synnex Canada email alert.</description>
+        <name>Email_to_Synnex_Canada</name>
+        <label>Email to Synnex Canada</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Lead.Email_Distribution_when_New_Partner_Authorization_Request_is_created_Synnex_Cana</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Email_to_Bluestar</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Email_Distribution_when_New_Partner_Authorization_Request_is_created_Synnex_Cana</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Internal_Ergotron_Notification</name>
+        <label>Internal Ergotron Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Lead.Email_Distribution_when_New_Partner_Authorization_Request_is_created</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Email_D_and_H</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Lead.Email_Distribution_when_New_Partner_Authorization_Request_is_created</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>64.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Evaluate the country of the partner authorization request to determine which emails to send</description>
+        <name>Partner_auth_request_evaluation</name>
+        <label>Partner auth request evaluation</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Internal_Ergotron_Notification</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Canadian_Request</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Partner_Auth_Request.Country</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Canada</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_to_Ingram_Canada</targetReference>
+            </connector>
+            <label>Canadian Request</label>
+        </rules>
+    </decisions>
+    <description>This flow automates email notifications to distributor partners when a user reviews and clicks a button on a reseller authorization request. Based on the partner&apos;s country, the flow determines the appropriate group of distributors to notify. If the partner is located in Canada, a specific set of Canadian distributors receives the email alerts. For all other countries, a different group of distributors is notified. Each distributor receives a separate email via predefined Salesforce email alerts.</description>
+    <environments>Default</environments>
+    <interviewLabel>Reseller Partner Authorization Notification to Distis {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Reseller Partner Authorization Notification to Distis</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get the partner auth request record (Lead)</description>
+        <name>Partner_Auth_Request</name>
+        <label>Partner Auth Request</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Partner_auth_request_evaluation</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Lead</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Partner_Auth_Request</targetReference>
+        </connector>
+    </start>
+    <status>Draft</status>
+    <variables>
+        <description>Record Id of the lead (partner authorization request) launching this flow.</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

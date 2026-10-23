@@ -1,0 +1,51 @@
+<apex:page standardController="Opportunity" extensions="Opportunity_Special_Pricing_Controller">
+    <style type="text/css">
+        body {font-family: Arial,Helvetica,sans-serif; font-size: 11px; color: #0066cc; font-weight:bold;}
+    </style>
+    
+    <apex:form id="theForm">
+        <!-- Hidden fields used by the controller -->
+        <apex:outputField rendered="false" value="{!Opportunity.HasOpportunityLineItem}" id="hiddenHasOpportunityLineItem"/>
+        <apex:outputField rendered="false" value="{!Opportunity.SPR_Type__c}" id="hiddenSPRType"/>
+        <apex:outputField rendered="false" value="{!Opportunity.SPR_Reason__c}" id="hiddenSPRReason"/>
+        <apex:outputField rendered="false" value="{!Opportunity.SPR_Status__c}" id="hiddenSPRStatus"/>
+        <apex:outputField rendered="false" value="{!Opportunity.Expected_Order_Date__c}" id="hiddenSPRExpectedOrderDate"/>
+        <apex:outputField rendered="false" value="{!Opportunity.Expected_Ship_Date__c}" id="hiddenSPRExpectedShipDate"/>
+        <apex:outputField rendered="false" value="{!Opportunity.Business_Justification__c}" id="hiddenSPRBusinessJustification"/>
+        <apex:outputField rendered="false" value="{!Opportunity.Advantage_Requested_Date__c}" id="hiddenSPRAdvantageReqeustedDate"/>
+        <apex:outputField rendered="false" value="{!Opportunity.Advantage_Submission_Notes__c}" id="hiddenSPRAdvantageSubmissionNotes"/>
+        <apex:messages />
+        
+        <apex:outputText value="{!$Label.SPR_Message}">
+            <apex:param value="{!IF(Opportunity.SPR_Type__c='', '', Opportunity.SPR_Type__c)}" />
+        </apex:outputText>
+        <br/><br/>
+
+        <apex:inputCheckbox disabled="true" selected="true" rendered="{!bRequiredSPRFields}" />
+        <apex:outputText value="{!$Label.SPR_Step_1}"/><br/><br/>
+
+        <apex:inputCheckbox disabled="true" selected="true" rendered="{!bOpptyProducts}" />
+        <apex:outputText value="{!$Label.SPR_Step_2}"/><br/><br/>
+
+        <apex:inputCheckbox disabled="true" selected="true" rendered="{!bOpptyDistributor}" />
+        <apex:outputText value="{!$Label.SPR_Step_3}"/><br/><br/>
+
+        <apex:inputCheckbox disabled="true" selected="true" rendered="{!bOpptyReseller}" />
+        <apex:outputText value="{!$Label.SPR_Step_4}"/><br/><br/>
+
+        <apex:inputCheckbox disabled="true" selected="true" rendered="{!bOpptyContactRoles}" />
+        <apex:outputText value="{!$Label.SPR_Step_5}"/><br/><br/>
+        
+        <!-- Approval submission button.  This only displays when all required data and related data for SPR approval has been populated on the opportunity -->
+        <apex:commandButton action="{!SubmitSPRApproval}" value="Submit SPR Approval" id="submitApprovalButton" rendered="{!bDisplaySubmitButton}" />
+        
+        <!-- Redirect panel that refreshes the top page and not the inline Visualforce page -->
+        <apex:outputPanel id="redirectPanel" >
+            <apex:outputText rendered="{!bShouldRedirect}">
+                <script type="text/javascript">
+                    window.top.location.href = '{!sRedirectUrl}';
+                </script>
+            </apex:outputText>
+        </apex:outputPanel>     
+    </apex:form>    
+</apex:page>
